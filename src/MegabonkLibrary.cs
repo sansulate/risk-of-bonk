@@ -24,9 +24,23 @@ namespace RiskOfBonk
         public float[] Color = { 1, 1, 1, 1 };
     }
 
+    /// <summary>One transform of a Megabonk model's hierarchy, in its rest pose (model root space).</summary>
+    public sealed class RawBone
+    {
+        public string Name;
+        public int Parent = -1;
+        public Matrix World;
+    }
+
     /// <summary>A whole Megabonk model: every mesh renderer under one GameObject merged into one vertex list.</summary>
     public sealed class RawModel
     {
+        /// <summary>Every transform under the model root (index 0 is the root). Skinned vertices follow their bones,
+        /// plain mesh vertices follow the transform they sit on.</summary>
+        public readonly List<RawBone> Bones = new List<RawBone>();
+        public readonly List<int> BoneIndices = new List<int>();     // 4 per vertex, into Bones
+        public readonly List<float> BoneWeights = new List<float>(); // 4 per vertex
+        public int SkinnedVertices;
         public string SourceName;
         public readonly List<float> Positions = new List<float>(); // xyz
         public readonly List<float> Normals = new List<float>();   // xyz
@@ -170,7 +184,8 @@ namespace RiskOfBonk
                 if (me != null)
                 {
                     best = new RawModel { SourceName = me.Name };
-                    AppendMesh(best, am.GetBaseField(me.File, me.Info), me.File, Matrix.Identity, new List<RawTexture>(), new List<float[]>());
+                    best.Bones.Add(new RawBone { Name = me.Name, World = Matrix.Identity });
+                    AppendMesh(best, am.GetBaseField(me.File, me.Info), me.File, 0, null, new List<RawTexture>(), new List<float[]>());
                     var tex = FindTexture(hints);
                     foreach (var sm in best.SubMeshes) sm.Texture = tex;
                 }
@@ -180,12 +195,47 @@ namespace RiskOfBonk
 
         RawModel BuildModel(Entry go)
         {
-            var model = new RawModel { SourceName = go.Name };
             var goField = am.GetBaseField(go.File, go.Info);
-            var rootTf = Component(go.File, goField, TransformId);
-            if (rootTf.baseField == null) rootTf = Component(go.File, goField, RectTransformId);
-            if (rootTf.baseField == null) return null;
-            Walk(rootTf, Matrix.Identity, model, 0);
+            var target = Component(go.File, goField, TransformId);
+            if (target.baseField == null) target = Component(go.File, goField, RectTransformId);
+            if (target.baseField == null) return null;
+            // A skinned renderer's bones can live beside it (an FBX's armature next to its mesh object): build from
+            // the nearest ancestor that holds every bone, still showing only the renderers under the matched object.
+            var root = target;
+            for (int up = 0; ; up++)
+            {
+                var model = Build(go.Name, root, (target.file.path, target.info.PathId), out bool missingBones);
+                if (!missingBones || up >= 4) return model;
+                var father = am.GetExtAsset(root.file, root.baseField["m_Father"]);
+                if (father.baseField == null) return model;
+                root = father;
+            }
+        }
+
+        RawModel Build(string name, AssetExternal root, (string, long) target, out bool missingBones)
+        {
+            missingBones = false;
+            var model = new RawModel { SourceName = name };
+            var jobs = new List<(int node, AssetExternal mesh, AssetExternal renderer)>();
+            var index = new Dictionary<(string, long), int>();
+            Walk(root, -1, model, 0, false, target, jobs, index);
+            foreach (var (node, mesh, renderer) in jobs)
+            {
+                if (model.VertexCount > 200000) break;
+                int[] boneMap = null;
+                if (renderer.info.TypeId == SkinnedMeshRendererId)
+                {
+                    var map = new List<int>();
+                    foreach (var b in renderer.baseField["m_Bones.Array"].Children)
+                    {
+                        var e = am.GetExtAsset(renderer.file, b, true);
+                        if (e.info != null && index.TryGetValue((e.file.path, e.info.PathId), out int bi)) map.Add(bi);
+                        else { map.Add(node); missingBones = true; }
+                    }
+                    boneMap = map.ToArray();
+                }
+                AppendRenderer(model, mesh, renderer, node, boneMap);
+            }
             return model;
         }
 
@@ -200,43 +250,47 @@ namespace RiskOfBonk
             return default;
         }
 
-        void Walk(AssetExternal tf, Matrix parent, RawModel model, int depth)
+        void Walk(AssetExternal tf, int parent, RawModel model, int depth, bool inTarget, (string, long) target,
+                  List<(int, AssetExternal, AssetExternal)> jobs, Dictionary<(string, long), int> index)
         {
-            if (depth > 64 || model.VertexCount > 200000) return;
+            inTarget |= (tf.file.path, tf.info.PathId) == target;
+            if (depth > 64 || model.Bones.Count > 4000) return;
             var t = tf.baseField;
             var local = Matrix.TRS(V3(t["m_LocalPosition"]), Q(t["m_LocalRotation"]), V3(t["m_LocalScale"]));
             // The root's own placement in its scene is ignored: the model is rebuilt around its origin. Its tilt is
             // kept though: imported FBX roots often carry the -90 deg X axis conversion, without which the model lies along Z.
-            var world = depth == 0 ? Matrix.TRS(new float[3], Tilt(Q(t["m_LocalRotation"])), V3(t["m_LocalScale"])) : parent * local;
+            var world = depth == 0 ? Matrix.TRS(new float[3], Tilt(Q(t["m_LocalRotation"])), V3(t["m_LocalScale"])) : model.Bones[parent].World * local;
             var goExt = am.GetExtAsset(tf.file, t["m_GameObject"]);
-            if (goExt.baseField != null && goExt.baseField["m_IsActive"].AsBool)
+            int node = model.Bones.Count;
+            model.Bones.Add(new RawBone { Name = goExt.baseField?["m_Name"].AsString ?? "", Parent = parent, World = world });
+            index[(tf.file.path, tf.info.PathId)] = node;
+            if (goExt.baseField == null || !goExt.baseField["m_IsActive"].AsBool) return; // hidden, with its children
+            var goField = goExt.baseField;
+            var smr = Component(goExt.file, goField, SkinnedMeshRendererId);
+            if (!inTarget) { }
+            else if (smr.baseField != null)
             {
-                var goField = goExt.baseField;
-                var smr = Component(goExt.file, goField, SkinnedMeshRendererId);
-                if (smr.baseField != null)
+                var mesh = am.GetExtAsset(smr.file, smr.baseField["m_Mesh"]);
+                if (mesh.baseField != null) jobs.Add((node, mesh, smr));
+            }
+            else
+            {
+                var mr = Component(goExt.file, goField, MeshRendererId);
+                var mf = Component(goExt.file, goField, MeshFilterId);
+                if (mr.baseField != null && mf.baseField != null)
                 {
-                    var mesh = am.GetExtAsset(smr.file, smr.baseField["m_Mesh"]);
-                    if (mesh.baseField != null) AppendRenderer(model, mesh, smr, world);
-                }
-                else
-                {
-                    var mr = Component(goExt.file, goField, MeshRendererId);
-                    var mf = Component(goExt.file, goField, MeshFilterId);
-                    if (mr.baseField != null && mf.baseField != null)
-                    {
-                        var mesh = am.GetExtAsset(mf.file, mf.baseField["m_Mesh"]);
-                        if (mesh.baseField != null) AppendRenderer(model, mesh, mr, world);
-                    }
+                    var mesh = am.GetExtAsset(mf.file, mf.baseField["m_Mesh"]);
+                    if (mesh.baseField != null) jobs.Add((node, mesh, mr));
                 }
             }
             foreach (var child in t["m_Children.Array"].Children)
             {
                 var c = am.GetExtAsset(tf.file, child);
-                if (c.baseField != null) Walk(c, world, model, depth + 1);
+                if (c.baseField != null) Walk(c, node, model, depth + 1, inTarget, target, jobs, index);
             }
         }
 
-        void AppendRenderer(RawModel model, AssetExternal mesh, AssetExternal renderer, Matrix world)
+        void AppendRenderer(RawModel model, AssetExternal mesh, AssetExternal renderer, int node, int[] boneMap)
         {
             if (!renderer.baseField["m_Enabled"].AsBool) return;
             var texs = new List<RawTexture>();
@@ -247,7 +301,7 @@ namespace RiskOfBonk
                 texs.Add(mat.baseField != null ? MainTexture(mat) : null);
                 colors.Add(mat.baseField != null ? MainColor(mat.baseField) : new float[] { 1, 1, 1, 1 });
             }
-            AppendMesh(model, mesh.baseField, mesh.file, world, texs, colors);
+            AppendMesh(model, mesh.baseField, mesh.file, node, boneMap, texs, colors);
         }
 
         static readonly string[] TexPrefs = { "_MainTex", "_BaseMap", "_BaseColorMap", "_Albedo", "_MainTexture", "_Texture", "_Diffuse", "_ColorMap" };
@@ -283,8 +337,9 @@ namespace RiskOfBonk
         // Unity 2019+ VertexFormat sizes.
         static readonly int[] FormatSize = { 4, 2, 1, 1, 2, 2, 1, 1, 2, 2, 4, 4 };
 
-        void AppendMesh(RawModel model, AssetTypeValueField mesh, AssetsFileInstance file, Matrix world, List<RawTexture> texs, List<float[]> colors)
+        void AppendMesh(RawModel model, AssetTypeValueField mesh, AssetsFileInstance file, int node, int[] boneMap, List<RawTexture> texs, List<float[]> colors)
         {
+            var world = model.Bones[node].World;
             if (!mesh["m_MeshCompression"].IsDummy && mesh["m_MeshCompression"].AsByte != 0)
             {
                 log($"mesh {mesh["m_Name"].AsString}: compressed meshes are not supported, skipped");
@@ -326,14 +381,69 @@ namespace RiskOfBonk
 
             int baseIndex = model.VertexCount;
             var normalMatrix = world.InverseTransposeLinear();
+            // Skinned meshes: rest-pose position = sum of weight * (bone world * bindpose) * vertex.
+            var binds = mesh["m_BindPose.Array"].IsDummy ? new List<AssetTypeValueField>() : mesh["m_BindPose.Array"].Children;
+            bool skinned = boneMap != null && boneMap.Length > 0 && binds.Count == boneMap.Length &&
+                           channels.Count > 13 && channels[13].dim > 0;
+            Matrix[] skin = null, skinN = null;
+            if (skinned)
+            {
+                skin = new Matrix[binds.Count];
+                skinN = new Matrix[binds.Count];
+                for (int j = 0; j < binds.Count; j++)
+                {
+                    var bp = new Matrix { M = new float[16] };
+                    for (int r = 0; r < 4; r++)
+                        for (int c = 0; c < 4; c++) bp.M[r * 4 + c] = binds[j]["e" + r + c].AsFloat;
+                    skin[j] = model.Bones[boneMap[j]].World * bp;
+                    skinN[j] = skin[j].InverseTransposeLinear();
+                }
+                model.SkinnedVertices += vcount;
+            }
             for (int v = 0; v < vcount; v++)
             {
                 var p = Read(0, v, 3);
-                var w = world.MultiplyPoint(p[0], p[1], p[2]);
-                model.Positions.AddRange(w);
                 var n = channels.Count > 1 ? Read(1, v, 3) : null;
-                if (n != null) model.Normals.AddRange(Normalize(normalMatrix.MultiplyVector(n[0], n[1], n[2])));
-                else model.Normals.AddRange(new float[] { 0, 1, 0 });
+                if (skinned)
+                {
+                    int dims = Math.Min(channels[13].dim, 4), wdims = Math.Min(channels[12].dim, 4);
+                    var idx = Read(13, v, 4);
+                    var wt = wdims > 0 ? Read(12, v, 4) : new float[] { 1, 0, 0, 0 };
+                    if (wdims > 0 && wdims < dims)
+                    {
+                        float sum = 0;
+                        for (int k = 0; k < wdims; k++) sum += wt[k];
+                        wt[wdims] = Math.Max(0, 1 - sum);
+                    }
+                    float total = 0;
+                    for (int k = 0; k < dims; k++) total += wt[k];
+                    if (total < 1e-5f) { wt = new float[] { 1, 0, 0, 0 }; total = 1; }
+                    var sumP = new float[3];
+                    var nor = new float[3];
+                    for (int k = 0; k < 4; k++)
+                    {
+                        float w = k < dims ? wt[k] / total : 0;
+                        int j = Math.Min(Math.Max(0, (int)idx[k]), skin.Length - 1);
+                        model.BoneIndices.Add(boneMap[j]);
+                        model.BoneWeights.Add(w);
+                        if (w <= 0) continue;
+                        var sp = skin[j].MultiplyPoint(p[0], p[1], p[2]);
+                        for (int c = 0; c < 3; c++) sumP[c] += sp[c] * w;
+                        if (n == null) continue;
+                        var sn = skinN[j].MultiplyVector(n[0], n[1], n[2]);
+                        for (int c = 0; c < 3; c++) nor[c] += sn[c] * w;
+                    }
+                    model.Positions.AddRange(sumP);
+                    model.Normals.AddRange(n != null ? Normalize(nor) : new float[] { 0, 1, 0 });
+                }
+                else
+                {
+                    model.Positions.AddRange(world.MultiplyPoint(p[0], p[1], p[2]));
+                    if (n != null) model.Normals.AddRange(Normalize(normalMatrix.MultiplyVector(n[0], n[1], n[2])));
+                    else model.Normals.AddRange(new float[] { 0, 1, 0 });
+                    model.BoneIndices.AddRange(new[] { node, node, node, node });
+                    model.BoneWeights.AddRange(new float[] { 1, 0, 0, 0 });
+                }
                 var uv = channels.Count > 4 ? Read(4, v, 2) : null;
                 model.UVs.AddRange(uv ?? new float[] { 0, 0 });
                 var col = channels.Count > 3 ? Read(3, v, 4) : null;

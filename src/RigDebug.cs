@@ -26,6 +26,11 @@ namespace RiskOfBonk
             File.WriteAllText(Path.Combine(Dir, name + "_bones.obj"), sb.ToString());
         }
 
+        public static void WriteSkeleton(string name, System.Collections.Generic.IEnumerable<string> lines)
+        {
+            if (On) File.WriteAllLines(Path.Combine(Dir, name + "_skeleton.txt"), lines);
+        }
+
         static void Line(StringBuilder sb, string tag, Vector3 v) =>
             sb.Append(tag).Append(' ').Append(v.x.ToString(CultureInfo.InvariantCulture)).Append(' ')
               .Append(v.y.ToString(CultureInfo.InvariantCulture)).Append(' ').Append(v.z.ToString(CultureInfo.InvariantCulture)).Append('\n');

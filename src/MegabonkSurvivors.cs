@@ -123,7 +123,11 @@ namespace RiskOfBonk
             if (bodyModel == null) throw new Exception("moveset body has no model");
             Reskin(bodyModel, raw, mesh, row, lib);
             var displayModel = display.GetComponentInChildren<CharacterModel>(true)?.transform;
-            if (displayModel != null) Reskin(displayModel, raw, mesh, row, lib);
+            if (displayModel != null)
+            {
+                Reskin(displayModel, raw, mesh, row, lib);
+                FillLight(displayModel);
+            }
 
             var def = ScriptableObject.CreateInstance<SurvivorDef>();
             def.cachedName = "RiskOfBonk" + id;
@@ -165,6 +169,23 @@ namespace RiskOfBonk
                 ni.m_AssetId = NetworkHash128.Parse(BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant());
             }
             return c;
+        }
+
+        /// <summary>
+        /// Character select lights its pedestal dim and red, which turns the flat-colored Megabonk models into
+        /// silhouettes: a soft white light in front of the display model shows their colors.
+        /// </summary>
+        static void FillLight(Transform displayModel)
+        {
+            var go = new GameObject("MB_FillLight");
+            go.transform.SetParent(displayModel, false);
+            go.transform.position = displayModel.position + displayModel.forward * 1.6f + Vector3.up * 1.5f;
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.range = 5f;
+            light.intensity = 1.6f;
+            light.color = new Color(1f, 0.96f, 0.9f);
+            light.shadows = LightShadows.None;
         }
 
         static Texture2D SolidPortrait(Color c)
@@ -209,11 +230,14 @@ namespace RiskOfBonk
                 return m;
             }).ToArray();
 
-            var smr = AutoRig.Fit(modelRoot, mainSmr, SkinMesh(modelRoot, mainSmr)?.bindposes, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id);
+            var fitted = AutoRig.Fit(modelRoot, mainSmr, SkinMesh(modelRoot, mainSmr)?.bindposes, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id, raw);
+            // CharacterModel draws each renderer with one material, so every part has its own renderer.
+            var parts = AutoRig.SplitParts(fitted);
+            var smr = parts[0];
 
             // Hide every original renderer (body, weapons, attachments).
             foreach (var r in modelRoot.GetComponentsInChildren<Renderer>(true))
-                if (r != smr && !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
+                if (System.Array.IndexOf(parts, r) < 0 && !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
                 {
                     // Skins load meshes lazily and re-enable renderers, so also force them off for good.
                     r.enabled = false;
@@ -221,16 +245,16 @@ namespace RiskOfBonk
                     if (r is SkinnedMeshRenderer o) o.sharedMesh = null;
                 }
 
-            var info = new CharacterModel.RendererInfo
+            var infos = parts.Select(part => new CharacterModel.RendererInfo
             {
-                renderer = smr,
-                defaultMaterial = mats.FirstOrDefault(),
+                renderer = part,
+                defaultMaterial = part.sharedMaterial,
                 defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
                 ignoreOverlays = false,
-            };
+            }).ToArray();
             if (cm != null)
             {
-                cm.baseRendererInfos = new[] { info };
+                cm.baseRendererInfos = infos;
                 cm.mainSkinnedMeshRenderer = smr;
             }
 
@@ -243,13 +267,13 @@ namespace RiskOfBonk
                 SetMember(skin, "nameToken", "RISKOFBONK_" + row.Id.ToUpperInvariant() + "_NAME");
                 SetMember(skin, "rootObject", modelRoot.gameObject);
                 // Newer game builds moved renderer lists into SkinDefParams; fill whichever this build has.
-                if (!SetMember(skin, "rendererInfos", new[] { info }))
+                if (!SetMember(skin, "rendererInfos", infos))
                 {
                     var paramsField = typeof(SkinDef).GetField("skinDefParams", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
                     if (paramsField != null)
                     {
                         var p = ScriptableObject.CreateInstance(paramsField.FieldType);
-                        SetMember(p, "rendererInfos", new[] { info });
+                        SetMember(p, "rendererInfos", infos);
                         paramsField.SetValue(skin, p);
                     }
                 }

@@ -13,7 +13,7 @@ namespace RiskOfBonk
     public static class AutoRig
     {
         public static SkinnedMeshRenderer Fit(Transform modelRoot, SkinnedMeshRenderer src, Matrix4x4[] srcBindposes, Transform[] fallbackBones, Mesh source,
-            Material[] materials, float yawDeg, string name)
+            Material[] materials, float yawDeg, string name, RawModel raw = null)
         {
             Transform[] bones;
             Vector3[] local;          // bone positions in model space (Y up, character facing +Z)
@@ -77,7 +77,9 @@ namespace RiskOfBonk
                      $"height {skeletonHeight:0.00} [{minY:0.00}..{maxY:0.00}], head {(heads.Length > 0 ? bones[heads[0]].name : "-")}");
 
             // Megabonk model, scaled and placed on the skeleton in model space.
-            var rot = Quaternion.Euler(0, yawDeg, 0);
+            // Megabonk rigs say which way they face (their .L limbs are on the left); the sheet's yaw is added on top.
+            float facing = Retarget.FacingYaw(raw) ?? 0f;
+            var rot = Quaternion.Euler(0, facing + yawDeg, 0);
             var verts = source.vertices.Select(v => rot * v).ToArray();
             var b = new Bounds(verts[0], Vector3.zero);
             foreach (var v in verts) b.Encapsulate(v);
@@ -87,6 +89,17 @@ namespace RiskOfBonk
             float mx = Median(verts.Select(v => v.x)), mz = Median(verts.Select(v => v.z));
             var offset = new Vector3(centre.x, minY - 0.04f * skeletonHeight, centre.z) - new Vector3(mx, b.min.y, mz) * scale;
             for (int i = 0; i < verts.Length; i++) verts[i] = verts[i] * scale + offset;
+
+            // Humanoid on both sides: drive the Megabonk model's own skeleton (see Retarget).
+            var bindRot = bindPose
+                ? bindposes.Select(bp => Retarget.Rot(toModel * bp.inverse)).ToArray()
+                : bones.Select(t => Quaternion.Inverse(modelRoot.rotation) * t.rotation).ToArray();
+            var retargeted = Retarget.Build(modelRoot, bones, local, bindRot, all, raw, source, materials, rot, scale, offset, name);
+            if (retargeted != null)
+            {
+                RigDebug.WriteFit(name + "_" + modelRoot.root.name, retargeted.sharedMesh.vertices, source.triangles, all.Select(i => local[i]).ToArray(), Matrix4x4.identity);
+                return retargeted;
+            }
 
             // Bone segments: each body bone to each of its child bones; leaves are points. Helper bones get no vertices.
             var isBody = new HashSet<int>(body);
@@ -123,6 +136,8 @@ namespace RiskOfBonk
             }
 
             RigDebug.WriteFit(name + "_" + modelRoot.root.name, verts, source.triangles, all.Select(i => local[i]).ToArray(), Matrix4x4.identity);
+            RigDebug.WriteSkeleton(name + "_" + modelRoot.root.name + "_" + modelRoot.name, all.Select(i =>
+                $"{bones[i].name}	{(bones[i].parent != null ? bones[i].parent.name : "-")}	{local[i].x:0.000} {local[i].y:0.000} {local[i].z:0.000}	{(body.Contains(i) ? "body" : "helper")}"));
 
             // Back from model space into the mesh space the bindposes expect.
             var toMesh = toModel.inverse;
@@ -153,6 +168,40 @@ namespace RiskOfBonk
             return smr;
         }
 
+        /// <summary>
+        /// One renderer per sub-mesh, sharing the bones; the part with the most vertices comes first. The original
+        /// renderer keeps sub-mesh 0.
+        /// </summary>
+        public static SkinnedMeshRenderer[] SplitParts(SkinnedMeshRenderer smr)
+        {
+            var mesh = smr.sharedMesh;
+            var mats = smr.sharedMaterials;
+            if (mesh.subMeshCount <= 1) return new[] { smr };
+            var parts = new List<(SkinnedMeshRenderer r, int verts)>();
+            var tris = Enumerable.Range(0, mesh.subMeshCount).Select(mesh.GetTriangles).ToArray();
+            for (int s = 0; s < tris.Length; s++)
+            {
+                if (tris[s].Length == 0) continue;
+                var part = s == 0 ? smr : Object.Instantiate(smr.gameObject, smr.transform.parent).GetComponent<SkinnedMeshRenderer>();
+                if (s > 0)
+                {
+                    part.name = smr.name + "_part" + s;
+                    foreach (var c in part.GetComponents<MonoBehaviour>()) Object.Destroy(c); // one rig driver is enough
+                    part.bones = smr.bones;
+                    part.rootBone = smr.rootBone;
+                }
+                var m = Object.Instantiate(mesh);
+                m.name = mesh.name + "_" + s;
+                m.subMeshCount = 1;
+                m.SetTriangles(tris[s], 0);
+                m.RecalculateBounds();
+                part.sharedMesh = m;
+                part.sharedMaterials = new[] { mats[Mathf.Min(s, mats.Length - 1)] };
+                parts.Add((part, tris[s].Distinct().Count()));
+            }
+            return parts.OrderByDescending(p => p.verts).Select(p => p.r).ToArray();
+        }
+
         static readonly string[] helperWords = { "ik", "target", "pole", "aim", "muzzle", "camera", "pivot", "hook", "chain", "rope", "root", "fx", "hurtbox", "end" };
 
         static bool IsHelper(string boneName)
@@ -168,7 +217,7 @@ namespace RiskOfBonk
         static bool Named(Transform t, params string[] words)
         {
             string n = t.name.ToLowerInvariant();
-            return words.Any(w => n.Contains(w)) && !n.Contains("end");
+            return words.Any(w => n.Contains(w)) && !n.Contains("end") && !n.Contains("cannon") && !n.Contains("mech");
         }
 
         static float Median(IEnumerable<float> values)
