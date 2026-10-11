@@ -15,10 +15,19 @@ namespace RiskOfBonk
             bones = bones.Where(b => b != null).Distinct().ToArray();
             var local = bones.Select(b => modelRoot.InverseTransformPoint(b.position)).ToArray();
 
-            // Skeleton extents in model space: feet to head.
-            float minY = local.Min(p => p.y), maxY = local.Max(p => p.y);
+            // Skeleton extents in model space, feet to head. Skins also hold helper bones (IK targets, aim pivots, hook
+            // chains) that can sit far from the body, so measure from body bones only and prefer the head and feet.
+            var body = Enumerable.Range(0, bones.Length).Where(i => !IsHelper(bones[i].name)).ToArray();
+            if (body.Length < 3) body = Enumerable.Range(0, bones.Length).ToArray();
+            var heads = body.Where(i => Named(bones[i], "head")).ToArray();
+            var feet = body.Where(i => Named(bones[i], "foot", "toe", "ankle")).ToArray();
+            float minY = (feet.Length > 0 ? feet : body).Min(i => local[i].y);
+            float maxY = heads.Length > 0 ? heads.Max(i => local[i].y) : body.Max(i => local[i].y);
             float skeletonHeight = Mathf.Max(0.3f, maxY - minY);
-            var centre = new Vector3(local.Average(p => p.x), 0, local.Average(p => p.z));
+            var centre = new Vector3(body.Average(i => local[i].x), 0, body.Average(i => local[i].z));
+            var top = body.OrderByDescending(i => local[i].y).Take(3).Select(i => $"{bones[i].name}@{local[i].y:0.00}");
+            Log.Info($"{name} on {modelRoot.name}: {bones.Length} bones ({body.Length} body), height {skeletonHeight:0.00} " +
+                     $"[{minY:0.00}..{maxY:0.00}], head {(heads.Length > 0 ? bones[heads[0]].name : "-")}, top {string.Join(" ", top)}, scale {modelRoot.lossyScale}");
 
             // Megabonk model extents.
             var rot = Quaternion.Euler(0, yawDeg, 0);
@@ -30,12 +39,14 @@ namespace RiskOfBonk
             var offset = new Vector3(centre.x, minY - 0.04f * skeletonHeight, centre.z) - new Vector3(b.center.x, b.min.y, b.center.z) * scale;
             for (int i = 0; i < verts.Length; i++) verts[i] = verts[i] * scale + offset;
 
-            // Bone segments: each bone to each of its child bones; leaves are points.
+            // Bone segments: each body bone to each of its child bones; leaves are points. Helper bones get no vertices.
+            var isBody = new HashSet<int>(body);
             var index = new Dictionary<Transform, int>();
             for (int i = 0; i < bones.Length; i++) index[bones[i]] = i;
             var segA = new List<Vector3>(); var segB = new List<Vector3>(); var segBone = new List<int>();
             for (int i = 0; i < bones.Length; i++)
             {
+                if (!isBody.Contains(i)) continue;
                 bool child = false;
                 foreach (Transform c in bones[i])
                     if (index.TryGetValue(c, out int ci))
@@ -81,6 +92,24 @@ namespace RiskOfBonk
             smr.sharedMaterials = materials;
             smr.updateWhenOffscreen = true;
             return smr;
+        }
+
+        static readonly string[] helperWords = { "ik", "target", "pole", "aim", "muzzle", "camera", "pivot", "hook", "chain", "rope", "root", "fx", "hurtbox", "end" };
+
+        static bool IsHelper(string boneName)
+        {
+            string n = boneName.ToLowerInvariant().Replace(".", "_").Replace(" ", "_");
+            // Match word starts so "spine" or "hand" do not trip on "pine"/"and".
+            foreach (var part in n.Split('_', '-'))
+                foreach (var w in helperWords)
+                    if (part.StartsWith(w)) return true;
+            return false;
+        }
+
+        static bool Named(Transform t, params string[] words)
+        {
+            string n = t.name.ToLowerInvariant();
+            return words.Any(w => n.Contains(w)) && !n.Contains("end");
         }
 
         static float DistSq(Vector3 p, Vector3 a, Vector3 b)

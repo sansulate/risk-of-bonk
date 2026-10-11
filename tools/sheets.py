@@ -11,7 +11,7 @@ SHEETS = os.path.join(ROOT, "sheets")
 OUT = os.path.join(ROOT, "src", "Generated", "Sheets.g.cs")
 
 REQUIRED = {
-    "characters": ["id", "displayName", "mbNameHints", "movesetBody", "primaryColor", "sortPosition",
+    "characters": ["id", "displayName", "mbNameHints", "mbPortrait", "movesetBody", "primaryColor", "sortPosition",
                    "heightMeters", "yawOffsetDeg", "description", "mbAssetsVerified"],
     "moveset_bodies": ["bodyName", "source", "verified"],
     "menu_style": ["id", "target", "color", "alpha", "mbSpriteHints", "verified"],
@@ -74,7 +74,7 @@ def generate(s):
          "    public static class Sheets", "    {"]
     L.append("        public static readonly CharacterRow[] Characters =\n        {")
     for r in s["characters"]:
-        L.append(f"            new CharacterRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbNameHints'])}, {cs(r['movesetBody'])}, "
+        L.append(f"            new CharacterRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbNameHints'])}, {cs(r['mbPortrait'])}, {cs(r['movesetBody'])}, "
                  f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}),")
     L.append("        };")
     L.append("        public static readonly StyleRow[] MenuStyle =\n        {")

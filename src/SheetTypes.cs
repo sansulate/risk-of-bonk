@@ -3,14 +3,14 @@ namespace RiskOfBonk.Generated
     /// <summary>One row of sheets/characters.json.</summary>
     public sealed class CharacterRow
     {
-        public readonly string Id, DisplayName, MovesetBody, PrimaryColor, Description;
+        public readonly string Id, DisplayName, MbPortrait, MovesetBody, PrimaryColor, Description;
         public readonly string[] MbNameHints;
         public readonly float SortPosition, HeightMeters, YawOffsetDeg;
 
-        public CharacterRow(string id, string displayName, string[] mbNameHints, string movesetBody, string primaryColor,
+        public CharacterRow(string id, string displayName, string[] mbNameHints, string mbPortrait, string movesetBody, string primaryColor,
             float sortPosition, float heightMeters, float yawOffsetDeg, string description)
         {
-            Id = id; DisplayName = displayName; MbNameHints = mbNameHints; MovesetBody = movesetBody; PrimaryColor = primaryColor;
+            Id = id; DisplayName = displayName; MbNameHints = mbNameHints; MbPortrait = mbPortrait; MovesetBody = movesetBody; PrimaryColor = primaryColor;
             SortPosition = sortPosition; HeightMeters = heightMeters; YawOffsetDeg = yawOffsetDeg; Description = description;
         }
     }

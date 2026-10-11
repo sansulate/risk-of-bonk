@@ -88,7 +88,7 @@ namespace RiskOfBonk
                 return null;
             }
             RawTexture portraitRaw;
-            lock (lib) portraitRaw = lib.FindTexture(row.MbNameHints, new[] { "Portrait", "Icon", "Avatar", "Head", "Face", "Ui", "Card" });
+            lock (lib) portraitRaw = lib.FindTexture(new[] { row.MbPortrait });
 
             if (!keys.TryGetValue(row.MovesetBody + ".prefab", out var bodyKey))
                 throw new Exception($"moveset body {row.MovesetBody} not in Addressables");
@@ -180,7 +180,7 @@ namespace RiskOfBonk
         {
             var cm = modelRoot.GetComponent<CharacterModel>();
             var oldInfos = cm != null && cm.baseRendererInfos != null ? cm.baseRendererInfos : new CharacterModel.RendererInfo[0];
-            var template = oldInfos.Select(i => i.defaultMaterial).FirstOrDefault(m => m != null);
+            var template = TemplateMaterial(modelRoot, oldInfos);
 
             // Bones of the survivor's main body mesh drive the Megabonk model.
             var mainSmr = (cm != null ? cm.mainSkinnedMeshRenderer : null)
@@ -191,7 +191,7 @@ namespace RiskOfBonk
 
             var mats = raw.SubMeshes.Select(sm =>
             {
-                var m = template != null ? new Material(template) : new Material(Shader.Find("Standard"));
+                var m = new Material(template);
                 m.name = "MB_" + raw.SourceName;
                 var tex = UnityConvert.Texture(sm.Texture, lib);
                 if (m.HasProperty("_MainTex")) m.SetTexture("_MainTex", tex);
@@ -244,6 +244,28 @@ namespace RiskOfBonk
                 }
                 msc.skins = new[] { skin };
             }
+        }
+
+        /// <summary>
+        /// A survivor material to copy. Newer game builds leave RendererInfo.defaultMaterial empty and load it from
+        /// defaultMaterialAddress, and Shader.Find("Standard") is rejected by the game's legacy shader hook.
+        /// </summary>
+        static Material TemplateMaterial(Transform modelRoot, CharacterModel.RendererInfo[] infos)
+        {
+            var m = infos.Select(i => i.defaultMaterial).FirstOrDefault(x => x != null);
+            if (m != null) return m;
+            var addrField = typeof(CharacterModel.RendererInfo).GetField("defaultMaterialAddress");
+            if (addrField != null)
+                foreach (object info in infos)
+                    if (addrField.GetValue(info) is AssetReference r && r.RuntimeKeyIsValid())
+                    {
+                        m = Addressables.LoadAssetAsync<Material>(r.RuntimeKey).WaitForCompletion();
+                        if (m != null) return m;
+                    }
+            m = modelRoot.GetComponentsInChildren<Renderer>(true).Select(x => x.sharedMaterial).FirstOrDefault(x => x != null && x.shader.name.Contains("HGStandard"));
+            if (m != null) return m;
+            var shader = Addressables.LoadAssetAsync<Shader>("RoR2/Base/Shaders/HGStandard.shader").WaitForCompletion();
+            return new Material(shader);
         }
 
         static bool SetMember(object o, string name, object value)

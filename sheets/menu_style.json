@@ -48,9 +48,7 @@
    "color": "#FFFFFF",
    "alpha": 1.0,
    "mbSpriteHints": [
-    "Logo",
-    "logo",
-    "Title"
+    "MegabonkLogo"
    ],
    "verified": false
   }

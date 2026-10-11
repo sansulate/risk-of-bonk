@@ -22,10 +22,23 @@
 - BepInEx 5.4.23.2 (reference only). AssetsTools.NET 3.0.5. classdata.tpk from UABEA v8.
 
 ## Status
-- Builds: yes (`./build.sh`). Preflight: 0 errors, 21 unverified cells (Megabonk asset names + logo).
-- NOT run in game yet: the build container has neither game. The first run on a PC with both games must:
-  1. check `BepInEx/LogOutput.log` for "Megabonk survivors ready: ..." and any warnings;
-  2. read `BepInEx/RiskOfBonk/megabonk_inventory.txt`, fix `mbNameHints` in sheets/characters.json and set
-     `mbAssetsVerified: true` per row;
-  3. check each character's facing (`yawOffsetDeg`) and fit in the character select.
-- Melty: melty.gg is denied by this cloud environment's network policy, so nothing is uploaded or listed yet.
+- Builds: yes (`./build.sh`; on Windows the same steps by hand, Git Bash has no `zip`). Preflight: 0 errors,
+  21 unverified cells (mbAssetsVerified per character + logo; set true only after each looks right in game).
+- First run on the PC with both games (2026-10-11; RoR2 Unity 2021.3.45, BepInEx 5.4.21 via r2modman profile
+  "Default"; Megabonk Unity 2023.2.22f1):
+  - Loads, finds Megabonk (32 asset files, 12130 named assets). Megabonk-style main menu and character select apply.
+  - All 20 Megabonk survivors register, each with its real Megabonk character-select icon as portrait.
+    Model names from the real inventory: Megachad=Chad, Fox=FoxWizard, Sir Oofie=Knight, Tony McZoom=ModelHoverman,
+    Spaceman=Astronaut, Vlad=BloodMage, CL4NK=RobotCowboy, Bush=Sniperman, Sir Chadwell=CorruptedKnight
+    (sharedassets1 has a_skin_sirChadwell*; Corrupt* skins). Portraits are exact Texture2D names (`mbPortrait`).
+    Logo: MegabonkLogo.
+  - Fixed: newer RoR2 leaves RendererInfo.defaultMaterial empty (defaultMaterialAddress) and rejects
+    Shader.Find("Standard"); materials now come from the address, a renderer, or HGStandard via Addressables.
+  - Fixed: 20 extra survivors overflowed the grid onto the Overview/Skills tabs; the grid now adds columns and
+    shrinks icons to keep the vanilla height. The cloned Bonk/Rain button no longer carries Ready's gamepad glyph
+    or shortcut.
+  - Character-select display models look right (seen: Calcium on Railgunner, Amog on Engineer).
+  - OPEN: in a run, Megachad on Loader's body is ~3x too large and smeared. The likely cause is helper bones (IK/aim/hook)
+    inflating the skeleton height and stealing vertex weights. AutoRig now measures head-to-feet on body bones only
+    and logs each fit ("MB_<id> on <model>: ... height ..."). This fix is built but not yet seen in game.
+- Melty: not done yet (needs a fresh Publish prompt from the user).

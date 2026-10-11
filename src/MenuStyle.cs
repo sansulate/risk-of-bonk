@@ -158,6 +158,10 @@ namespace RiskOfBonk
                 var go = Instantiate(ready.gameObject, ready.transform.parent);
                 go.name = "RiskOfBonkStyleButton";
                 foreach (var lang in go.GetComponentsInChildren<LanguageTextMeshController>(true)) Destroy(lang);
+                // Ready's gamepad shortcut and its button glyph must not come along with the clone.
+                foreach (var gp in go.GetComponentsInChildren<HGGamepadInputEvent>(true)) Destroy(gp);
+                foreach (var c in go.GetComponentsInChildren<Component>(true))
+                    if (c != null && c.GetType().Name.Contains("InputBindingDisplay") && c.gameObject != go) Destroy(c.gameObject);
                 button = go.GetComponent<MPButton>();
                 button.onClick = new Button.ButtonClickedEvent();
                 button.onClick.AddListener(StageMode.Toggle);
@@ -173,9 +177,54 @@ namespace RiskOfBonk
 
             void OnDestroy() => StageMode.Changed -= Refresh;
 
+            float nextFit;
+            GridLayoutGroup grid;
+            float gridHeight;
+
             void Update()
             {
                 if (button != null) button.interactable = StageMode.CanChange;
+                if (Time.unscaledTime >= nextFit) { nextFit = Time.unscaledTime + 0.5f; FitSurvivorGrid(); }
+            }
+
+            /// <summary>
+            /// Twenty extra survivors overflow the grid onto the Overview/Skills tabs: add columns and shrink the icons
+            /// until every row fits in the height the grid had for the vanilla roster.
+            /// </summary>
+            void FitSurvivorGrid()
+            {
+                if (grid == null)
+                {
+                    var icon = controller.GetComponentInChildren<SurvivorIconController>(true);
+                    grid = icon != null ? icon.transform.parent.GetComponent<GridLayoutGroup>() : null;
+                    if (grid == null) return;
+                    var rt0 = (RectTransform)grid.transform;
+                    // Room for the vanilla roster: 3 rows of the original cell size.
+                    gridHeight = grid.padding.vertical + 3 * grid.cellSize.y + 2 * grid.spacing.y;
+                    Log.Info($"Survivor grid: {grid.constraint} {grid.constraintCount}, cell {grid.cellSize}, width {rt0.rect.width}");
+                }
+                int n = 0;
+                foreach (Transform c in grid.transform) if (c.gameObject.activeSelf) n++;
+                if (n == 0) return;
+                var rt = (RectTransform)grid.transform;
+                float width = rt.rect.width - grid.padding.horizontal;
+                float aspect = grid.cellSize.y / Mathf.Max(1f, grid.cellSize.x);
+                for (int cols = Mathf.Max(1, grid.constraintCount); cols < 40; cols++)
+                {
+                    float cell = (width - grid.spacing.x * (cols - 1)) / cols;
+                    int rows = (n + cols - 1) / cols;
+                    float h = grid.padding.vertical + rows * cell * aspect + (rows - 1) * grid.spacing.y;
+                    if (h <= gridHeight + 0.5f || cell < 24f)
+                    {
+                        if (grid.constraint != GridLayoutGroup.Constraint.FixedColumnCount || grid.constraintCount != cols)
+                        {
+                            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                            grid.constraintCount = cols;
+                            grid.cellSize = new Vector2(cell, cell * aspect);
+                        }
+                        return;
+                    }
+                }
             }
 
             void Refresh()
