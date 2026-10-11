@@ -71,6 +71,8 @@ namespace RiskOfBonk
                 minY = body.Min(i => local[i].y);
                 maxY = body.Max(i => local[i].y);
             }
+            // Models stand on their origin; REX's bind pose holds its legs up off the floor.
+            if (minY > 0.2f * (maxY - minY)) minY = 0f;
             float skeletonHeight = Mathf.Max(0.3f, maxY - minY);
             var centre = new Vector3(body.Average(i => local[i].x), 0, body.Average(i => local[i].z));
             Log.Info($"{name} on {modelRoot.name}: {(bindPose ? "bind pose" : "prefab pose")}, {bones.Length} bones ({body.Length} body), " +

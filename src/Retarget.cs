@@ -15,7 +15,7 @@ namespace RiskOfBonk
         public enum Role { None, Hips, Chest, Neck, Head, UpperArm, ForeArm, Hand, Thigh, Shin, Foot }
 
         static readonly string[] skipWords = { "mech", "cannon", "ik", "target", "bender", "grip", "jiggle", "finger", "thumb", "roll",
-                                               "control", "helper", "front", "back", "extra", "end", "pad", "exhaust", "tool", "gun", "hood" };
+                                               "control", "helper", "back", "extra", "end", "pad", "exhaust", "tool", "gun", "hood" };
 
         /// <summary>Role and side (-1 left, 1 right, 0 middle) of a bone, by its name.</summary>
         public static (Role role, int side) Classify(string boneName, bool megabonk)
@@ -24,6 +24,8 @@ namespace RiskOfBonk
             int side = 0;
             foreach (var (suffix, s) in new[] { (".l", -1), ("_l", -1), (".left", -1), (".r", 1), ("_r", 1), (".right", 1) })
                 if (n.EndsWith(suffix)) { side = s; n = n.Substring(0, n.Length - suffix.Length); break; }
+            // REX walks on four legs: its front pair stands in for legs (the back pair is skipped above).
+            n = n.Replace(".front", "");
             foreach (var part in n.Split('.', '_', '-'))
                 foreach (var w in skipWords)
                     if (part.StartsWith(w)) return (Role.None, side);
@@ -46,9 +48,9 @@ namespace RiskOfBonk
                 switch (n)
                 {
                     case "pelvis": case "hip": r = Role.Hips; break;
-                    case "chest": r = Role.Chest; break;
+                    case "chest": case "platformbase": r = Role.Chest; break;
                     case "neck": r = Role.Neck; break;
-                    case "head": r = Role.Head; break;
+                    case "head": case "headbase": r = Role.Head; break;
                     case "upper_arm": case "upperarm": r = Role.UpperArm; break;
                     case "lower_arm": case "lowerarm": case "forearm": r = Role.ForeArm; break;
                     case "hand": r = Role.Hand; break;
@@ -78,12 +80,10 @@ namespace RiskOfBonk
             return map;
         }
 
-        static bool Humanoid(Dictionary<(Role, int), int> m, bool needLegs) =>
+        /// <summary>A body (hips and chest) with at least four limb bones: arms, legs, or REX's one arm and front legs.</summary>
+        static bool Humanoid(Dictionary<(Role, int), int> m) =>
             m.ContainsKey((Role.Hips, 0)) && m.ContainsKey((Role.Chest, 0)) &&
-            m.ContainsKey((Role.UpperArm, -1)) && m.ContainsKey((Role.UpperArm, 1)) &&
-            m.ContainsKey((Role.ForeArm, -1)) && m.ContainsKey((Role.ForeArm, 1)) &&
-            (!needLegs || (m.ContainsKey((Role.Thigh, -1)) && m.ContainsKey((Role.Thigh, 1)) &&
-                           m.ContainsKey((Role.Shin, -1)) && m.ContainsKey((Role.Shin, 1))));
+            m.Keys.Count(k => k.Item2 != 0 && k.Item1 >= Role.UpperArm) >= 4;
 
         static Vector3 Pos(Matrix m) => new Vector3(m.M[3], m.M[7], m.M[11]);
 
@@ -129,12 +129,16 @@ namespace RiskOfBonk
                     if (tNames[i].ToLowerInvariant() == "base") { tMap[(Role.Hips, 0)] = i; break; }
             }
             if (!tMap.ContainsKey((Role.Head, 0)) && tMap.TryGetValue((Role.Neck, 0), out int tn)) tMap[(Role.Head, 0)] = tn;
+            // Still no hips (REX): the chest's parent carries the body, or the chest itself.
+            if (!tMap.ContainsKey((Role.Hips, 0)) && tMap.TryGetValue((Role.Chest, 0), out int tc))
+                tMap[(Role.Hips, 0)] = tParents[tc] >= 0 ? tParents[tc] : tc;
 
             var mNames = raw.Bones.Select(b => b.Name).ToList();
             var mParents = raw.Bones.Select(b => b.Parent).ToList();
             var mMap = Map(mNames, mParents, Enumerable.Range(0, raw.Bones.Count), true);
-            if (!mMap.ContainsKey((Role.Head, 0)) && mMap.TryGetValue((Role.Neck, 0), out int mn)) mMap[(Role.Head, 0)] = mn;
-            if (!Humanoid(tMap, true) || !Humanoid(mMap, false))
+            // A Megabonk "Neck" without a "Head" is the head: drive it once, as the head.
+            if (!mMap.ContainsKey((Role.Head, 0)) && mMap.TryGetValue((Role.Neck, 0), out int mn)) { mMap[(Role.Head, 0)] = mn; mMap.Remove((Role.Neck, 0)); }
+            if (!Humanoid(tMap) || !Humanoid(mMap))
             {
                 Log.Info($"{name}: not retargeted (survivor roles {string.Join(",", tMap.Keys)}; Megabonk roles {string.Join(",", mMap.Keys)})");
                 return null;
@@ -243,7 +247,11 @@ namespace RiskOfBonk
                 drv.survivorHipsBind = tPos[tMap[(Role.Hips, 0)]];
                 float tFloor = tValid.Min(i => tPos[i].y), mFloor = mesh.bounds.min.y;
                 float th = drv.survivorHipsBind.y - tFloor, mh = drv.hipsRest.y - mFloor;
-                drv.hipsScale = th > 1e-4f ? Mathf.Clamp(mh / th, 0.2f, 5f) : 1f;
+                // Hip motion scales with leg length; a legless model (Vlad floats on a cape) just follows it.
+                bool legs = mMap.ContainsKey((Role.Thigh, -1)) && mMap.ContainsKey((Role.Thigh, 1));
+                drv.hipsScale = legs && th > 1e-4f ? Mathf.Clamp(mh / th, 0.5f, 2f) : 1f;
+                // Without legs the robe would sink through the floor whenever the survivor crouches: float instead.
+                drv.hipsVertical = legs ? 1f : 0f;
             }
             Log.Info($"{name} on {modelRoot.name}: retargeted, {pairs.Count} bones driven ({string.Join(" ", pairs.Select(kv => mNames[kv.Value] + ">" + tNames[tMap[kv.Key]]))})");
             if (RigDebug.On) go.AddComponent<RigDebug.Bake>().modelRoot = modelRoot;
@@ -275,7 +283,7 @@ namespace RiskOfBonk
         public Quaternion[] survivorBind, megabonkRest; // model space
         public int hips = -1;
         public Vector3 hipsRest, survivorHipsBind;      // model space
-        public float hipsScale = 1f;
+        public float hipsScale = 1f, hipsVertical = 1f;
 
         void LateUpdate()
         {
@@ -292,6 +300,7 @@ namespace RiskOfBonk
                 if (i == hips)
                 {
                     var moved = modelRoot.InverseTransformPoint(s.position) - survivorHipsBind;
+                    moved.y *= hipsVertical;
                     m.position = modelRoot.TransformPoint(hipsRest + moved * hipsScale);
                 }
             }

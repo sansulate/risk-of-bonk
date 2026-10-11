@@ -75,7 +75,7 @@ def generate(s):
     L.append("        public static readonly CharacterRow[] Characters =\n        {")
     for r in s["characters"]:
         L.append(f"            new CharacterRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbNameHints'])}, {cs(r['mbPortrait'])}, {cs(r['movesetBody'])}, "
-                 f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}),")
+                 f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}, {cs(r.get('mbTexture', ''))}),")
     L.append("        };")
     L.append("        public static readonly StyleRow[] MenuStyle =\n        {")
     for r in s["menu_style"]:

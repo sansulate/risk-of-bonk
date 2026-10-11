@@ -87,6 +87,14 @@ namespace RiskOfBonk
                 Log.Warn($"{row.DisplayName}: no model matching [{string.Join(", ", row.MbNameHints)}] in Megabonk; skipped (see megabonk_inventory.txt).");
                 return null;
             }
+            if (!string.IsNullOrEmpty(row.MbTexture))
+            {
+                RawTexture bodyTex;
+                lock (lib) bodyTex = lib.FindTexture(new[] { row.MbTexture });
+                var biggest = raw.SubMeshes.OrderByDescending(sm => sm.Triangles.Length).FirstOrDefault();
+                if (bodyTex != null && biggest != null) biggest.Texture = bodyTex;
+                else Log.Warn($"{row.DisplayName}: texture {row.MbTexture} not found in Megabonk");
+            }
             RawTexture portraitRaw;
             lock (lib) portraitRaw = lib.FindTexture(new[] { row.MbPortrait });
 
@@ -182,8 +190,8 @@ namespace RiskOfBonk
             go.transform.position = displayModel.position + displayModel.forward * 1.6f + Vector3.up * 1.5f;
             var light = go.AddComponent<Light>();
             light.type = LightType.Point;
-            light.range = 5f;
-            light.intensity = 1.6f;
+            light.range = 6f;
+            light.intensity = 2.5f;
             light.color = new Color(1f, 0.96f, 0.9f);
             light.shadows = LightShadows.None;
         }

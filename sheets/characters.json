@@ -1,6 +1,6 @@
 {
  "sheet": "characters",
- "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt).",
+ "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's).",
  "rows": [
   {
    "id": "megachad",
@@ -61,7 +61,8 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A knight who goes oof. Dashes and slashes with Mercenary's blade.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "mbTexture": "Knight_Default"
   },
   {
    "id": "monke",

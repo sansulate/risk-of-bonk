@@ -4,14 +4,16 @@ namespace RiskOfBonk.Generated
     public sealed class CharacterRow
     {
         public readonly string Id, DisplayName, MbPortrait, MovesetBody, PrimaryColor, Description;
+        /// <summary>Optional exact Megabonk texture for the body, when the model's own material is another skin's.</summary>
+        public readonly string MbTexture;
         public readonly string[] MbNameHints;
         public readonly float SortPosition, HeightMeters, YawOffsetDeg;
 
         public CharacterRow(string id, string displayName, string[] mbNameHints, string mbPortrait, string movesetBody, string primaryColor,
-            float sortPosition, float heightMeters, float yawOffsetDeg, string description)
+            float sortPosition, float heightMeters, float yawOffsetDeg, string description, string mbTexture)
         {
             Id = id; DisplayName = displayName; MbNameHints = mbNameHints; MbPortrait = mbPortrait; MovesetBody = movesetBody; PrimaryColor = primaryColor;
-            SortPosition = sortPosition; HeightMeters = heightMeters; YawOffsetDeg = yawOffsetDeg; Description = description;
+            SortPosition = sortPosition; HeightMeters = heightMeters; YawOffsetDeg = yawOffsetDeg; Description = description; MbTexture = mbTexture;
         }
     }
 
