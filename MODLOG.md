@@ -40,18 +40,33 @@
   - Character-select display models look right (seen: Calcium on Railgunner, Amog on Engineer).
   - Fixed: menu styling threw on not-yet-initialized TMP labels (outlineWidth), so the main menu stayed vanilla.
     Now: Megabonk logo, yellow buttons, chunky text.
-  - Rig, in progress (still looks wrong in game): newer RoR2 loads skinned meshes lazily via
-    SkinDefParams.meshReplacements[].meshAddress, so the fit now uses the body mesh's bind pose (found through the
-    skin, picked by vertex count) and reuses its bindposes; bones whose bind-pose length disagrees with the real bone
-    are ignored. Original renderers are forced off (forceRenderingOff) since lazy skins re-enable them.
-    yawOffsetDeg is 180 for all rows (Megabonk models face the other way).
-  - Debug: create BepInEx/RiskOfBonk/debug to dump each fit (model-space OBJ + bones) and the in-game baked mesh.
-    Fixed (2026-10-11): Megabonk FBX roots carry the -90 deg X axis conversion and Walk dropped it, laying Megachad,
-    Sir Oofie, Tony McZoom, Vlad, Dicehead and Bush along Z. Walk now keeps the root's tilt (swing) and drops only its
-    yaw (twist); all 20 stand upright in character select. Fits centre on the vertex median (props skewed the bounds).
-    Remaining rig issues seen in character select: Ogre on MUL-T and CL4NK on Engineer barely show, Monke on Acrid
-    is wrong (Acrid's bind pose measures 15.5 units tall), Megabonk arms-down models bind to T-pose arms, some may face
-    backwards (yawOffsetDeg per row still to check), display lighting is very dark.
+  - Rig (2026-10-11): retargeting, not skinning by distance. The reader keeps each Megabonk model's own skeleton and
+    skin weights (all 20 are skinned rigs: Hips, Leg/Knee/Foot|Toes, Torso, Neck/Head, Shoulder/Arm|Forearm|Elbow,
+    Hand|Wrist|Wirst, with .L/.R). When a matched mesh object's bones live beside it (FBX armature), the model is
+    built from the nearest ancestor holding them, still showing only that object's renderers. FBX roots keep their
+    tilt (the -90 deg X axis conversion) and drop their yaw.
+    In game (Retarget.cs): the Megabonk bones become transforms under the survivor model, posed like the survivor's
+    bind pose (chest->head, upper arm->forearm->hand, thigh->shin->foot directions), and MegabonkRig copies each
+    survivor bone's rotation away from its bind pose onto the mapped Megabonk bone every LateUpdate; the hips also
+    follow the pelvis offset (scaled by leg length; legless Vlad ignores the vertical bob). Proportions stay
+    Megabonk's. Survivor names: pelvis|hip|base, chest, head, upper_arm, lower_arm|forearm, hand, thigh, calf, foot;
+    REX: front legs as legs, PlatformBase/HeadBase, its one arm. Every survivor (REX included) now retargets; the
+    nearest-bone fit remains as fallback.
+    Facing: every Megabonk rig faces +Z with .L at -X, like RoR2, so yawOffsetDeg is 0 (180 was turning them
+    around); the yaw is derived from the rig and the sheet value is added on top.
+    CharacterModel draws a renderer with one material, so multi-part models (CL4NK's revolvers, Ogre's axe,
+    Calcium's skateboard) showed only their first part: each part is now its own renderer + RendererInfo.
+    Newer builds need SkinDefParams on our SkinDef and give effect renderers (Engineer's sprint jets, REX's roots,
+    Huntress/Railgunner/Acrid effects) their materials by address through the default skin: those are now assigned
+    from the old skin (they were magenta). Sir Oofie uses mbTexture Knight_Default (its model carries the corrupted
+    knight's material). Display prefabs get a soft fill light (character select is dark red).
+    Checked in game: character select for all 20; runs (idle, run, attack) as Megachad, Monke, Ogre, CL4NK, Bush,
+    Vlad. Acrid's moveset starts outside a drop pod, so an idle test character can die to the first enemy.
+  - Debug: create BepInEx/RiskOfBonk/debug to dump each fit (model-space OBJ + skeleton names) and, 6 s after a
+    model appears, the baked mesh and the list of visible renderers.
+  - Test tools: tools/probe (offline: what the mod reads from Megabonk per character), tools/ingame (redeploy.sh
+    rebuilds and relaunches the r2modman profile; sheet.ps1 makes a character select contact sheet; runtest.sh plays
+    a short run as one survivor; screenshots go to .work/, which git ignores).
   - Menu leftovers fixed (2026-10-11): RoR2's label material (TextMeshPro/Distance Field) has a pink underlay and the
     outline keyword off, which washed labels out; each label now gets its own material with the outline on and a dark
     underlay. The "RISK OF BONK" title shows (yellow, black outline). The Rain style button keeps its blue color
