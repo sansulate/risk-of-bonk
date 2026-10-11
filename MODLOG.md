@@ -38,7 +38,15 @@
     shrinks icons to keep the vanilla height. The cloned Bonk/Rain button no longer carries Ready's gamepad glyph
     or shortcut.
   - Character-select display models look right (seen: Calcium on Railgunner, Amog on Engineer).
-  - OPEN: in a run, Megachad on Loader's body is ~3x too large and smeared. The likely cause is helper bones (IK/aim/hook)
-    inflating the skeleton height and stealing vertex weights. AutoRig now measures head-to-feet on body bones only
-    and logs each fit ("MB_<id> on <model>: ... height ..."). This fix is built but not yet seen in game.
+  - Fixed: menu styling threw on not-yet-initialized TMP labels (outlineWidth), so the main menu stayed vanilla.
+    Now: Megabonk logo, yellow buttons, chunky text. Cosmetic leftovers: "NEW" shine washes out labels; the
+    "RISK OF BONK" title is not visible; the Rain style button is yellow instead of blue.
+  - Rig, in progress (still looks wrong in game): newer RoR2 loads skinned meshes lazily via
+    SkinDefParams.meshReplacements[].meshAddress, so the fit now uses the body mesh's bind pose (found through the
+    skin, picked by vertex count) and reuses its bindposes; bones whose bind-pose length disagrees with the real bone
+    are ignored. Original renderers are forced off (forceRenderingOff) since lazy skins re-enable them.
+    yawOffsetDeg is 180 for all rows (Megabonk models face the other way).
+  - Debug: create BepInEx/RiskOfBonk/debug to dump each fit (model-space OBJ + bones) and the in-game baked mesh.
+    The dumps show the remaining bug: some Megabonk raw models (e.g. Chad) come out lying along Z, because
+    MegabonkLibrary.Walk drops the root transform's rotation. Next fix: keep a root rotation that tilts the up axis.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

@@ -52,11 +52,17 @@ namespace RiskOfBonk
         {
             foreach (var t in root.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
-                if (!styled.Add(t.GetInstanceID())) continue;
-                t.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
-                if (t.color.a > 0.05f) t.color = new Color(C("text").r, C("text").g, C("text").b, t.color.a);
-                t.outlineColor = C("outline");
-                t.outlineWidth = 0.22f;
+                // Labels on screens not shown yet have no material, and setting their outline throws: retry later.
+                if (!t.isActiveAndEnabled || t.fontSharedMaterial == null || styled.Contains(t.GetInstanceID())) continue;
+                styled.Add(t.GetInstanceID());
+                try
+                {
+                    t.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
+                    if (t.color.a > 0.05f) t.color = new Color(C("text").r, C("text").g, C("text").b, t.color.a);
+                    t.outlineColor = C("outline");
+                    t.outlineWidth = 0.22f;
+                }
+                catch (System.Exception e) { Log.Warn($"style {t.name}: {e.Message}"); }
             }
             foreach (var b in root.GetComponentsInChildren<Selectable>(true))
             {
@@ -138,8 +144,8 @@ namespace RiskOfBonk
             {
                 if (Time.unscaledTime < next) return;
                 next = Time.unscaledTime + 0.5f;
-                Apply(transform);
                 if (title) TitleLogo(transform);
+                Apply(transform);
             }
         }
 

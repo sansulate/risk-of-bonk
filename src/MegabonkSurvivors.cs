@@ -182,9 +182,15 @@ namespace RiskOfBonk
             var oldInfos = cm != null && cm.baseRendererInfos != null ? cm.baseRendererInfos : new CharacterModel.RendererInfo[0];
             var template = TemplateMaterial(modelRoot, oldInfos);
 
-            // Bones of the survivor's main body mesh drive the Megabonk model.
-            var mainSmr = (cm != null ? cm.mainSkinnedMeshRenderer : null)
-                          ?? modelRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s => s.bones.Length).FirstOrDefault();
+            // The survivor's body mesh drives the Megabonk model: the skinned mesh with the most vertices (weapons and
+            // gauntlets often reference the whole skeleton too). Its bind pose is where the model is fitted.
+            var mainSmr = modelRoot.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                              .Where(s => s.bones.Length > 0)
+                              .Select(s => (s, m: SkinMesh(modelRoot, s)))
+                              .OrderByDescending(x => x.m != null && x.s.bones.Length >= 10 ? x.m.vertexCount : -1)
+                              .ThenByDescending(x => x.s.bones.Length)
+                              .Select(x => x.s).FirstOrDefault()
+                          ?? (cm != null ? cm.mainSkinnedMeshRenderer : null);
             Transform[] bones = mainSmr != null && mainSmr.bones.Length > 0
                 ? mainSmr.bones
                 : modelRoot.GetComponentsInChildren<Transform>(true).Where(t => t != modelRoot).ToArray();
@@ -203,12 +209,17 @@ namespace RiskOfBonk
                 return m;
             }).ToArray();
 
-            var smr = AutoRig.Fit(modelRoot, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id);
+            var smr = AutoRig.Fit(modelRoot, mainSmr, SkinMesh(modelRoot, mainSmr)?.bindposes, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id);
 
             // Hide every original renderer (body, weapons, attachments).
             foreach (var r in modelRoot.GetComponentsInChildren<Renderer>(true))
                 if (r != smr && !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
+                {
+                    // Skins load meshes lazily and re-enable renderers, so also force them off for good.
                     r.enabled = false;
+                    r.forceRenderingOff = true;
+                    if (r is SkinnedMeshRenderer o) o.sharedMesh = null;
+                }
 
             var info = new CharacterModel.RendererInfo
             {
@@ -266,6 +277,54 @@ namespace RiskOfBonk
             if (m != null) return m;
             var shader = Addressables.LoadAssetAsync<Shader>("RoR2/Base/Shaders/HGStandard.shader").WaitForCompletion();
             return new Material(shader);
+        }
+
+        /// <summary>
+        /// The mesh a survivor's skinned renderer shows. Newer game builds ship renderers without a mesh and load it
+        /// from the default skin's SkinDefParams (meshReplacements[].meshAddress). The skin points at the original
+        /// prefab's renderers, so ours are matched by name.
+        /// </summary>
+        static Mesh SkinMesh(Transform modelRoot, SkinnedMeshRenderer r)
+        {
+            if (r == null) return null;
+            if (r.sharedMesh != null) return r.sharedMesh;
+            var msc = modelRoot.GetComponent<ModelSkinController>();
+            if (msc == null || msc.skins == null || msc.skins.Length == 0 || msc.skins[0] == null) return null;
+            object skin = msc.skins[0];
+            var sources = new[]
+            {
+                skin,
+                GetMember(skin, "skinDefParams") ?? LoadAddress<ScriptableObject>(GetMember(skin, "skinDefParamsAddress")),
+                GetMember(skin, "optimizedSkinDefParams") ?? LoadAddress<ScriptableObject>(GetMember(skin, "optimizedSkinDefParamsAddress")),
+            };
+            foreach (var src in sources)
+                if (src != null && GetMember(src, "meshReplacements") is Array reps)
+                    foreach (var rep in reps)
+                        if (GetMember(rep, "renderer") is Renderer rr && rr != null && rr.name == r.name)
+                        {
+                            var mesh = GetMember(rep, "mesh") as Mesh ?? LoadAddress<Mesh>(GetMember(rep, "meshAddress"));
+                            if (mesh != null) return mesh;
+                        }
+            Log.Info($"{modelRoot.name}: no skin mesh for {r.name}; skin {msc.skins[0].name}, sources " +
+                     string.Join(" | ", sources.Select(x => x == null ? "null" : x.GetType().Name + ":" +
+                         string.Join(",", (GetMember(x, "meshReplacements") as Array ?? new object[0]).Cast<object>()
+                             .Select(rep => (GetMember(rep, "renderer") as Renderer)?.name ?? "?")))));
+            return null;
+        }
+
+        static object GetMember(object o, string name)
+        {
+            if (o == null) return null;
+            var f = o.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var v = f?.GetValue(o);
+            return v is UnityEngine.Object uo && uo == null ? null : v;
+        }
+
+        static T LoadAddress<T>(object reference) where T : UnityEngine.Object
+        {
+            if (!(reference is AssetReference ar) || !ar.RuntimeKeyIsValid()) return null;
+            try { return Addressables.LoadAssetAsync<T>(ar.RuntimeKey).WaitForCompletion(); }
+            catch (Exception e) { Log.Warn($"load {ar.RuntimeKey}: {e.Message}"); return null; }
         }
 
         static bool SetMember(object o, string name, object value)
