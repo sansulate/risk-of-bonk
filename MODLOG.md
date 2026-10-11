@@ -39,14 +39,21 @@
     or shortcut.
   - Character-select display models look right (seen: Calcium on Railgunner, Amog on Engineer).
   - Fixed: menu styling threw on not-yet-initialized TMP labels (outlineWidth), so the main menu stayed vanilla.
-    Now: Megabonk logo, yellow buttons, chunky text. Cosmetic leftovers: "NEW" shine washes out labels; the
-    "RISK OF BONK" title is not visible; the Rain style button is yellow instead of blue.
+    Now: Megabonk logo, yellow buttons, chunky text.
   - Rig, in progress (still looks wrong in game): newer RoR2 loads skinned meshes lazily via
     SkinDefParams.meshReplacements[].meshAddress, so the fit now uses the body mesh's bind pose (found through the
     skin, picked by vertex count) and reuses its bindposes; bones whose bind-pose length disagrees with the real bone
     are ignored. Original renderers are forced off (forceRenderingOff) since lazy skins re-enable them.
     yawOffsetDeg is 180 for all rows (Megabonk models face the other way).
   - Debug: create BepInEx/RiskOfBonk/debug to dump each fit (model-space OBJ + bones) and the in-game baked mesh.
-    The dumps show the remaining bug: some Megabonk raw models (e.g. Chad) come out lying along Z, because
-    MegabonkLibrary.Walk drops the root transform's rotation. Next fix: keep a root rotation that tilts the up axis.
+    Fixed (2026-10-11): Megabonk FBX roots carry the -90 deg X axis conversion and Walk dropped it, laying Megachad,
+    Sir Oofie, Tony McZoom, Vlad, Dicehead and Bush along Z. Walk now keeps the root's tilt (swing) and drops only its
+    yaw (twist); all 20 stand upright in character select. Fits centre on the vertex median (props skewed the bounds).
+    Remaining rig issues seen in character select: Ogre on MUL-T and CL4NK on Engineer barely show, Monke on Acrid
+    is wrong (Acrid's bind pose measures 15.5 units tall), Megabonk arms-down models bind to T-pose arms, some may face
+    backwards (yawOffsetDeg per row still to check), display lighting is very dark.
+  - Menu leftovers fixed (2026-10-11): RoR2's label material (TextMeshPro/Distance Field) has a pink underlay and the
+    outline keyword off, which washed labels out; each label now gets its own material with the outline on and a dark
+    underlay. The "RISK OF BONK" title shows (yellow, black outline). The Rain style button keeps its blue color
+    (the menu styler no longer re-tints it).
 - Melty: not done yet (needs a fresh Publish prompt from the user).

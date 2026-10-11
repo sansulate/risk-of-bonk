@@ -59,8 +59,7 @@ namespace RiskOfBonk
                 {
                     t.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
                     if (t.color.a > 0.05f) t.color = new Color(C("text").r, C("text").g, C("text").b, t.color.a);
-                    t.outlineColor = C("outline");
-                    t.outlineWidth = 0.22f;
+                    Outline(t, 0.22f);
                 }
                 catch (System.Exception e) { Log.Warn($"style {t.name}: {e.Message}"); }
             }
@@ -86,6 +85,29 @@ namespace RiskOfBonk
                 if (rt.width * rt.height > 40000 && img.color.a > 0.1f)
                     img.color = new Color(C("panel").r, C("panel").g, C("panel").b, Mathf.Max(img.color.a, C("panel").a));
             }
+        }
+
+        /// <summary>
+        /// Chunky black outline. RoR2's font material draws a pink underlay and leaves the outline off, which washes
+        /// light labels out on the yellow buttons: give each label its own material with outline on and a dark underlay.
+        /// </summary>
+        static bool loggedShader;
+
+        static void Outline(TMP_Text t, float width)
+        {
+            var mat = t.fontMaterial; // per-label instance
+            if (!loggedShader) { loggedShader = true; Log.Info($"Menu label shader: {mat.shader.name}, keywords {string.Join(" ", mat.shaderKeywords)}"); }
+            var outline = C("outline");
+            if (mat.HasProperty(ShaderUtilities.ID_OutlineColor))
+            {
+                mat.EnableKeyword(ShaderUtilities.Keyword_Outline);
+                mat.SetColor(ShaderUtilities.ID_OutlineColor, outline);
+                mat.SetFloat(ShaderUtilities.ID_OutlineWidth, width);
+            }
+            if (mat.HasProperty(ShaderUtilities.ID_UnderlayColor))
+                mat.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(outline.r, outline.g, outline.b, 0.85f));
+            t.outlineColor = outline;
+            t.outlineWidth = width;
         }
 
         public static void TitleLogo(Transform root)
@@ -129,8 +151,7 @@ namespace RiskOfBonk
             tmp.fontStyle = FontStyles.Bold | FontStyles.Italic;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = C("accent");
-            tmp.outlineColor = C("outline");
-            tmp.outlineWidth = 0.3f;
+            Outline(tmp, 0.3f);
             tmp.raycastTarget = false;
             styled.Add(tmp.GetInstanceID());
         }
@@ -177,6 +198,8 @@ namespace RiskOfBonk
                 var rr = (RectTransform)ready.transform;
                 rt.anchoredPosition = rr.anchoredPosition + new Vector2(0, rr.rect.height + 12);
                 go.SetActive(true);
+                // The menu styler would tint it accent yellow over the Bonk/Rain color: it colors itself.
+                foreach (var s in go.GetComponentsInChildren<Selectable>(true)) styled.Add(s.GetInstanceID());
                 StageMode.Changed += Refresh;
                 Refresh();
             }
