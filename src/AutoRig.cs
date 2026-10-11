@@ -83,7 +83,9 @@ namespace RiskOfBonk
             foreach (var v in verts) b.Encapsulate(v);
             // A little taller than the joints so the head clears the head bone.
             float scale = skeletonHeight * 1.12f / Mathf.Max(0.01f, b.size.y);
-            var offset = new Vector3(centre.x, minY - 0.04f * skeletonHeight, centre.z) - new Vector3(b.center.x, b.min.y, b.center.z) * scale;
+            // Centre on the vertex median, not the bounds: a held prop (sword, cape, staff) skews the bounds sideways.
+            float mx = Median(verts.Select(v => v.x)), mz = Median(verts.Select(v => v.z));
+            var offset = new Vector3(centre.x, minY - 0.04f * skeletonHeight, centre.z) - new Vector3(mx, b.min.y, mz) * scale;
             for (int i = 0; i < verts.Length; i++) verts[i] = verts[i] * scale + offset;
 
             // Bone segments: each body bone to each of its child bones; leaves are points. Helper bones get no vertices.
@@ -167,6 +169,12 @@ namespace RiskOfBonk
         {
             string n = t.name.ToLowerInvariant();
             return words.Any(w => n.Contains(w)) && !n.Contains("end");
+        }
+
+        static float Median(IEnumerable<float> values)
+        {
+            var s = values.OrderBy(x => x).ToArray();
+            return s.Length == 0 ? 0 : s[s.Length / 2];
         }
 
         static float DistSq(Vector3 p, Vector3 a, Vector3 b)

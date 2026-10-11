@@ -205,8 +205,9 @@ namespace RiskOfBonk
             if (depth > 64 || model.VertexCount > 200000) return;
             var t = tf.baseField;
             var local = Matrix.TRS(V3(t["m_LocalPosition"]), Q(t["m_LocalRotation"]), V3(t["m_LocalScale"]));
-            // The root's own placement in its scene is ignored: the model is rebuilt around its origin.
-            var world = depth == 0 ? Matrix.Scale(V3(t["m_LocalScale"])) : parent * local;
+            // The root's own placement in its scene is ignored: the model is rebuilt around its origin. Its tilt is
+            // kept though: imported FBX roots often carry the -90 deg X axis conversion, without which the model lies along Z.
+            var world = depth == 0 ? Matrix.TRS(new float[3], Tilt(Q(t["m_LocalRotation"])), V3(t["m_LocalScale"])) : parent * local;
             var goExt = am.GetExtAsset(tf.file, t["m_GameObject"]);
             if (goExt.baseField != null && goExt.baseField["m_IsActive"].AsBool)
             {
@@ -480,6 +481,22 @@ namespace RiskOfBonk
                 while (read < buf.Length) { int n = fs.Read(buf, read, buf.Length - read); if (n <= 0) break; read += n; }
             }
             return buf;
+        }
+
+        /// <summary>The swing part of a rotation: what is left after removing its twist (yaw) around the up axis.</summary>
+        static float[] Tilt(float[] q)
+        {
+            float tl = (float)Math.Sqrt(q[1] * q[1] + q[3] * q[3]);
+            if (tl < 1e-4f) return q; // a pure half-turn tilt: no yaw to remove
+            float ty = q[1] / tl, tw = q[3] / tl;
+            // swing = q * inverse(twist), twist = (0, ty, 0, tw)
+            return new[]
+            {
+                q[0] * tw + q[2] * ty,
+                q[1] * tw - q[3] * ty,
+                q[2] * tw - q[0] * ty,
+                q[3] * tw + q[1] * ty,
+            };
         }
 
         static float[] V3(AssetTypeValueField f) => new[] { f["x"].AsFloat, f["y"].AsFloat, f["z"].AsFloat };
