@@ -58,6 +58,10 @@ namespace RiskOfBonk
                 foreach (var b in smr.bones) if (b != null) Line(sb, "v", modelRoot.InverseTransformPoint(b.position));
                 File.WriteAllText(Path.Combine(Dir, name + "_" + transform.root.name.Replace("(Clone)", "") + "_ingame_bones.obj"), sb.ToString());
                 Log.Info($"debug: baked {name}");
+                foreach (var r in modelRoot.GetComponentsInChildren<Renderer>(true))
+                    if (r.enabled && !r.forceRenderingOff && r.gameObject.activeInHierarchy)
+                        Log.Info($"debug: {name} visible renderer {r.GetType().Name} '{r.name}' under '{r.transform.parent?.name}' " +
+                                 $"shader {(r.sharedMaterial != null ? r.sharedMaterial.shader.name : "none")} bounds {r.bounds.size}");
             }
         }
     }

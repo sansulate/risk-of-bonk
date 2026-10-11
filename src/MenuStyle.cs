@@ -72,7 +72,8 @@ namespace RiskOfBonk
                 cb.selectedColor = cb.highlightedColor;
                 cb.pressedColor = Color.Lerp(C("accent"), Color.black, 0.25f);
                 cb.disabledColor = new Color(0.35f, 0.35f, 0.4f, 0.8f);
-                b.colors = cb;
+                // Some HGButtons are not wired up yet and throw from their state transition; the colors are set anyway.
+                try { b.colors = cb; } catch (System.NullReferenceException) { }
             }
             foreach (var img in root.GetComponentsInChildren<Image>(true))
             {

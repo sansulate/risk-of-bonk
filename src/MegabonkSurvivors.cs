@@ -235,6 +235,8 @@ namespace RiskOfBonk
             var parts = AutoRig.SplitParts(fitted);
             var smr = parts[0];
 
+            EffectMaterials(modelRoot);
+
             // Hide every original renderer (body, weapons, attachments).
             foreach (var r in modelRoot.GetComponentsInChildren<Renderer>(true))
                 if (System.Array.IndexOf(parts, r) < 0 && !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
@@ -251,7 +253,11 @@ namespace RiskOfBonk
                 defaultMaterial = part.sharedMaterial,
                 defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
                 ignoreOverlays = false,
-            }).ToArray();
+            })
+            // Effects stay (Engineer's sprint jets, REX's petals): keep their entries, whose materials newer game builds
+            // load by address through the skin. Without them those effects render with no material (magenta).
+            .Concat(oldInfos.Where(i => i.renderer is ParticleSystemRenderer || i.renderer is TrailRenderer || i.renderer is LineRenderer))
+            .ToArray();
             if (cm != null)
             {
                 cm.baseRendererInfos = infos;
@@ -266,16 +272,17 @@ namespace RiskOfBonk
                 skin.name = "MB_" + row.Id + "Default";
                 SetMember(skin, "nameToken", "RISKOFBONK_" + row.Id.ToUpperInvariant() + "_NAME");
                 SetMember(skin, "rootObject", modelRoot.gameObject);
-                // Newer game builds moved renderer lists into SkinDefParams; fill whichever this build has.
-                if (!SetMember(skin, "rendererInfos", infos))
+                // Newer game builds bake skins from SkinDefParams and refuse a skin without one; older builds read the
+                // lists on the SkinDef itself. Fill both, with every other list empty.
+                SetMember(skin, "rendererInfos", infos);
+                FillEmptyArrays(skin);
+                var paramsField = typeof(SkinDef).GetField("skinDefParams", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+                if (paramsField != null)
                 {
-                    var paramsField = typeof(SkinDef).GetField("skinDefParams", BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (paramsField != null)
-                    {
-                        var p = ScriptableObject.CreateInstance(paramsField.FieldType);
-                        SetMember(p, "rendererInfos", infos);
-                        paramsField.SetValue(skin, p);
-                    }
+                    var p = ScriptableObject.CreateInstance(paramsField.FieldType);
+                    SetMember(p, "rendererInfos", infos);
+                    FillEmptyArrays(p);
+                    paramsField.SetValue(skin, p);
                 }
                 msc.skins = new[] { skin };
             }
@@ -334,6 +341,47 @@ namespace RiskOfBonk
                          string.Join(",", (GetMember(x, "meshReplacements") as Array ?? new object[0]).Cast<object>()
                              .Select(rep => (GetMember(rep, "renderer") as Renderer)?.name ?? "?")))));
             return null;
+        }
+
+        /// <summary>
+        /// Effects that stay visible (Engineer's sprint jets, REX's petals) get their materials from the default skin
+        /// in newer game builds, by address. Our skin replaces that one, so give those renderers their material now.
+        /// </summary>
+        static void EffectMaterials(Transform modelRoot)
+        {
+            var msc = modelRoot.GetComponent<ModelSkinController>();
+            if (msc == null || msc.skins == null || msc.skins.Length == 0 || msc.skins[0] == null) return;
+            object skin = msc.skins[0];
+            var sources = new[]
+            {
+                skin,
+                GetMember(skin, "skinDefParams") ?? LoadAddress<ScriptableObject>(GetMember(skin, "skinDefParamsAddress")),
+            };
+            var effects = modelRoot.GetComponentsInChildren<Renderer>(true)
+                .Where(r => r is ParticleSystemRenderer || r is TrailRenderer || r is LineRenderer).ToList();
+            int fixedCount = 0;
+            foreach (var src in sources)
+                if (src != null && GetMember(src, "rendererInfos") is Array infos)
+                    foreach (var info in infos)
+                    {
+                        if (!(GetMember(info, "renderer") is Renderer orig) || orig == null) continue;
+                        foreach (var r in effects.Where(e => e.name == orig.name && e.GetType() == orig.GetType() && e.sharedMaterial == null))
+                        {
+                            var mat = GetMember(info, "defaultMaterial") as Material ?? LoadAddress<Material>(GetMember(info, "defaultMaterialAddress"));
+                            if (mat == null) continue;
+                            r.sharedMaterial = mat;
+                            fixedCount++;
+                        }
+                    }
+            int missing = effects.Count(e => e.sharedMaterial == null);
+            if (fixedCount > 0 || missing > 0) Log.Info($"{modelRoot.name}: {fixedCount} effect materials from the skin, {missing} effects still without one");
+        }
+
+        static void FillEmptyArrays(object o)
+        {
+            foreach (var f in o.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+                if (f.FieldType.IsArray && f.GetValue(o) == null)
+                    f.SetValue(o, Array.CreateInstance(f.FieldType.GetElementType(), 0));
         }
 
         static object GetMember(object o, string name)
