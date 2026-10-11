@@ -1,0 +1,48 @@
+{
+ "sheet": "hooks",
+ "note": "Every game system the mod touches.",
+ "rows": [
+  {
+   "id": "content",
+   "system": "ContentManager.collectContentPackProviders",
+   "kind": "event",
+   "purpose": "register Megabonk survivors (bodies, displays, SurvivorDefs)",
+   "verified": true
+  },
+  {
+   "id": "language",
+   "system": "RoR2.Language.GetLocalizedStringByToken",
+   "kind": "harmony-postfix",
+   "purpose": "names/descriptions of Megabonk survivors and UI labels",
+   "verified": true
+  },
+  {
+   "id": "mainmenu",
+   "system": "RoR2.UI.MainMenu.MainMenuController.Start",
+   "kind": "harmony-postfix",
+   "purpose": "Megabonk-style title screen; multiplayer buttons untouched",
+   "verified": true
+  },
+  {
+   "id": "charselect",
+   "system": "RoR2.UI.CharacterSelectController.Awake",
+   "kind": "harmony-postfix",
+   "purpose": "Megabonk-style character select + Bonk/Rain style button",
+   "verified": true
+  },
+  {
+   "id": "netclient",
+   "system": "RoR2.Networking.NetworkManagerSystem.onStartClientGlobal",
+   "kind": "event",
+   "purpose": "register cloned network prefabs + stage-mode message",
+   "verified": true
+  },
+  {
+   "id": "netserver",
+   "system": "RoR2.Networking.NetworkManagerSystem.onStartServerGlobal",
+   "kind": "event",
+   "purpose": "host broadcasts the stage mode",
+   "verified": true
+  }
+ ]
+}

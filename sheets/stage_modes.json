@@ -1,0 +1,22 @@
+{
+ "sheet": "stage_modes",
+ "note": "The character select toggle. Host decides; synced to every player in the lobby.",
+ "rows": [
+  {
+   "id": "rain",
+   "label": "Rain style",
+   "description": "Original Risk of Rain 2 stages and terrain.",
+   "color": "accent2",
+   "implementedIn": "v1",
+   "verified": true
+  },
+  {
+   "id": "bonk",
+   "label": "Bonk style",
+   "description": "Megabonk-style random terrain generation.",
+   "color": "accent",
+   "implementedIn": "v1 toggle + sync; terrain generation in update 2",
+   "verified": true
+  }
+ ]
+}

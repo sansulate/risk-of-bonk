@@ -1,0 +1,71 @@
+{
+ "sheet": "moveset_bodies",
+ "note": "RoR2 survivor bodies cloned as movesets. Found at runtime by Addressables key ending in <bodyName>.prefab.",
+ "rows": [
+  {
+   "bodyName": "Bandit2Body",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "CaptainBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "CommandoBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "CrocoBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "EngiBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "HuntressBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "LoaderBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "MageBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "MercBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "RailgunnerBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "ToolbotBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "TreebotBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  },
+  {
+   "bodyName": "VoidSurvivorBody",
+   "source": "Risk of Rain 2 (host)",
+   "verified": true
+  }
+ ]
+}

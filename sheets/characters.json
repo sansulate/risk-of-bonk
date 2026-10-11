@@ -1,0 +1,301 @@
+{
+ "sheet": "characters",
+ "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints; mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt).",
+ "rows": [
+  {
+   "id": "megachad",
+   "displayName": "Megachad",
+   "mbNameHints": [
+    "Megachad",
+    "MegaChad",
+    "Chad"
+   ],
+   "movesetBody": "LoaderBody",
+   "primaryColor": "#F2C14E",
+   "sortPosition": 200,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Pure gains. Megachad flexes through the horde with Loader's gauntlet kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "fox",
+   "displayName": "Fox",
+   "mbNameHints": [
+    "Fox"
+   ],
+   "movesetBody": "HuntressBody",
+   "primaryColor": "#F28C28",
+   "sortPosition": 201,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Quick and sly. Fox skirmishes with Huntress's glaives and blink.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "calcium",
+   "displayName": "Calcium",
+   "mbNameHints": [
+    "Calcium",
+    "Skeleton"
+   ],
+   "movesetBody": "RailgunnerBody",
+   "primaryColor": "#E8E6D9",
+   "sortPosition": 202,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A skeleton with a grudge, sniping with Railgunner's scope.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "sir_oofie",
+   "displayName": "Sir Oofie",
+   "mbNameHints": [
+    "SirOofie",
+    "Oofie"
+   ],
+   "movesetBody": "MercBody",
+   "primaryColor": "#9AA7B8",
+   "sortPosition": 203,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A knight who goes oof. Dashes and slashes with Mercenary's blade.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "monke",
+   "displayName": "Monke",
+   "mbNameHints": [
+    "Monke",
+    "Monkey"
+   ],
+   "movesetBody": "CrocoBody",
+   "primaryColor": "#8B5A2B",
+   "sortPosition": 204,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Return to monke: poison and leap with Acrid's kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "ninja",
+   "displayName": "Ninja",
+   "mbNameHints": [
+    "Ninja"
+   ],
+   "movesetBody": "Bandit2Body",
+   "primaryColor": "#3B3B58",
+   "sortPosition": 205,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Stealthy strikes with Bandit's cloak and blades.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "tony_mczoom",
+   "displayName": "Tony McZoom",
+   "mbNameHints": [
+    "TonyMcZoom",
+    "Tony",
+    "McZoom"
+   ],
+   "movesetBody": "CommandoBody",
+   "primaryColor": "#D94A3D",
+   "sortPosition": 206,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Gotta go fast. Double-tap with Commando's pistols.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "robinette",
+   "displayName": "Robinette",
+   "mbNameHints": [
+    "Robinette",
+    "Robin"
+   ],
+   "movesetBody": "HuntressBody",
+   "primaryColor": "#4E9A51",
+   "sortPosition": 207,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "An archer of the woods with Huntress's bow.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "bandit",
+   "displayName": "Bandit",
+   "mbNameHints": [
+    "Bandit"
+   ],
+   "movesetBody": "Bandit2Body",
+   "primaryColor": "#7A4E2D",
+   "sortPosition": 208,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Steal the show with Bandit's shotgun and revolver.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "birdo",
+   "displayName": "Birdo",
+   "mbNameHints": [
+    "Birdo",
+    "Bird"
+   ],
+   "movesetBody": "MageBody",
+   "primaryColor": "#5DADE2",
+   "sortPosition": 209,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Flies high and rains fire with Artificer's spells.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "noelle",
+   "displayName": "Noelle",
+   "mbNameHints": [
+    "Noelle"
+   ],
+   "movesetBody": "MageBody",
+   "primaryColor": "#A9DFF5",
+   "sortPosition": 210,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Ice and fire with Artificer's kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "spaceman",
+   "displayName": "Spaceman",
+   "mbNameHints": [
+    "Spaceman",
+    "Astronaut"
+   ],
+   "movesetBody": "CaptainBody",
+   "primaryColor": "#CFD8DC",
+   "sortPosition": 211,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Calls orbital support with Captain's beacons.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "vlad",
+   "displayName": "Vlad",
+   "mbNameHints": [
+    "Vlad",
+    "Vampire"
+   ],
+   "movesetBody": "VoidSurvivorBody",
+   "primaryColor": "#8E1B2B",
+   "sortPosition": 212,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A vampire who embraces the void with Void Fiend's corruption.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "athena",
+   "displayName": "Athena",
+   "mbNameHints": [
+    "Athena"
+   ],
+   "movesetBody": "MercBody",
+   "primaryColor": "#E6C36A",
+   "sortPosition": 213,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Divine strikes with Mercenary's blade.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "ogre",
+   "displayName": "Ogre",
+   "mbNameHints": [
+    "Ogre"
+   ],
+   "movesetBody": "ToolbotBody",
+   "primaryColor": "#6E8B3D",
+   "sortPosition": 214,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Big, heavy and loud with MUL-T's tools.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "cl4nk",
+   "displayName": "CL4NK",
+   "mbNameHints": [
+    "CL4NK",
+    "Clank",
+    "Robot"
+   ],
+   "movesetBody": "EngiBody",
+   "primaryColor": "#B0B7BF",
+   "sortPosition": 215,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A robot who builds turrets with Engineer's kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "dicehead",
+   "displayName": "Dicehead",
+   "mbNameHints": [
+    "Dicehead",
+    "Dice"
+   ],
+   "movesetBody": "CommandoBody",
+   "primaryColor": "#FFFFFF",
+   "sortPosition": 216,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Rolls the dice with Commando's pistols.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "amog",
+   "displayName": "Amog",
+   "mbNameHints": [
+    "Amog"
+   ],
+   "movesetBody": "EngiBody",
+   "primaryColor": "#C0392B",
+   "sortPosition": 217,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "Sus. Lays mines and turrets with Engineer's kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "bush",
+   "displayName": "Bush",
+   "mbNameHints": [
+    "Bush"
+   ],
+   "movesetBody": "TreebotBody",
+   "primaryColor": "#2E7D32",
+   "sortPosition": 218,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A bush with a plan, rooting the horde with REX's kit.",
+   "mbAssetsVerified": false
+  },
+  {
+   "id": "sir_chadwell",
+   "displayName": "Sir Chadwell",
+   "mbNameHints": [
+    "SirChadwell",
+    "Chadwell"
+   ],
+   "movesetBody": "LoaderBody",
+   "primaryColor": "#B8860B",
+   "sortPosition": 219,
+   "heightMeters": 1.6,
+   "yawOffsetDeg": 0,
+   "description": "A noble chad with Loader's punches.",
+   "mbAssetsVerified": false
+  }
+ ]
+}
