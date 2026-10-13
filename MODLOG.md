@@ -163,4 +163,19 @@
   sqrt(difficulty) and spends it on the stage's monsters (the horde patch applies to it). Removed with credit zeroed
   when the boss is gone. Checked: F10 BrotherMaster on stage 1 -> "swarm on", beetles stream in. Not checked yet: on
   the moon itself, swarm off after the kill.
+- Update 7 (2026-10-14): Bonk style terrain. BonkTerrain.cs, SceneDirector.Start prefix on every machine (before the
+  host places the Teleporter and interactables), only with StageMode.IsBonk on SceneType.Stage scenes with stageOrder
+  1-5. Seed from the run's synced unique id (Run.GetUniqueId) + stageClearCount + scene name, so every player builds
+  the same map with no message. Map: 380 m square, 3 m cells, 4-octave Perlin, terraced (lerp to 7 m steps), flat
+  clearing at the spawn, walls in the outer 20%; flat-shaded triangles coloured from an 8-colour palette texture by
+  height/steepness, palette by scene name (snow/frozen, goolake/desert, wispgraveyard/shipgraveyard/rootjungle,
+  dampcave/skymeadow/sulfur/void, else grass). 140 low-poly trees (pine and round, capsule colliders) in Perlin groves
+  and 70 rocks. The stage's renderers and colliders are switched off except particles and anything networked or
+  interactable (sky, light, fog stay); MapZones off, with a FallGuard that puts bodies back in the clearing; fixed
+  interactables set down on the new ground; spawn points moved to the clearing. Host: ground (10 m grid) and air
+  (20 m grid at +12/+26 m) NodeGraphs built from the heightfield: links under 45 degrees with no bump in between,
+  TeleporterOK like MapNode.TestTeleporterOK (ground within -3..+7 m at 15 m all round), line of sight per pair up to
+  120 m. MapNodeGroup.Bake works at runtime but its physics tests took 23 s for this map; the heightfield version takes
+  0.5 s. Checked in game: terrain, trees, rocks, walls, monsters and chests on it, Teleporter placed on it and the
+  Megabonk boss event there. Not checked yet: a client seeing the same map, later stages/palettes.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

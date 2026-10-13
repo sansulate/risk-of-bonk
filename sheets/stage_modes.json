@@ -13,9 +13,9 @@
   {
    "id": "bonk",
    "label": "Bonk style",
-   "description": "Megabonk-style random terrain generation.",
+   "description": "Megabonk-style random terrain: low-poly hills, groves and walls, a new map every stage.",
    "color": "accent",
-   "implementedIn": "v1 toggle + sync; terrain generation in update 2",
+   "implementedIn": "v1 toggle + sync; terrain generation in update 7 (BonkTerrain.cs)",
    "verified": true
   }
  ]

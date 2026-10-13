@@ -62,6 +62,7 @@ namespace RiskOfBonk
                 "Megabonk Charge Shrines (stand inside to charge, everyone gets an upgrade) and Magnet Shrines (pull every XP gem) on each stage, next to Risk of Rain 2's shrines. Applies when you host.");
             Shrines.Init(gameObject, shrines.Value);
             gameObject.AddComponent<StageMode.LobbyBeacon>();
+            BonkTerrain.Init(harmony, gameObject);
             Log.Info($"{Name} {Version} loaded");
         }
 

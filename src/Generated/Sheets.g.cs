@@ -38,7 +38,7 @@ namespace RiskOfBonk.Generated
         public static readonly ModeRow[] StageModes =
         {
             new ModeRow("rain", "Rain style", "Original Risk of Rain 2 stages and terrain.", "accent2"),
-            new ModeRow("bonk", "Bonk style", "Megabonk-style random terrain generation.", "accent"),
+            new ModeRow("bonk", "Bonk style", "Megabonk-style random terrain: low-poly hills, groves and walls, a new map every stage.", "accent"),
         };
         public static readonly UpgradeRow[] Upgrades =
         {

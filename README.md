@@ -13,8 +13,11 @@ brings its characters and its look into it, read from your own Megabonk install 
 - **Megabonk-style character select** with both rosters in one grid: the Risk of Rain 2 survivors and the Megabonk
   characters. Difficulty, artifacts and loadouts are unchanged.
 - **Bonk style / Rain style button** on the character select screen. The host picks it and every player in the lobby
-  sees the host's choice. *Rain style* keeps Risk of Rain 2's stages. *Bonk style* will add Megabonk-style random
-  terrain generation in the next update; in v0.1 it is only the setting, and the stages stay the same.
+  sees the host's choice. *Rain style* keeps Risk of Rain 2's stages. *Bonk style* gives every normal stage a new
+  Megabonk-style random map: low-poly hills with flat tops and steps, groves of trees, rocks and walls round the edge,
+  coloured to fit the stage (grass, snow, sand, autumn, dusk) under the stage's own sky. The Teleporter, chests,
+  shrines and monsters all use the new map; every player gets the same map. Hidden realms and the final stages stay
+  as they are.
 - **Megabonk movement.** You always run at full speed (no sprint toggle), and the **Sprint key slides**: a slide
   gives a burst of speed and keeps building speed down slopes. Momentum fades instead of stopping dead, bunny hops
   keep it, and air strafing steers without slowing you down. Jumps are a little higher. Numbers in `sheets/tuning.json`.
@@ -45,7 +48,7 @@ MegabonkBossEvent, MegabonkXp, MegabonkShrines.
 
 ## Planned next
 
-Bonk style terrain generation, more Megabonk shrines and Megabonk chests alongside Risk of Rain 2's, Megabonk-styled
+More Megabonk shrines and Megabonk chests alongside Risk of Rain 2's, Megabonk-styled
 stage visuals, and Megabonk bosses for Voidling and
 the other final bosses.
 
