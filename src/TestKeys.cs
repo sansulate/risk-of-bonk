@@ -9,7 +9,7 @@ namespace RiskOfBonk
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
     /// F6 puts you in the next Megabonk shrine, F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
-    /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons.
+    /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons, F12 goes to the next stage.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
     {
@@ -33,6 +33,7 @@ namespace RiskOfBonk
             if (Input.GetKeyDown(KeyCode.F9)) GoToTeleporter();
             if (Input.GetKeyDown(KeyCode.F10)) Spawn();
             if (Input.GetKeyDown(KeyCode.F11)) GiveWeapon();
+            if (Input.GetKeyDown(KeyCode.F12) && Run.instance.nextStageScene) Run.instance.AdvanceStage(Run.instance.nextStageScene);
         }
 
         static void GiveLevel()
