@@ -13,7 +13,7 @@ namespace RiskOfBonk
     public static class AutoRig
     {
         public static SkinnedMeshRenderer Fit(Transform modelRoot, SkinnedMeshRenderer src, Matrix4x4[] srcBindposes, Transform[] fallbackBones, Mesh source,
-            Material[] materials, float yawDeg, string name, RawModel raw = null)
+            Material[] materials, float yawDeg, string name, RawModel raw = null, bool allowRetarget = true)
         {
             Transform[] bones;
             Vector3[] local;          // bone positions in model space (Y up, character facing +Z)
@@ -96,7 +96,7 @@ namespace RiskOfBonk
             var bindRot = bindPose
                 ? bindposes.Select(bp => Retarget.Rot(toModel * bp.inverse)).ToArray()
                 : bones.Select(t => Quaternion.Inverse(modelRoot.rotation) * t.rotation).ToArray();
-            var retargeted = Retarget.Build(modelRoot, bones, local, bindRot, all, raw, source, materials, rot, scale, offset, name);
+            var retargeted = allowRetarget ? Retarget.Build(modelRoot, bones, local, bindRot, all, raw, source, materials, rot, scale, offset, name) : null;
             if (retargeted != null)
             {
                 RigDebug.WriteFit(name + "_" + modelRoot.root.name, retargeted.sharedMesh.vertices, source.triangles, all.Select(i => local[i]).ToArray(), Matrix4x4.identity);

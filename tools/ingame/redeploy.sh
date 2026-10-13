@@ -5,7 +5,8 @@ set -e
 cd "$(dirname "$0")/../.."
 PROF="$APPDATA/r2modmanPlus-local/RiskOfRain2/profiles/Default/BepInEx"
 python tools/sheets.py generate | tail -1
-OUT=$(dotnet build src/RiskOfBonk.csproj -c Release -nologo -v q -p:BepInExCore="$PROF/core" 2>&1); echo "$OUT" | grep -E "error|Build succeeded" | sort -u | head; echo "$OUT" | grep -q " error " && exit 1
+GAME="${RISKOFRAIN2:-/c/Program Files (x86)/Steam/steamapps/common/Risk of Rain 2}"
+OUT=$(dotnet build src/RiskOfBonk.csproj -c Release -nologo -v q -p:BepInExCore="$PROF/core" -p:RoR2Managed="$(cygpath -m "$GAME/Risk of Rain 2_Data/Managed")" 2>&1); echo "$OUT" | grep -E "error|Build succeeded" | sort -u | head; echo "$OUT" | grep -q " error " && exit 1
 taskkill //IM "Risk of Rain 2.exe" //F >/dev/null 2>&1 && sleep 5 || true
 cp src/bin/Release/netstandard2.1/RiskOfBonk.dll "$PROF/plugins/RiskOfBonk/"
 rm -f "$PROF/RiskOfBonk/debug/"* 2>/dev/null || true

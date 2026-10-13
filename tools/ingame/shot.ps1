@@ -1,6 +1,9 @@
 param([string]$Out, [string]$Proc = "Risk of Rain 2")
 Add-Type -AssemblyName System.Drawing
-Add-Type @"
+# The helper is compiled once into %TEMP% (compiling it on every call takes ~50 s while the game is busy).
+$dll = Join-Path $env:TEMP "rob_shot_w.dll"
+if (Test-Path $dll) { Add-Type -Path $dll } else {
+Add-Type -OutputAssembly $dll -OutputType Library @"
 using System; using System.Runtime.InteropServices;
 public static class W {
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int L, T, R, B; }
@@ -10,6 +13,7 @@ public static class W {
   [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint f);
 }
 "@
+Add-Type -Path $dll }
 $p = Get-Process -Name $Proc -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
 $h = $p.MainWindowHandle
 [W]::ShowWindow($h, 9) | Out-Null

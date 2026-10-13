@@ -1,0 +1,16 @@
+{
+ "sheet": "upgrades",
+ "note": "Megabonk tomes offered on level up (3 random, keys 1/2/3). Each pick gives the tome as many points as its rarity (sheets/rarities.json). stat says what one point does; mbIcon is the exact Megabonk Texture2D name of the tome icon. Weapon, size, quantity, duration, projectile speed and knockback tomes wait for the Megabonk weapons update.",
+ "rows": [
+  { "id": "damage", "displayName": "Damage Tome", "mbIcon": "DamageTome", "stat": "damage", "perPoint": 0.08, "description": "+{0}% damage", "verified": false },
+  { "id": "cooldown", "displayName": "Cooldown Tome", "mbIcon": "CooldownTome", "stat": "cooldown", "perPoint": 0.06, "description": "+{0}% attack speed, -{0}% skill cooldowns", "verified": false },
+  { "id": "precision", "displayName": "Precision Tome", "mbIcon": "PrecisionTome", "stat": "crit", "perPoint": 5, "description": "+{1}% critical chance", "verified": false },
+  { "id": "health", "displayName": "HP Tome", "mbIcon": "HealthTome", "stat": "health", "perPoint": 0.1, "description": "+{0}% max health", "verified": false },
+  { "id": "regen", "displayName": "Regen Tome", "mbIcon": "RegenerationTome", "stat": "regen", "perPoint": 0.8, "description": "+{1} health per second (grows with level)", "verified": false },
+  { "id": "armor", "displayName": "Armor Tome", "mbIcon": "ArmorTome", "stat": "armor", "perPoint": 6, "description": "+{1} armor", "verified": false },
+  { "id": "agility", "displayName": "Agility Tome", "mbIcon": "SpeedTome", "stat": "speed", "perPoint": 0.06, "description": "+{0}% movement speed", "verified": false },
+  { "id": "shield", "displayName": "Shield Tome", "mbIcon": "ShieldTome", "stat": "shield", "perPoint": 0.08, "description": "+{0}% of max health as shield", "verified": false },
+  { "id": "evasion", "displayName": "Evasion Tome", "mbIcon": "EvasionTome", "stat": "evasion", "perPoint": 0.03, "description": "+{0}% chance to dodge a hit (max 60%)", "verified": false },
+  { "id": "luck", "displayName": "Luck Tome", "mbIcon": "LuckTome", "stat": "luck", "perPoint": 0.1, "description": "Better upgrade rarities (+{0}%)", "verified": false }
+ ]
+}

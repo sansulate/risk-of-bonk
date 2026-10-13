@@ -38,7 +38,26 @@ namespace RiskOfBonk
 
             ContentManager.collectContentPackProviders += add => add(new MegabonkSurvivors());
             StageMode.Init();
-            new Harmony(Guid).PatchAll(typeof(Patches));
+            ConfigEntry<bool> movement = Config.Bind("Gameplay", "MegabonkMovement", true,
+                "Megabonk movement: always sprinting, the Sprint key slides, momentum, bunny hops and air strafing (your own character).");
+            ConfigEntry<bool> hordes = Config.Bind("Gameplay", "MegabonkHordes", true,
+                "Megabonk horde pacing: more, weaker monsters. Applies when you host; every player should use the same setting.");
+            var harmony = new Harmony(Guid);
+            harmony.PatchAll(typeof(Patches));
+            BonkMovement.Enabled = movement.Value;
+            BonkMovement.Init(harmony);
+            if (hordes.Value) Horde.Init(harmony);
+            Upgrades.Init(harmony);
+            ConfigEntry<bool> bosses = Config.Bind("Gameplay", "MegabonkBossEvent", true,
+                "Teleporter boss event: a Megabonk boss and swarm instead of the vanilla boss. Applies when you host.");
+            if (bosses.Value) MegabonkBosses.Init(harmony);
+            TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod"));
+            gameObject.AddComponent<TestKeys>();
+            gameObject.AddComponent<UpgradePanel>();
+            ConfigEntry<bool> xp = Config.Bind("Gameplay", "MegabonkXp", true,
+                "Megabonk XP: kills drop XP gems you collect by walking near them, shown in a Megabonk XP bar. Applies when you host.");
+            XpGems.Init(harmony, gameObject, xp.Value);
+            gameObject.AddComponent<XpBar>();
             gameObject.AddComponent<StageMode.LobbyBeacon>();
             Log.Info($"{Name} {Version} loaded");
         }
@@ -65,6 +84,34 @@ namespace RiskOfBonk
                 __instance.gameObject.AddComponent<MenuStyle.Styler>();
                 __instance.gameObject.AddComponent<MenuStyle.StyleButton>().controller = __instance;
                 Log.Info("Character select: Megabonk style + Bonk/Rain style button");
+            }
+
+            // Test runs only (host side): the file BepInEx/RiskOfBonk/testgod makes player bodies unkillable, and
+            // testnospawn stops monster spawns, so a test character is not buried under enemies at the drop pod.
+            static bool TestGodOn => File.Exists(Path.Combine(DataDir, "testgod"));
+            static bool NoSpawnOn => File.Exists(Path.Combine(DataDir, "testnospawn"));
+
+            [HarmonyPostfix, HarmonyPatch(typeof(CharacterBody), "Start")]
+            static void TestGod(CharacterBody __instance)
+            {
+                if (!__instance.isPlayerControlled || !UnityEngine.Networking.NetworkServer.active || !__instance.healthComponent) return;
+                if (!TestGodOn) return;
+                __instance.healthComponent.godMode = true;
+                Log.Info($"testgod: {__instance.name} is unkillable");
+            }
+
+            [HarmonyPrefix, HarmonyPatch(typeof(CombatDirector), "AttemptSpawnOnTarget")]
+            static bool TestGodNoSpawns(ref bool __result)
+            {
+                if (!NoSpawnOn) return true;
+                __result = false;
+                return false;
+            }
+
+            [HarmonyPrefix, HarmonyPatch(typeof(SceneDirector), "PopulateScene")]
+            static void TestGodNoStageMonsters(SceneDirector __instance)
+            {
+                if (NoSpawnOn) Traverse.Create(__instance).Field("monsterCredit").SetValue(0);
             }
         }
     }

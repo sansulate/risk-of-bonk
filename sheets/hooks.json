@@ -43,6 +43,125 @@
    "kind": "event",
    "purpose": "host broadcasts the stage mode",
    "verified": true
+  },
+  {
+   "id": "autosprint",
+   "system": "RoR2.PlayerCharacterMasterController.PollButtonInput",
+   "kind": "harmony-prefix+postfix",
+   "purpose": "Megabonk movement: always sprinting while moving; the Sprint key is read raw as Slide",
+   "verified": true
+  },
+  {
+   "id": "movement",
+   "system": "RoR2.CharacterMotor.PreMove",
+   "kind": "harmony-prefix+postfix",
+   "purpose": "Megabonk movement: slides, momentum, air strafing (horizontal velocity only, authority client)",
+   "verified": true
+  },
+  {
+   "id": "landing",
+   "system": "RoR2.CharacterMotor.OnLanded",
+   "kind": "harmony-postfix",
+   "purpose": "bunny-hop window after landing",
+   "verified": true
+  },
+  {
+   "id": "jump",
+   "system": "EntityStates.GenericCharacterMain.ApplyJumpVelocity",
+   "kind": "harmony-prefix+postfix",
+   "purpose": "jumps keep momentum and are higher",
+   "verified": true
+  },
+  {
+   "id": "hordedirector",
+   "system": "RoR2.CombatDirector.Awake",
+   "kind": "harmony-prefix",
+   "purpose": "Megabonk horde pacing: credit, wave size, interval (not boss squads)",
+   "verified": true
+  },
+  {
+   "id": "hordelimit",
+   "system": "RoR2.Run.Start",
+   "kind": "harmony-postfix",
+   "purpose": "monster team soft limit",
+   "verified": true
+  },
+  {
+   "id": "hordehealth",
+   "system": "RoR2.CharacterBody.Start",
+   "kind": "harmony-prefix",
+   "purpose": "non-champion monsters are weaker",
+   "verified": true
+  },
+  {
+   "id": "upgradestats",
+   "system": "RoR2.CharacterBody.RecalculateStats",
+   "kind": "harmony-postfix",
+   "purpose": "Megabonk tome stats from hidden tome items",
+   "verified": true
+  },
+  {
+   "id": "evasion",
+   "system": "RoR2.HealthComponent.TakeDamage",
+   "kind": "harmony-prefix",
+   "purpose": "Evasion Tome dodge (host)",
+   "verified": true
+  },
+  {
+   "id": "upgradepick",
+   "system": "NetworkServer handler 0x5B0C",
+   "kind": "network-message",
+   "purpose": "client asks the host for a tome pick; host validates pending picks and gives items",
+   "verified": true
+  },
+  {
+   "id": "bossevent",
+   "system": "RoR2.TeleporterInteraction.ChargingState.OnEnter",
+   "kind": "harmony-postfix",
+   "purpose": "Megabonk boss + swarm instead of the vanilla Teleporter boss (host)",
+   "verified": true
+  },
+  {
+   "id": "finalbosses",
+   "system": "Addressables body prefabs (BrotherBody, FalseSonBossBody, ...)",
+   "kind": "content-load",
+   "purpose": "final bosses wear Megabonk models and names; their fights stay",
+   "verified": true
+  },
+  {
+   "id": "weapons",
+   "system": "Megabonk survivor SkillLocator families + GenericSkill.SetSkillOverride",
+   "kind": "content-load + runtime",
+   "purpose": "Megabonk weapons as skills: start weapon on primary, picked weapons on secondary/utility/special in pick order (Megabonk survivors only)",
+   "verified": true
+  },
+  {
+   "id": "weaponstate",
+   "system": "RiskOfBonk.WeaponFire (EntityStateCatalog)",
+   "kind": "entity-state",
+   "purpose": "one attack of a Megabonk weapon: bullet, projectile, melee, aura or chain lightning",
+   "verified": true
+  },
+  {
+   "id": "xpgems",
+   "system": "RoR2.ExperienceManager.AwardExperience",
+   "kind": "harmony-prefix",
+   "purpose": "kill XP becomes Megabonk XP gems on the ground (host), collected by walking near",
+   "verified": true
+  },
+  {
+   "id": "xpgemnet",
+   "system": "client handler 0x5B0E",
+   "kind": "network-message",
+   "purpose": "gem spawn / collect / remove shown on every machine",
+   "verified": true
+  },
+  {
+   "id": "menuinvincible",
+   "system": "NetworkServer handler 0x5B0D",
+   "kind": "network-message",
+   "purpose": "level-up menu opened: host grants HiddenInvincibility for tuning.upgrade_invincibility s, cleared on pick",
+   "verified": true
   }
  ]
 }

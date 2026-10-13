@@ -5,7 +5,11 @@ set -euo pipefail
 cd "$(dirname "$0")"
 : "${BEPINEX_CORE:?set BEPINEX_CORE to a BepInEx 5 core folder}"
 python3 tools/sheets.py generate
-dotnet build src/RiskOfBonk.csproj -c Release -nologo -v q -p:BepInExCore="$BEPINEX_CORE"
+# RISKOFRAIN2=<game folder> compiles against the installed game's own assemblies (publicized at build time);
+# without it the older reference assemblies from nuget are used.
+EXTRA=()
+[ -n "${RISKOFRAIN2:-}" ] && EXTRA=(-p:RoR2Managed="$RISKOFRAIN2/Risk of Rain 2_Data/Managed")
+dotnet build src/RiskOfBonk.csproj -c Release -nologo -v q -p:BepInExCore="$BEPINEX_CORE" "${EXTRA[@]}"
 VER=$(grep -oP '(?<=<Version>)[^<]+' src/RiskOfBonk.csproj)
 STAGE=dist/stage/RiskOfBonk
 rm -rf dist/stage && mkdir -p "$STAGE"

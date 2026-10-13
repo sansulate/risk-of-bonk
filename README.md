@@ -3,7 +3,7 @@
 A Risk of Rain 2 × Megabonk mashup. You play **Risk of Rain 2** (the host game, online co-op intact), and **Megabonk**
 brings its characters and its look into it, read from your own Megabonk install every time the game starts.
 
-## What you get (v0.1, "characters + menus")
+## What you get (v0.2, "characters, menus and the Megabonk game feel")
 
 - **Megabonk characters as Risk of Rain 2 survivors.** Each one uses its real Megabonk model and textures (loaded from
   your Megabonk folder, never copied or shipped) fitted onto a Risk of Rain 2 survivor's skeleton, and plays that
@@ -16,13 +16,35 @@ brings its characters and its look into it, read from your own Megabonk install 
 - **Bonk style / Rain style button** on the character select screen. The host picks it and every player in the lobby
   sees the host's choice. *Rain style* keeps Risk of Rain 2's stages. *Bonk style* will add Megabonk-style random
   terrain generation in the next update; in v0.1 it is only the setting, and the stages stay the same.
+- **Megabonk movement.** You always run at full speed (no sprint toggle), and the **Sprint key slides**: a slide
+  gives a burst of speed and keeps building speed down slopes. Momentum fades instead of stopping dead, bunny hops
+  keep it, and air strafing steers without slowing you down. Jumps are a little higher. Numbers in `sheets/tuning.json`.
+- **Megabonk XP.** Kills drop XP gems on the ground; walk near them and they fly to you. A Megabonk XP bar runs
+  across the top of the screen, pulses as gems land and bursts into "LEVEL UP!" when you level.
+- **Megabonk level-up menu.** Every level-up pops up three cards, picked with **1, 2 or 3**: Megabonk tomes (Damage,
+  Cooldown, Precision, HP, Regen, Armor, Agility, Shield, Evasion, Luck) with rarities from Common to Legendary, and
+  for Megabonk characters also weapons. The game does not pause (co-op keeps going): you are **invincible for 10
+  seconds** while the menu is open, shown as a countdown that turns red and shakes near the end; picking ends it.
+- **Megabonk weapons (Megabonk characters only).** Each Megabonk character starts with its own Megabonk weapon on
+  left mouse and nothing else. Weapons you pick go on right mouse, then Shift, then R: four weapons per run. Picking a
+  weapon you own levels it up. Equipment (Q) works as usual. Risk of Rain 2 survivors keep their own movesets.
+  `sheets/weapons.json` (25 weapons), start weapons in `sheets/characters.json`.
+- **Megabonk hordes.** More monsters per wave, more often, each with less health.
+- **Megabonk boss event at the Teleporter.** Instead of the vanilla boss, a Megabonk boss (Ancient Ent, Ghost Lord)
+  arrives with a Megabonk swarm; the Teleporter finishes when it dies, with the normal boss rewards.
+- **Megabonk final bosses.** Mithrix becomes the **Ghost King** and False Son the **Shadow King**: Megabonk models and
+  names on their own fights. `sheets/bosses.json`.
+- **Endless:** Risk of Rain 2's looping stays, so a run goes on as long as you survive.
 - **Multiplayer:** Risk of Rain 2's own online co-op, up to 4 players. Every player needs the mod and both games.
 
-## Planned next (update 2+)
+Settings (`BepInEx/config/com.sansulate.riskofbonk.cfg`, section Gameplay): MegabonkMovement, MegabonkHordes,
+MegabonkBossEvent, MegabonkXp.
 
-Megabonk movement and physics controls, Megabonk's level-up upgrade system and weapons/tomes, horde pacing, the
-Megabonk boss event at the Teleporter, Megabonk final bosses replacing Mithrix and the other final bosses, Bonk style
-terrain generation, Megabonk shrines alongside Risk of Rain 2's shrines and chests, and endless looping.
+## Planned next
+
+Bonk style terrain generation, Megabonk weapons as extra upgrades, Megabonk shrines and chests alongside Risk of
+Rain 2's, Megabonk-styled stage visuals, a Megabonk swarm in the final boss fights, and Megabonk bosses for Voidling and
+the other final bosses.
 
 ## Requirements
 

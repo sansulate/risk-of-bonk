@@ -1,0 +1,206 @@
+{
+ "sheet": "tuning",
+ "note": "Numbers for the Megabonk-style systems (movement, hordes). One row per value; verified becomes true once it feels right in game. Generated as RiskOfBonk.Generated.Tune.<PascalCaseId>.",
+ "rows": [
+  {
+   "id": "auto_sprint",
+   "value": 1,
+   "unit": "bool (1/0)",
+   "system": "movement",
+   "note": "Megabonk has no sprint: always at full speed while moving (RoR2 still stops sprint when moving backwards or during some skills). The Sprint key becomes Slide.",
+   "verified": false
+  },
+  {
+   "id": "slide_min_speed",
+   "value": 0.6,
+   "unit": "x walk speed",
+   "system": "movement",
+   "note": "Slide starts when the Slide key is held on the ground at this fraction of walk speed or more.",
+   "verified": false
+  },
+  {
+   "id": "slide_boost",
+   "value": 6.0,
+   "unit": "m/s",
+   "system": "movement",
+   "note": "Speed added when a slide starts (Megabonk slideForce), once per slide_cooldown.",
+   "verified": false
+  },
+  {
+   "id": "slide_cooldown",
+   "value": 0.8,
+   "unit": "s",
+   "system": "movement",
+   "note": "Time before another slide start can boost again.",
+   "verified": false
+  },
+  {
+   "id": "slide_friction",
+   "value": 4.0,
+   "unit": "m/s per s",
+   "system": "movement",
+   "note": "Speed lost per second while sliding on flat ground (Megabonk slideCounterMovement).",
+   "verified": false
+  },
+  {
+   "id": "slide_slope_gain",
+   "value": 1.6,
+   "unit": "x gravity along slope",
+   "system": "movement",
+   "note": "Sliding downhill speeds you up, uphill slows you down.",
+   "verified": false
+  },
+  {
+   "id": "slide_steer",
+   "value": 120.0,
+   "unit": "deg/s",
+   "system": "movement",
+   "note": "How fast a slide turns toward the move input.",
+   "verified": false
+  },
+  {
+   "id": "momentum_decay",
+   "value": 7.0,
+   "unit": "m/s per s",
+   "system": "movement",
+   "note": "On the ground without sliding, speed above walk speed fades at this rate (Megabonk inertiaFriction) instead of being cut off.",
+   "verified": false
+  },
+  {
+   "id": "momentum_turn",
+   "value": 360.0,
+   "unit": "deg/s",
+   "system": "movement",
+   "note": "How fast kept momentum turns toward the move input on the ground.",
+   "verified": false
+  },
+  {
+   "id": "bhop_window",
+   "value": 0.15,
+   "unit": "s",
+   "system": "movement",
+   "note": "After landing, momentum is kept fully this long so a quick jump keeps all of it (bunny hop).",
+   "verified": false
+  },
+  {
+   "id": "bhop_boost",
+   "value": 0.5,
+   "unit": "m/s",
+   "system": "movement",
+   "note": "Speed added per jump that keeps momentum.",
+   "verified": false
+  },
+  {
+   "id": "air_control",
+   "value": 0.6,
+   "unit": "x acceleration",
+   "system": "movement",
+   "note": "Air strafing strength. Steering in the air never slows you below your speed at take-off (RoR2 default is 0.25 and drags you to walk speed).",
+   "verified": false
+  },
+  {
+   "id": "max_speed",
+   "value": 3.5,
+   "unit": "x walk speed",
+   "system": "movement",
+   "note": "Hard cap on horizontal speed from momentum.",
+   "verified": false
+  },
+  {
+   "id": "jump_height",
+   "value": 1.15,
+   "unit": "x jump power",
+   "system": "movement",
+   "note": "Megabonk jumps are a bit higher than RoR2's.",
+   "verified": false
+  },
+  {
+   "id": "horde_credit",
+   "value": 1.8,
+   "unit": "x director credit",
+   "system": "hordes",
+   "note": "Monster spawn budget over time (stage and Teleporter directors without a boss squad).",
+   "verified": false
+  },
+  {
+   "id": "horde_wave_size",
+   "value": 14,
+   "unit": "monsters",
+   "system": "hordes",
+   "note": "Most monsters one director wave may spawn (RoR2 default 6). Cheap monsters are no longer skipped.",
+   "verified": false
+  },
+  {
+   "id": "horde_interval",
+   "value": 0.6,
+   "unit": "x reroll interval",
+   "system": "hordes",
+   "note": "Time between director waves.",
+   "verified": false
+  },
+  {
+   "id": "horde_health",
+   "value": 0.6,
+   "unit": "x max health",
+   "system": "hordes",
+   "note": "Non-boss monsters are weaker so the horde mows down like in Megabonk.",
+   "verified": false
+  },
+  {
+   "id": "boss_swarm_credit",
+   "value": 400,
+   "unit": "director credit (x difficulty)",
+   "system": "bosses",
+   "note": "Extra monster credit for the Teleporter's horde director when the Megabonk boss event starts.",
+   "verified": false
+  },
+  {
+   "id": "horde_limit",
+   "value": 70,
+   "unit": "monsters",
+   "system": "hordes",
+   "note": "Monster team soft limit (RoR2 default 40).",
+   "verified": false
+  },
+  {
+   "id": "upgrade_invincibility",
+   "value": 10,
+   "unit": "s",
+   "system": "upgrades",
+   "note": "Invincibility while the level-up menu is open; ends early when you pick. The countdown turns red and shakes in its last 30%.",
+   "verified": false
+  },
+  {
+   "id": "weapon_offer_chance",
+   "value": 0.45,
+   "unit": "0-1 per card",
+   "system": "upgrades",
+   "note": "Chance that a level-up card is a Megabonk weapon (Megabonk survivors only), otherwise a tome.",
+   "verified": false
+  },
+  {
+   "id": "xp_multiplier",
+   "value": 1.5,
+   "unit": "x RoR2 kill XP",
+   "system": "xp",
+   "note": "XP in each gem compared with Risk of Rain 2's own kill XP (Megabonk levels up more often).",
+   "verified": false
+  },
+  {
+   "id": "xp_pickup_radius",
+   "value": 7,
+   "unit": "m",
+   "system": "xp",
+   "note": "XP gems within this distance of a player fly to them and are collected.",
+   "verified": false
+  },
+  {
+   "id": "xp_gem_limit",
+   "value": 300,
+   "unit": "gems",
+   "system": "xp",
+   "note": "Most gems on the ground; past this the oldest gem is collected for the team at once.",
+   "verified": false
+  }
+ ]
+}

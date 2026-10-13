@@ -24,11 +24,14 @@ namespace RiskOfBonk
         readonly ContentPack pack = new ContentPack();
         public static readonly List<GameObject> NetworkPrefabs = new List<GameObject>();
         public static readonly List<string> Registered = new List<string>();
-        static GameObject holder;
+        internal static GameObject holder;
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
             pack.identifier = identifier;
+            pack.itemDefs.Add(Upgrades.CreateItems()); // the upgrade system works even without Megabonk's icons
+            pack.itemDefs.Add(Weapons.CreateItems());
+            pack.entityStateTypes.Add(new[] { typeof(WeaponFire) });
             while (!MegabonkLoader.Done) yield return null;
             if (MegabonkLoader.Library == null)
             {
@@ -41,6 +44,7 @@ namespace RiskOfBonk
             UnityEngine.Object.DontDestroyOnLoad(holder);
 
             var keys = AddressableKeys();
+            Weapons.CreateSkills();
             var bodies = new List<GameObject>();
             var survivors = new List<SurvivorDef>();
             foreach (var row in Sheets.Characters)
@@ -51,8 +55,13 @@ namespace RiskOfBonk
                 if (def != null) survivors.Add(def);
                 yield return null;
             }
+            var masters = new List<GameObject>();
+            MegabonkBosses.BuildAll(keys, bodies, masters);
             pack.bodyPrefabs.Add(bodies.ToArray());
+            pack.masterPrefabs.Add(masters.ToArray());
             pack.survivorDefs.Add(survivors.ToArray());
+            pack.skillDefs.Add(Weapons.SkillDefs.ToArray());
+            pack.skillFamilies.Add(Weapons.Families.ToArray());
             Log.Info($"Megabonk survivors ready: {string.Join(", ", Registered)} ({Registered.Count}/{Sheets.Characters.Length})");
         }
 
@@ -64,7 +73,7 @@ namespace RiskOfBonk
 
         public IEnumerator FinalizeAsync(FinalizeAsyncArgs args) { yield break; }
 
-        static Dictionary<string, string> AddressableKeys()
+        internal static Dictionary<string, string> AddressableKeys()
         {
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var locator in Addressables.ResourceLocators)
@@ -120,6 +129,7 @@ namespace RiskOfBonk
             Plugin.Tokens[tok + "_FAIL"] = "...and so " + row.DisplayName + " vanished, bonked at last.";
             ColorUtility.TryParseHtmlString(row.PrimaryColor, out var color);
 
+            Weapons.SetupBody(body, row);
             var cb = body.GetComponent<CharacterBody>();
             cb.baseNameToken = tok + "_NAME";
             cb.subtitleNameToken = tok + "_SUBTITLE";
@@ -163,9 +173,9 @@ namespace RiskOfBonk
             "VoidSurvivorBody" => "Void Fiend", _ => body.Replace("Body", ""),
         };
 
-        static string Pascal(string id) => string.Concat(id.Split('_').Select(p => p.Length == 0 ? p : char.ToUpperInvariant(p[0]) + p.Substring(1)));
+        internal static string Pascal(string id) => string.Concat(id.Split('_').Select(p => p.Length == 0 ? p : char.ToUpperInvariant(p[0]) + p.Substring(1)));
 
-        static GameObject Clone(GameObject src, string name, bool networked)
+        internal static GameObject Clone(GameObject src, string name, bool networked)
         {
             var c = UnityEngine.Object.Instantiate(src, holder.transform);
             c.name = name;
@@ -205,7 +215,7 @@ namespace RiskOfBonk
         }
 
         /// <summary>Replace the survivor's visible renderers with the auto-rigged Megabonk model.</summary>
-        static void Reskin(Transform modelRoot, RawModel raw, Mesh mesh, CharacterRow row, MegabonkLibrary lib)
+        internal static void Reskin(Transform modelRoot, RawModel raw, Mesh mesh, CharacterRow row, MegabonkLibrary lib, bool allowRetarget = true)
         {
             var cm = modelRoot.GetComponent<CharacterModel>();
             var oldInfos = cm != null && cm.baseRendererInfos != null ? cm.baseRendererInfos : new CharacterModel.RendererInfo[0];
@@ -238,7 +248,7 @@ namespace RiskOfBonk
                 return m;
             }).ToArray();
 
-            var fitted = AutoRig.Fit(modelRoot, mainSmr, SkinMesh(modelRoot, mainSmr)?.bindposes, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id, raw);
+            var fitted = AutoRig.Fit(modelRoot, mainSmr, SkinMesh(modelRoot, mainSmr)?.bindposes, bones, mesh, mats, row.YawOffsetDeg, "MB_" + row.Id, raw, allowRetarget);
             // CharacterModel draws each renderer with one material, so every part has its own renderer.
             var parts = AutoRig.SplitParts(fitted);
             var smr = parts[0];

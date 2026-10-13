@@ -1,0 +1,82 @@
+{
+ "sheet": "bosses",
+ "note": "Megabonk bosses. role 'teleporter': a Risk of Rain 2 boss body (rorBody/rorMaster: moveset and AI) wearing a Megabonk model, spawned by the Teleporter boss event (rotating by stage) instead of the vanilla boss, with a Megabonk swarm. role 'final': the Megabonk model replaces the look and name of the Risk of Rain 2 final boss bodies listed in 'replaces' (their fight stays). Models are read from the player's install and fitted onto the boss skeleton like the survivors. healthBoost = extra +10% health stacks (teleporter bosses). retarget false = the model only follows the nearest boss bones instead of driving its own skeleton (non-humanoid bosses like the Vagrant use that anyway).",
+ "rows": [
+  {
+   "id": "ancient_ent",
+   "displayName": "Ancient Ent",
+   "subtitle": "Megabonk Boss",
+   "role": "teleporter",
+   "mbNameHints": [
+    "Ent"
+   ],
+   "mbTexture": "",
+   "rorBody": "TitanBody",
+   "rorMaster": "TitanMaster",
+   "replaces": [],
+   "airborne": false,
+   "healthBoost": 5,
+   "verified": false,
+   "retarget": true
+  },
+  {
+   "id": "ghost_lord",
+   "displayName": "Ghost Lord",
+   "subtitle": "Megabonk Boss",
+   "role": "teleporter",
+   "mbNameHints": [
+    "Ghost"
+   ],
+   "mbTexture": "t_ghost_purple",
+   "rorBody": "VagrantBody",
+   "rorMaster": "VagrantMaster",
+   "replaces": [],
+   "airborne": true,
+   "healthBoost": 5,
+   "verified": false,
+   "retarget": true
+  },
+  {
+   "id": "ghost_king",
+   "displayName": "Ghost King",
+   "subtitle": "Megabonk Final Boss",
+   "role": "final",
+   "mbNameHints": [
+    "Ghost"
+   ],
+   "mbTexture": "t_ghost_gold",
+   "rorBody": "BrotherBody",
+   "rorMaster": "BrotherMaster",
+   "replaces": [
+    "BrotherBody",
+    "BrotherHurtBody",
+    "BrotherGlassBody"
+   ],
+   "airborne": false,
+   "healthBoost": 0,
+   "verified": false,
+   "retarget": true
+  },
+  {
+   "id": "shadow_king",
+   "displayName": "Shadow King",
+   "subtitle": "Megabonk Final Boss",
+   "role": "final",
+   "mbNameHints": [
+    "Ghost"
+   ],
+   "mbTexture": "t_ghost_black",
+   "rorBody": "FalseSonBossBody",
+   "rorMaster": "FalseSonBossMaster",
+   "replaces": [
+    "FalseSonBossBody",
+    "FalseSonBossBodyLunarShard",
+    "FalseSonBossBodyBrokenLunarShard"
+   ],
+   "airborne": false,
+   "healthBoost": 0,
+   "verified": false,
+   "retarget": true
+  }
+ ]
+}

@@ -24,6 +24,12 @@ namespace RiskOfBonk
             int side = 0;
             foreach (var (suffix, s) in new[] { (".l", -1), ("_l", -1), (".left", -1), (".r", 1), ("_r", 1), (".right", 1) })
                 if (n.EndsWith(suffix)) { side = s; n = n.Substring(0, n.Length - suffix.Length); break; }
+            // False Son style: "L_Thigh", "R_Upperarm".
+            if (side == 0 && n.Length > 2 && (n.StartsWith("l_") || n.StartsWith("r_")))
+            {
+                side = n[0] == 'l' ? -1 : 1;
+                n = n.Substring(2);
+            }
             // REX walks on four legs: its front pair stands in for legs (the back pair is skipped above).
             n = n.Replace(".front", "");
             foreach (var part in n.Split('.', '_', '-'))
@@ -47,8 +53,8 @@ namespace RiskOfBonk
             else
                 switch (n)
                 {
-                    case "pelvis": case "hip": r = Role.Hips; break;
-                    case "chest": case "platformbase": r = Role.Chest; break;
+                    case "pelvis": case "hip": case "hips": r = Role.Hips; break;
+                    case "chest": case "platformbase": case "spineend": r = Role.Chest; break;
                     case "neck": r = Role.Neck; break;
                     case "head": case "headbase": r = Role.Head; break;
                     case "upper_arm": case "upperarm": r = Role.UpperArm; break;

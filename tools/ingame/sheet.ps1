@@ -14,12 +14,13 @@ $i = 0
 foreach ($p in $pos) {
   & "$s\click.ps1" -X $p[0] -Y $p[1]
   Start-Sleep -Milliseconds 2600
-  & "$s\shot.ps1" -Out "$s\tmp.png" | Out-Null
-  $img = [System.Drawing.Image]::FromFile("$s\tmp.png")
-  $src = New-Object System.Drawing.Rectangle 820, 280, 760, 820
+  & "$s\shot.ps1" -Out "$env:TEMP\rob_tmp.png" | Out-Null
+  $img = [System.Drawing.Image]::FromFile("$env:TEMP\rob_tmp.png")
+  $f = $img.Width / 1920.0
+  $src = New-Object System.Drawing.Rectangle ([int](820*$f)), ([int](280*$f)), ([int](760*$f)), ([int](820*$f))
   $dst = New-Object System.Drawing.Rectangle (($i % 5) * $tile), ([math]::Floor($i / 5) * $th), $tile, $th
   $g.DrawImage($img, $dst, $src, [System.Drawing.GraphicsUnit]::Pixel)
-  $title = New-Object System.Drawing.Rectangle 300, 300, 230, 40
+  $title = New-Object System.Drawing.Rectangle ([int](300*$f)), ([int](300*$f)), ([int](230*$f)), ([int](40*$f))
   $tdst = New-Object System.Drawing.Rectangle (($i % 5) * $tile), ([math]::Floor($i / 5) * $th), 184, 32
   $g.DrawImage($img, $tdst, $title, [System.Drawing.GraphicsUnit]::Pixel)
   $img.Dispose()

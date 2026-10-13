@@ -71,4 +71,61 @@
     outline keyword off, which washed labels out; each label now gets its own material with the outline on and a dark
     underlay. The "RISK OF BONK" title shows (yellow, black outline). The Rain style button keeps its blue color
     (the menu styler no longer re-tints it).
+- Second PC (2026-10-13; RoR2 1.5.0#1210, 1366x768): set up from scratch. .NET 8 SDK and Python 3.12 via winget;
+  BepInExPack 5.4.2122 + RoR2BepInExPack 1.46.0 from Thunderstore laid out like an r2modman "Default" profile
+  (winhttp.dll + doorstop_config.ini with enabled=false in the game folder, so plain Steam launches stay vanilla).
+  RoR2BepInExPack must sit in plugins/RiskofThunder-RoR2BepInExPack: the preloader deletes a plain
+  plugins/RoR2BepInExPack folder, and without its Newtonsoft.Json the game's own types fail to load our plugin.
+  Same results as the first PC: 20/20 survivors, Megabonk-style menu and character select.
+  - Test tools now work at any window size: click.ps1 takes 1920x1080 reference coordinates and scales them to the
+    game's client area, focuses the game (Alt tap + SetForegroundWindow) and sends real mouse moves (RoR2 reads raw
+    input, SetCursorPos alone is ignored). sheet.ps1 scales its crops.
+  - testgod: the file BepInEx/RiskOfBonk/testgod makes player bodies unkillable and stops monster spawns (host), so
+    run tests are not buried at the drop pod.
+  - Verified (mbAssetsVerified/verified true): logo; Megachad, Monke, Ogre, CL4NK, Bush, Vlad (runs on the first PC),
+    Fox and Calcium (runs here). All 20 look right in this PC's character select contact sheet. Still to run-test
+    (12 cells): Sir Oofie, Ninja, Tony McZoom, Robinette, Bandit, Birdo, Noelle, Spaceman, Athena, Dicehead, Amog,
+    Sir Chadwell. This PC has 7.9 GB RAM and the game takes ~3 GB; a long batch got stopped for low memory, so run
+    a few characters per game launch.
+- Update 2 (2026-10-13), toward the full vision (user asked to continue with it):
+  - Megabonk's metadata (IL2CPP strings, read only) shows a Dani/Karlson-style controller: slide (slideForce,
+    slideCounterMovement, slideThresholdSpeed), maxSlopeAngle, inertiaFriction, jump buffer, extra jumps, hold-to-wallrun;
+    actions move/jump/interact/slide/aim, no sprint. BonkMovement: auto-sprint, Sprint key (rawSprintInput) = Slide,
+    momentum model in a CharacterMotor.PreMove postfix (horizontal only; RoR2 keeps gravity), bhop in
+    ApplyJumpVelocity. Measured in game: sprint 10.2 m/s, slide start 12.8, bhop chain ~13. Wallrun not done.
+  - Upgrades: tomes as hidden ItemDefs (inventory sync = network sync), picks counter item, pending = team level - 1 -
+    picks; client sends message 0x5B0C, host validates and gives items. Checked: HP Tome math (352 -> 388 at level 5),
+    shield, agility (walk 11.4 = 7 x 1.45 x 1.12), Megabonk tome icons by exact Texture2D name.
+  - Hordes: monster count went 5 -> 31 in ~2 min standing still (vanilla ~10-15).
+  - Bosses: Megabonk keeps most enemies outside scene renderers (Golem textures exist, mesh not found); usable skinned
+    rigs: Ghost (humanoid, 41 bones, t_ghost_* variants), Ent, ShadyGuy. Teleporter: Ancient Ent (Ent on TitanBody,
+    retargeted 13 bones), Ghost Lord (Ghost on VagrantBody, nearest-bone fit). Final: Ghost King on Brother bodies,
+    Shadow King on FalseSon bodies (Retarget now also reads L_/R_ prefixes, Hips, SpineEnd). Checked in game: boss
+    event spawns, boss bar names, vanilla boss suppressed, swarm; Mithrix as Ghost King.
+    Note: RigDebug's in-game bake uses BakeMesh (applies model scale) while bones are dumped unscaled; compare world
+    bounds, not the bake against the bones.
+  - Test switches in BepInEx/RiskOfBonk/: testgod (unkillable; enables F8 level, F9 teleporter, F10 spawn testspawn
+    master), testnospawn, testmove (speed log), testboss (force a boss id), debug.
+  - Not done yet: Bonk style terrain, Megabonk weapons, Megabonk shrines/chests, stage visuals, final-fight swarm,
+    Voidling, wallrun, controller support for upgrade picks.
+- Update 3 (2026-10-13), user request: Megabonk weapons only for Megabonk survivors; each starts with one weapon on
+  primary (its own, characters.json startWeapon, a best guess: verify against Megabonk), picked weapons fill
+  secondary/utility/special in pick order (4 per run), equipment untouched; Megabonk XP with an animated XP bar; the
+  level-up menu gives 10 s invincibility with a countdown (red + shaking in the last 30%) instead of pausing.
+  - Build: compiling against the installed game's assemblies now (-p:RoR2Managed=..., publicized at build time by
+    BepInEx.AssemblyPublicizer.MSBuild); redeploy.sh does it, build.sh with RISKOFRAIN2=<game folder>. The nuget
+    GameLibs 1.3.1 path is pre-SotS (DamageType vs DamageTypeCombo etc.) and no longer compiles the weapon code.
+  - Weapons: 25 rows (Megabonk icons exist for all); one EntityState (WeaponFire) for every weapon, kind bullet /
+    projectile / melee / aura / lightning built from RoR2 attacks (tracers, MageFirebolt, Sawmerang, EngiMine,
+    MissileProjectile, Merc slashes, Jellyfish/Vagrant novas, Ukulele lightning). Megabonk bodies get their own
+    SkillFamilies (start weapon + empty "?" slots); the WeaponLoadout component sets SkillOverrides from the
+    inventory's itemAcquisitionOrder, so every machine agrees. LightningOrb needs bouncedObjects set.
+  - XP: ExperienceManager.AwardExperience prefix -> host gems (raycast to ground), messages 0x5B0E, pickup radius 7 m,
+    team XP on arrival; xp_multiplier 1.5. Checked: gems drop, fly in, level up; bar fills/flashes.
+  - Menu: client sends 0x5B0D on open, host adds HiddenInvincibility (once per pick), cleared on pick. Checked:
+    countdown red at 2.9/2.7 s, buff icon shows, "Not invincible" after.
+  - Checked in game as Megachad: M1 Aura, M2/Shift/R "?" until weapons are picked; Shotgun pick went to right mouse;
+    Firestaff/Lightning Staff/Sword on M2/Shift/R fire without errors; weapon-upgrade cards once 4 weapons are held.
+  - Test tools: F11 gives the next weapon from BepInEx/RiskOfBonk/testweapons; shot.ps1 caches its helper DLL in
+    %TEMP% (~10 s per shot instead of ~50 s during a run).
 - Melty: not done yet (needs a fresh Publish prompt from the user).

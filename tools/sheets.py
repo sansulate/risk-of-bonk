@@ -17,7 +17,13 @@ REQUIRED = {
     "menu_style": ["id", "target", "color", "alpha", "mbSpriteHints", "verified"],
     "stage_modes": ["id", "label", "description", "color", "implementedIn", "verified"],
     "hooks": ["id", "system", "kind", "purpose", "verified"],
+    "tuning": ["id", "value", "unit", "system", "note", "verified"],
+    "upgrades": ["id", "displayName", "mbIcon", "stat", "perPoint", "description", "verified"],
+    "rarities": ["id", "label", "color", "weight", "points", "verified"],
+    "weapons": ["id", "displayName", "mbIcon", "kind", "damage", "interval", "cooldown", "count", "range", "description", "verified"],
+    "bosses": ["id", "displayName", "subtitle", "role", "mbNameHints", "rorBody", "rorMaster", "airborne", "healthBoost", "verified"],
 }
+STATS = {"damage", "cooldown", "crit", "health", "regen", "armor", "speed", "shield", "evasion", "luck"}
 
 
 def load():
@@ -37,9 +43,11 @@ def preflight(s):
                 v = row.get(c)
                 if v is None or v == "" or (isinstance(v, list) and c != "mbSpriteHints" and not v):
                     errors.append(f"{name}[{key}].{c}: unfilled")
-            for c in ("verified", "mbAssetsVerified"):
+            for c in ("verified", "mbAssetsVerified", "startWeaponVerified"):
                 if c in row and row[c] is not True:
                     unverified.append(f"{name}[{key}].{c}: not verified yet")
+            if name == "tuning" and not isinstance(row.get("value"), (int, float)):
+                errors.append(f"tuning[{key}].value: not a number")
             for c in ("primaryColor", "color"):
                 v = row.get(c)
                 if isinstance(v, str) and v.startswith("#") and not re.fullmatch(r"#[0-9A-Fa-f]{6}", v):
@@ -52,6 +60,23 @@ def preflight(s):
     for r in s["stage_modes"]:
         if r["color"] not in style_ids:
             errors.append(f"stage_modes[{r['id']}].color -> menu_style: '{r['color']}' does not resolve")
+    weapon_ids = {r["id"] for r in s["weapons"]}
+    for r in s["weapons"]:
+        if r["kind"] not in ("bullet", "projectile", "melee", "aura", "lightning"):
+            errors.append(f"weapons[{r['id']}].kind: '{r['kind']}' unknown")
+        if r["kind"] == "projectile" and not r.get("prefab"):
+            errors.append(f"weapons[{r['id']}].prefab: a projectile weapon needs a projectile address")
+    for r in s["characters"]:
+        if r.get("startWeapon") not in weapon_ids:
+            errors.append(f"characters[{r['id']}].startWeapon -> weapons: '{r.get('startWeapon')}' does not resolve")
+    for r in s["bosses"]:
+        if r["role"] not in ("teleporter", "final"):
+            errors.append(f"bosses[{r['id']}].role: '{r['role']}' is not teleporter or final")
+        if r["role"] == "final" and not r.get("replaces"):
+            errors.append(f"bosses[{r['id']}].replaces: a final boss needs the bodies it replaces")
+    for r in s["upgrades"]:
+        if r["stat"] not in STATS:
+            errors.append(f"upgrades[{r['id']}].stat: '{r['stat']}' is not one of {sorted(STATS)}")
     for b in bodies:
         if not any(r["movesetBody"] == b for r in s["characters"]):
             errors.append(f"moveset_bodies[{b}]: not used by any character")
@@ -75,7 +100,7 @@ def generate(s):
     L.append("        public static readonly CharacterRow[] Characters =\n        {")
     for r in s["characters"]:
         L.append(f"            new CharacterRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbNameHints'])}, {cs(r['mbPortrait'])}, {cs(r['movesetBody'])}, "
-                 f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}, {cs(r.get('mbTexture', ''))}),")
+                 f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}, {cs(r.get('mbTexture', ''))}, {cs(r.get('startWeapon', ''))}),")
     L.append("        };")
     L.append("        public static readonly StyleRow[] MenuStyle =\n        {")
     for r in s["menu_style"]:
@@ -85,6 +110,33 @@ def generate(s):
     for r in s["stage_modes"]:
         L.append(f"            new ModeRow({cs(r['id'])}, {cs(r['label'])}, {cs(r['description'])}, {cs(r['color'])}),")
     L.append("        };")
+    L.append("        public static readonly UpgradeRow[] Upgrades =\n        {")
+    for r in s["upgrades"]:
+        L.append(f"            new UpgradeRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbIcon'])}, {cs(r['stat'])}, {cs(r['perPoint'])}, {cs(r['description'])}),")
+    L.append("        };")
+    L.append("        public static readonly RarityRow[] Rarities =\n        {")
+    for r in s["rarities"]:
+        L.append(f"            new RarityRow({cs(r['id'])}, {cs(r['label'])}, {cs(r['color'])}, {cs(r['weight'])}, {int(r['points'])}),")
+    L.append("        };")
+    L.append("        public static readonly WeaponRow[] Weapons =\n        {")
+    for r in s["weapons"]:
+        L.append(f"            new WeaponRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbIcon'])}, {cs(r['kind'])}, {cs(r['damage'])}, {cs(r['interval'])}, "
+                 f"{cs(r['cooldown'])}, {int(r['count'])}, {cs(r.get('spread', 0))}, {cs(r['range'])}, {cs(r.get('prefab', ''))}, {cs(r.get('effect', ''))}, "
+                 f"{cs(r.get('damageType', 'none'))}, {cs(r.get('pierce', False))}, {cs(r.get('sound', ''))}, {cs(r['description'])}),")
+    L.append("        };")
+    L.append("        public static readonly BossRow[] Bosses =\n        {")
+    for r in s["bosses"]:
+        L.append(f"            new BossRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['subtitle'])}, {cs(r['mbNameHints'])}, {cs(r.get('mbTexture', ''))}, "
+                 f"{cs(r['rorBody'])}, {cs(r['rorMaster'])}, {cs(r['airborne'])}, {int(r['healthBoost'])}, {cs(r['role'])}, {cs(r.get('replaces', []))}, {cs(r.get('retarget', True))}),")
+    L.append("        };")
+    L.append("    }")
+    L.append("    /// <summary>sheets/tuning.json, one field per row.</summary>")
+    L.append("    public static class Tune")
+    L.append("    {")
+    for r in s["tuning"]:
+        name = "".join(w.capitalize() for w in r["id"].split("_"))
+        L.append(f"        /// <summary>{r['note']} ({r['unit']})</summary>")
+        L.append(f"        public static float {name} = {cs(r['value'])};")
     L += ["    }", "}", ""]
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, "w", encoding="utf-8", newline="\n").write("\n".join(L))

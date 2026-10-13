@@ -5,26 +5,26 @@ namespace RiskOfBonk.Generated
     {
         public static readonly CharacterRow[] Characters =
         {
-            new CharacterRow("megachad", "Megachad", new[] { "Chad", "Megachad" }, "Megachad", "LoaderBody", "#F2C14E", 200.0f, 1.6f, 0.0f, "Pure gains. Megachad flexes through the horde with Loader's gauntlet kit.", ""),
-            new CharacterRow("fox", "Fox", new[] { "FoxWizard" }, "Fox", "HuntressBody", "#F28C28", 201.0f, 1.6f, 0.0f, "Quick and sly. Fox skirmishes with Huntress's glaives and blink.", ""),
-            new CharacterRow("calcium", "Calcium", new[] { "Calcium" }, "Calcium", "RailgunnerBody", "#E8E6D9", 202.0f, 1.6f, 0.0f, "A skeleton with a grudge, sniping with Railgunner's scope.", ""),
-            new CharacterRow("sir_oofie", "Sir Oofie", new[] { "Knight" }, "Knight", "MercBody", "#9AA7B8", 203.0f, 1.6f, 0.0f, "A knight who goes oof. Dashes and slashes with Mercenary's blade.", "Knight_Default"),
-            new CharacterRow("monke", "Monke", new[] { "Monke" }, "Monke", "CrocoBody", "#8B5A2B", 204.0f, 1.6f, 0.0f, "Return to monke: poison and leap with Acrid's kit.", ""),
-            new CharacterRow("ninja", "Ninja", new[] { "Ninja" }, "Ninja", "Bandit2Body", "#3B3B58", 205.0f, 1.6f, 0.0f, "Stealthy strikes with Bandit's cloak and blades.", ""),
-            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast. Double-tap with Commando's pistols.", ""),
-            new CharacterRow("robinette", "Robinette", new[] { "Robinette" }, "Robinette", "HuntressBody", "#4E9A51", 207.0f, 1.6f, 0.0f, "An archer of the woods with Huntress's bow.", ""),
-            new CharacterRow("bandit", "Bandit", new[] { "Bandit" }, "Bandit", "Bandit2Body", "#7A4E2D", 208.0f, 1.6f, 0.0f, "Steal the show with Bandit's shotgun and revolver.", ""),
-            new CharacterRow("birdo", "Birdo", new[] { "Birdo" }, "Birdo", "MageBody", "#5DADE2", 209.0f, 1.6f, 0.0f, "Flies high and rains fire with Artificer's spells.", ""),
-            new CharacterRow("noelle", "Noelle", new[] { "Noelle", "NoelleMesh" }, "Noelle", "MageBody", "#A9DFF5", 210.0f, 1.6f, 0.0f, "Ice and fire with Artificer's kit.", ""),
-            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "Calls orbital support with Captain's beacons.", ""),
-            new CharacterRow("vlad", "Vlad", new[] { "BloodMage" }, "BloodMage", "VoidSurvivorBody", "#8E1B2B", 212.0f, 1.6f, 0.0f, "A vampire who embraces the void with Void Fiend's corruption.", ""),
-            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes with Mercenary's blade.", ""),
-            new CharacterRow("ogre", "Ogre", new[] { "Ogre", "Orc" }, "Ogre", "ToolbotBody", "#6E8B3D", 214.0f, 1.6f, 0.0f, "Big, heavy and loud with MUL-T's tools.", ""),
-            new CharacterRow("cl4nk", "CL4NK", new[] { "RobotCowboy", "CowboyLow" }, "RobotCowboy", "EngiBody", "#B0B7BF", 215.0f, 1.6f, 0.0f, "A robot who builds turrets with Engineer's kit.", ""),
-            new CharacterRow("dicehead", "Dicehead", new[] { "Dicehead" }, "Dicehead", "CommandoBody", "#FFFFFF", 216.0f, 1.6f, 0.0f, "Rolls the dice with Commando's pistols.", ""),
-            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus. Lays mines and turrets with Engineer's kit.", ""),
-            new CharacterRow("bush", "Bush", new[] { "Sniperman" }, "Bush", "TreebotBody", "#2E7D32", 218.0f, 1.6f, 0.0f, "A bush with a plan, rooting the horde with REX's kit.", ""),
-            new CharacterRow("sir_chadwell", "Sir Chadwell", new[] { "CorruptedKnight" }, "CorruptedKnight", "LoaderBody", "#B8860B", 219.0f, 1.6f, 0.0f, "A noble chad with Loader's punches.", ""),
+            new CharacterRow("megachad", "Megachad", new[] { "Chad", "Megachad" }, "Megachad", "LoaderBody", "#F2C14E", 200.0f, 1.6f, 0.0f, "Pure gains. Megachad flexes through the horde with Loader's gauntlet kit.", "", "aura"),
+            new CharacterRow("fox", "Fox", new[] { "FoxWizard" }, "Fox", "HuntressBody", "#F28C28", 201.0f, 1.6f, 0.0f, "Quick and sly. Fox skirmishes with Huntress's glaives and blink.", "", "firestaff"),
+            new CharacterRow("calcium", "Calcium", new[] { "Calcium" }, "Calcium", "RailgunnerBody", "#E8E6D9", 202.0f, 1.6f, 0.0f, "A skeleton with a grudge, sniping with Railgunner's scope.", "", "bone"),
+            new CharacterRow("sir_oofie", "Sir Oofie", new[] { "Knight" }, "Knight", "MercBody", "#9AA7B8", 203.0f, 1.6f, 0.0f, "A knight who goes oof. Dashes and slashes with Mercenary's blade.", "Knight_Default", "sword"),
+            new CharacterRow("monke", "Monke", new[] { "Monke" }, "Monke", "CrocoBody", "#8B5A2B", 204.0f, 1.6f, 0.0f, "Return to monke: poison and leap with Acrid's kit.", "", "bananarang"),
+            new CharacterRow("ninja", "Ninja", new[] { "Ninja" }, "Ninja", "Bandit2Body", "#3B3B58", 205.0f, 1.6f, 0.0f, "Stealthy strikes with Bandit's cloak and blades.", "", "katana"),
+            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast. Double-tap with Commando's pistols.", "", "slutty_rocket"),
+            new CharacterRow("robinette", "Robinette", new[] { "Robinette" }, "Robinette", "HuntressBody", "#4E9A51", 207.0f, 1.6f, 0.0f, "An archer of the woods with Huntress's bow.", "", "bow"),
+            new CharacterRow("bandit", "Bandit", new[] { "Bandit" }, "Bandit", "Bandit2Body", "#7A4E2D", 208.0f, 1.6f, 0.0f, "Steal the show with Bandit's shotgun and revolver.", "", "shotgun"),
+            new CharacterRow("birdo", "Birdo", new[] { "Birdo" }, "Birdo", "MageBody", "#5DADE2", 209.0f, 1.6f, 0.0f, "Flies high and rains fire with Artificer's spells.", "", "lightning_staff"),
+            new CharacterRow("noelle", "Noelle", new[] { "Noelle", "NoelleMesh" }, "Noelle", "MageBody", "#A9DFF5", 210.0f, 1.6f, 0.0f, "Ice and fire with Artificer's kit.", "", "frostwalker"),
+            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "Calls orbital support with Captain's beacons.", "", "space_noodle"),
+            new CharacterRow("vlad", "Vlad", new[] { "BloodMage" }, "BloodMage", "VoidSurvivorBody", "#8E1B2B", 212.0f, 1.6f, 0.0f, "A vampire who embraces the void with Void Fiend's corruption.", "", "blood_magic"),
+            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes with Mercenary's blade.", "", "hero_sword"),
+            new CharacterRow("ogre", "Ogre", new[] { "Ogre", "Orc" }, "Ogre", "ToolbotBody", "#6E8B3D", 214.0f, 1.6f, 0.0f, "Big, heavy and loud with MUL-T's tools.", "", "axe"),
+            new CharacterRow("cl4nk", "CL4NK", new[] { "RobotCowboy", "CowboyLow" }, "RobotCowboy", "EngiBody", "#B0B7BF", 215.0f, 1.6f, 0.0f, "A robot who builds turrets with Engineer's kit.", "", "revolver"),
+            new CharacterRow("dicehead", "Dicehead", new[] { "Dicehead" }, "Dicehead", "CommandoBody", "#FFFFFF", 216.0f, 1.6f, 0.0f, "Rolls the dice with Commando's pistols.", "", "dice"),
+            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus. Lays mines and turrets with Engineer's kit.", "", "mine"),
+            new CharacterRow("bush", "Bush", new[] { "Sniperman" }, "Bush", "TreebotBody", "#2E7D32", 218.0f, 1.6f, 0.0f, "A bush with a plan, rooting the horde with REX's kit.", "", "sniper"),
+            new CharacterRow("sir_chadwell", "Sir Chadwell", new[] { "CorruptedKnight" }, "CorruptedKnight", "LoaderBody", "#B8860B", 219.0f, 1.6f, 0.0f, "A noble chad with Loader's punches.", "", "corrupted_sword"),
         };
         public static readonly StyleRow[] MenuStyle =
         {
@@ -40,5 +40,115 @@ namespace RiskOfBonk.Generated
             new ModeRow("rain", "Rain style", "Original Risk of Rain 2 stages and terrain.", "accent2"),
             new ModeRow("bonk", "Bonk style", "Megabonk-style random terrain generation.", "accent"),
         };
+        public static readonly UpgradeRow[] Upgrades =
+        {
+            new UpgradeRow("damage", "Damage Tome", "DamageTome", "damage", 0.08f, "+{0}% damage"),
+            new UpgradeRow("cooldown", "Cooldown Tome", "CooldownTome", "cooldown", 0.06f, "+{0}% attack speed, -{0}% skill cooldowns"),
+            new UpgradeRow("precision", "Precision Tome", "PrecisionTome", "crit", 5.0f, "+{1}% critical chance"),
+            new UpgradeRow("health", "HP Tome", "HealthTome", "health", 0.1f, "+{0}% max health"),
+            new UpgradeRow("regen", "Regen Tome", "RegenerationTome", "regen", 0.8f, "+{1} health per second (grows with level)"),
+            new UpgradeRow("armor", "Armor Tome", "ArmorTome", "armor", 6.0f, "+{1} armor"),
+            new UpgradeRow("agility", "Agility Tome", "SpeedTome", "speed", 0.06f, "+{0}% movement speed"),
+            new UpgradeRow("shield", "Shield Tome", "ShieldTome", "shield", 0.08f, "+{0}% of max health as shield"),
+            new UpgradeRow("evasion", "Evasion Tome", "EvasionTome", "evasion", 0.03f, "+{0}% chance to dodge a hit (max 60%)"),
+            new UpgradeRow("luck", "Luck Tome", "LuckTome", "luck", 0.1f, "Better upgrade rarities (+{0}%)"),
+        };
+        public static readonly RarityRow[] Rarities =
+        {
+            new RarityRow("common", "Common", "#E6E6E6", 60.0f, 1),
+            new RarityRow("uncommon", "Uncommon", "#5BD15B", 25.0f, 2),
+            new RarityRow("rare", "Rare", "#3FA9F5", 10.0f, 3),
+            new RarityRow("epic", "Epic", "#B05BF0", 4.0f, 4),
+            new RarityRow("legendary", "Legendary", "#FFC21A", 1.0f, 6),
+        };
+        public static readonly WeaponRow[] Weapons =
+        {
+            new WeaponRow("revolver", "Revolver", "Revolver", "bullet", 2.4f, 0.35f, 1.5f, 1, 0.0f, 150.0f, "", "RoR2/Base/Characters/Bandit2/VFX/TracerBanditPistol.prefab", "none", false, "Play_commando_M1", "Quick revolver shots."),
+            new WeaponRow("shotgun", "Shotgun", "Shotgun", "bullet", 0.9f, 0.8f, 2.5f, 6, 6.0f, 45.0f, "", "RoR2/Base/Characters/Bandit2/VFX/TracerBandit2Shotgun.prefab", "none", false, "Play_commando_M1", "A spread of pellets."),
+            new WeaponRow("sniper", "Sniper", "Sniper", "bullet", 6.0f, 1.4f, 4.0f, 1, 0.0f, 400.0f, "", "RoR2/Base/Characters/Huntress/Skills/TracerHuntressSnipe.prefab", "none", true, "Play_commando_M1", "A piercing long-range shot."),
+            new WeaponRow("bow", "Bow", "Bow", "bullet", 2.8f, 0.5f, 2.0f, 1, 0.0f, 200.0f, "", "RoR2/Base/Characters/Huntress/Skills/TracerHuntressSnipe.prefab", "none", false, "", "Swift arrows."),
+            new WeaponRow("space_noodle", "Space Noodle", "Space Noodle", "bullet", 1.6f, 0.25f, 1.5f, 1, 0.0f, 120.0f, "", "RoR2/Base/Characters/Golem/Skills/TracerGolem.prefab", "none", true, "", "A piercing cosmic beam."),
+            new WeaponRow("firestaff", "Firestaff", "Firestaff", "projectile", 2.2f, 0.45f, 2.0f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/Mage/Skills/MageFireboltBasic.prefab", "", "none", false, "", "Fireballs that burn."),
+            new WeaponRow("dragons_breath", "Dragon's Breath", "DragonsBreath", "projectile", 0.8f, 0.3f, 2.0f, 3, 10.0f, 100.0f, "RoR2/Base/Characters/Lemurian/Skills/Fireball.prefab", "", "ignite", false, "", "A burst of burning fireballs."),
+            new WeaponRow("bone", "Bone", "Bone", "projectile", 2.0f, 0.4f, 1.5f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/Bandit2/Skills/Bandit2ShivProjectile.prefab", "", "none", false, "", "Thrown bones."),
+            new WeaponRow("bananarang", "Bananarang", "Bananarang", "projectile", 1.8f, 0.9f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Equipment/Saw/Sawmerang.prefab", "", "none", false, "", "A banana that comes back."),
+            new WeaponRow("axe", "Axe", "Axe", "projectile", 2.6f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Equipment/Saw/Sawmerang.prefab", "", "none", false, "", "A spinning axe that comes back."),
+            new WeaponRow("dice", "Dice", "Dice", "projectile", 1.0f, 0.5f, 2.0f, 2, 6.0f, 100.0f, "RoR2/Base/Characters/Brother/BrotherHurt/Skills/LunarShardProjectile.prefab", "", "none", false, "", "Two dice; damage rolls 1 to 6."),
+            new WeaponRow("slutty_rocket", "Slutty Rocket", "SluttyRocket", "projectile", 2.5f, 0.9f, 3.0f, 2, 12.0f, 100.0f, "RoR2/Base/Common/Missile/MissileProjectile.prefab", "", "none", false, "", "Homing rockets."),
+            new WeaponRow("chunkers", "Chunkers", "Chunkers", "projectile", 4.0f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/Titan/TitanRockProjectile.prefab", "", "none", false, "", "Hurls a heavy chunk of rock."),
+            new WeaponRow("poison_flask", "Poison Flask", "Poison Flask", "projectile", 1.2f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/MiniMushroom/Skills/SporeGrenadeProjectile.prefab", "", "none", false, "", "Leaves a poison cloud."),
+            new WeaponRow("mine", "Mine", "Mine", "projectile", 4.0f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/Engi/Projectiles/EngiMine/EngiMine.prefab", "", "none", false, "", "Drops a proximity mine."),
+            new WeaponRow("tornado", "Tornado", "Tornado", "projectile", 1.5f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Characters/Huntress/Skills/ThrowCyclone/HuntressCycloneProjectileKickable.prefab", "", "none", false, "", "A tornado that tears through the horde."),
+            new WeaponRow("sword", "Sword", "Sword", "melee", 3.0f, 0.6f, 2.0f, 1, 0.0f, 4.0f, "", "RoR2/Base/Characters/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Wide sword swings."),
+            new WeaponRow("katana", "Katana", "Katana", "melee", 1.8f, 0.3f, 1.5f, 1, 0.0f, 3.2f, "", "RoR2/Base/Characters/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Lightning-fast slashes."),
+            new WeaponRow("hero_sword", "Hero Sword", "HeroSword", "melee", 5.0f, 1.1f, 3.0f, 1, 0.0f, 6.0f, "", "RoR2/Base/Characters/Merc/MercSwordFinisherSlash.prefab", "none", false, "Play_merc_sword_swing", "A huge heroic cleave."),
+            new WeaponRow("corrupted_sword", "Corrupted Sword", "CorruptedSword", "melee", 3.5f, 0.8f, 2.5f, 1, 0.0f, 5.0f, "", "RoR2/Base/Characters/Merc/Skills/MercSwordSlashWhirlwind.prefab", "bleed", false, "Play_merc_sword_swing", "Cursed swings that bleed."),
+            new WeaponRow("dexecutioner", "Dexecutioner", "Dexecutioner", "melee", 4.0f, 0.9f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Characters/Croco/CrocoSlash.prefab", "none", false, "Play_merc_sword_swing", "Brutal chops."),
+            new WeaponRow("aura", "Aura", "Aura", "aura", 1.4f, 0.9f, 3.0f, 1, 0.0f, 9.0f, "", "RoR2/Base/Characters/Jellyfish/Skills/JellyfishNova.prefab", "none", false, "", "Damages everything around you."),
+            new WeaponRow("frostwalker", "Frostwalker", "Frostwalker", "aura", 1.0f, 0.9f, 3.0f, 1, 0.0f, 8.0f, "", "RoR2/Base/Characters/Jellyfish/Skills/JellyfishNova.prefab", "slow", false, "", "A freezing aura that slows."),
+            new WeaponRow("blood_magic", "Blood Magic", "BloodMagic", "aura", 1.6f, 1.0f, 3.0f, 1, 0.0f, 7.0f, "", "RoR2/Base/Characters/Vagrant/Skills/VagrantNovaExplosion.prefab", "bleed", false, "", "A blood nova that makes enemies bleed."),
+            new WeaponRow("lightning_staff", "Lightning Staff", "LightningStaff", "lightning", 2.0f, 0.6f, 2.5f, 1, 0.0f, 40.0f, "", "", "none", false, "", "Chain lightning that jumps between enemies."),
+        };
+        public static readonly BossRow[] Bosses =
+        {
+            new BossRow("ancient_ent", "Ancient Ent", "Megabonk Boss", new[] { "Ent" }, "", "TitanBody", "TitanMaster", false, 5, "teleporter", new string[0], true),
+            new BossRow("ghost_lord", "Ghost Lord", "Megabonk Boss", new[] { "Ghost" }, "t_ghost_purple", "VagrantBody", "VagrantMaster", true, 5, "teleporter", new string[0], true),
+            new BossRow("ghost_king", "Ghost King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_gold", "BrotherBody", "BrotherMaster", false, 0, "final", new[] { "BrotherBody", "BrotherHurtBody", "BrotherGlassBody" }, true),
+            new BossRow("shadow_king", "Shadow King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_black", "FalseSonBossBody", "FalseSonBossMaster", false, 0, "final", new[] { "FalseSonBossBody", "FalseSonBossBodyLunarShard", "FalseSonBossBodyBrokenLunarShard" }, true),
+        };
+    }
+    /// <summary>sheets/tuning.json, one field per row.</summary>
+    public static class Tune
+    {
+        /// <summary>Megabonk has no sprint: always at full speed while moving (RoR2 still stops sprint when moving backwards or during some skills). The Sprint key becomes Slide. (bool (1/0))</summary>
+        public static float AutoSprint = 1.0f;
+        /// <summary>Slide starts when the Slide key is held on the ground at this fraction of walk speed or more. (x walk speed)</summary>
+        public static float SlideMinSpeed = 0.6f;
+        /// <summary>Speed added when a slide starts (Megabonk slideForce), once per slide_cooldown. (m/s)</summary>
+        public static float SlideBoost = 6.0f;
+        /// <summary>Time before another slide start can boost again. (s)</summary>
+        public static float SlideCooldown = 0.8f;
+        /// <summary>Speed lost per second while sliding on flat ground (Megabonk slideCounterMovement). (m/s per s)</summary>
+        public static float SlideFriction = 4.0f;
+        /// <summary>Sliding downhill speeds you up, uphill slows you down. (x gravity along slope)</summary>
+        public static float SlideSlopeGain = 1.6f;
+        /// <summary>How fast a slide turns toward the move input. (deg/s)</summary>
+        public static float SlideSteer = 120.0f;
+        /// <summary>On the ground without sliding, speed above walk speed fades at this rate (Megabonk inertiaFriction) instead of being cut off. (m/s per s)</summary>
+        public static float MomentumDecay = 7.0f;
+        /// <summary>How fast kept momentum turns toward the move input on the ground. (deg/s)</summary>
+        public static float MomentumTurn = 360.0f;
+        /// <summary>After landing, momentum is kept fully this long so a quick jump keeps all of it (bunny hop). (s)</summary>
+        public static float BhopWindow = 0.15f;
+        /// <summary>Speed added per jump that keeps momentum. (m/s)</summary>
+        public static float BhopBoost = 0.5f;
+        /// <summary>Air strafing strength. Steering in the air never slows you below your speed at take-off (RoR2 default is 0.25 and drags you to walk speed). (x acceleration)</summary>
+        public static float AirControl = 0.6f;
+        /// <summary>Hard cap on horizontal speed from momentum. (x walk speed)</summary>
+        public static float MaxSpeed = 3.5f;
+        /// <summary>Megabonk jumps are a bit higher than RoR2's. (x jump power)</summary>
+        public static float JumpHeight = 1.15f;
+        /// <summary>Monster spawn budget over time (stage and Teleporter directors without a boss squad). (x director credit)</summary>
+        public static float HordeCredit = 1.8f;
+        /// <summary>Most monsters one director wave may spawn (RoR2 default 6). Cheap monsters are no longer skipped. (monsters)</summary>
+        public static float HordeWaveSize = 14.0f;
+        /// <summary>Time between director waves. (x reroll interval)</summary>
+        public static float HordeInterval = 0.6f;
+        /// <summary>Non-boss monsters are weaker so the horde mows down like in Megabonk. (x max health)</summary>
+        public static float HordeHealth = 0.6f;
+        /// <summary>Extra monster credit for the Teleporter's horde director when the Megabonk boss event starts. (director credit (x difficulty))</summary>
+        public static float BossSwarmCredit = 400.0f;
+        /// <summary>Monster team soft limit (RoR2 default 40). (monsters)</summary>
+        public static float HordeLimit = 70.0f;
+        /// <summary>Invincibility while the level-up menu is open; ends early when you pick. The countdown turns red and shakes in its last 30%. (s)</summary>
+        public static float UpgradeInvincibility = 10.0f;
+        /// <summary>Chance that a level-up card is a Megabonk weapon (Megabonk survivors only), otherwise a tome. (0-1 per card)</summary>
+        public static float WeaponOfferChance = 0.45f;
+        /// <summary>XP in each gem compared with Risk of Rain 2's own kill XP (Megabonk levels up more often). (x RoR2 kill XP)</summary>
+        public static float XpMultiplier = 1.5f;
+        /// <summary>XP gems within this distance of a player fly to them and are collected. (m)</summary>
+        public static float XpPickupRadius = 7.0f;
+        /// <summary>Most gems on the ground; past this the oldest gem is collected for the team at once. (gems)</summary>
+        public static float XpGemLimit = 300.0f;
     }
 }

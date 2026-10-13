@@ -1,6 +1,6 @@
 {
  "sheet": "characters",
- "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's).",
+ "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's). startWeapon: the Megabonk weapon (weapons.json) on left mouse at the start of a run; the RoR2 moveset body still gives stats and animations, its skills are replaced by weapons.",
  "rows": [
   {
    "id": "megachad",
@@ -16,7 +16,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Pure gains. Megachad flexes through the horde with Loader's gauntlet kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "aura",
+   "startWeaponVerified": false
   },
   {
    "id": "fox",
@@ -31,7 +33,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Quick and sly. Fox skirmishes with Huntress's glaives and blink.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "firestaff",
+   "startWeaponVerified": false
   },
   {
    "id": "calcium",
@@ -46,7 +50,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A skeleton with a grudge, sniping with Railgunner's scope.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "bone",
+   "startWeaponVerified": false
   },
   {
    "id": "sir_oofie",
@@ -62,7 +68,9 @@
    "yawOffsetDeg": 0,
    "description": "A knight who goes oof. Dashes and slashes with Mercenary's blade.",
    "mbAssetsVerified": false,
-   "mbTexture": "Knight_Default"
+   "mbTexture": "Knight_Default",
+   "startWeapon": "sword",
+   "startWeaponVerified": false
   },
   {
    "id": "monke",
@@ -77,7 +85,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Return to monke: poison and leap with Acrid's kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "bananarang",
+   "startWeaponVerified": false
   },
   {
    "id": "ninja",
@@ -92,7 +102,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Stealthy strikes with Bandit's cloak and blades.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "katana",
+   "startWeaponVerified": false
   },
   {
    "id": "tony_mczoom",
@@ -108,7 +120,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Gotta go fast. Double-tap with Commando's pistols.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "slutty_rocket",
+   "startWeaponVerified": false
   },
   {
    "id": "robinette",
@@ -123,7 +137,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "An archer of the woods with Huntress's bow.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "bow",
+   "startWeaponVerified": false
   },
   {
    "id": "bandit",
@@ -138,7 +154,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Steal the show with Bandit's shotgun and revolver.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "shotgun",
+   "startWeaponVerified": false
   },
   {
    "id": "birdo",
@@ -153,7 +171,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Flies high and rains fire with Artificer's spells.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "lightning_staff",
+   "startWeaponVerified": false
   },
   {
    "id": "noelle",
@@ -169,7 +189,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Ice and fire with Artificer's kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "frostwalker",
+   "startWeaponVerified": false
   },
   {
    "id": "spaceman",
@@ -184,7 +206,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Calls orbital support with Captain's beacons.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "space_noodle",
+   "startWeaponVerified": false
   },
   {
    "id": "vlad",
@@ -199,7 +223,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A vampire who embraces the void with Void Fiend's corruption.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "blood_magic",
+   "startWeaponVerified": false
   },
   {
    "id": "athena",
@@ -214,7 +240,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Divine strikes with Mercenary's blade.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "hero_sword",
+   "startWeaponVerified": false
   },
   {
    "id": "ogre",
@@ -230,7 +258,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Big, heavy and loud with MUL-T's tools.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "axe",
+   "startWeaponVerified": false
   },
   {
    "id": "cl4nk",
@@ -246,7 +276,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A robot who builds turrets with Engineer's kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "revolver",
+   "startWeaponVerified": false
   },
   {
    "id": "dicehead",
@@ -261,7 +293,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Rolls the dice with Commando's pistols.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "dice",
+   "startWeaponVerified": false
   },
   {
    "id": "amog",
@@ -276,7 +310,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Sus. Lays mines and turrets with Engineer's kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "mine",
+   "startWeaponVerified": false
   },
   {
    "id": "bush",
@@ -291,7 +327,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A bush with a plan, rooting the horde with REX's kit.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": true,
+   "startWeapon": "sniper",
+   "startWeaponVerified": false
   },
   {
    "id": "sir_chadwell",
@@ -306,7 +344,9 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A noble chad with Loader's punches.",
-   "mbAssetsVerified": false
+   "mbAssetsVerified": false,
+   "startWeapon": "corrupted_sword",
+   "startWeaponVerified": false
   }
  ]
 }
