@@ -73,6 +73,22 @@ namespace RiskOfBonk
             Send(new GemMessage { op = OpSpawn, id = g.id, pos = g.pos, amount = (uint)Mathf.Min(amount, uint.MaxValue) });
         }
 
+        /// <summary>Host: every gem on the map flies to this player (Megabonk's magnet).</summary>
+        public static void MagnetTo(CharacterBody body)
+        {
+            if (!NetworkServer.active || !body) return;
+            float now = Time.fixedTime;
+            int n = 0;
+            foreach (var g in gems)
+            {
+                if (g.flyStart >= 0f) continue;
+                n++;
+                g.flyStart = now;
+                Send(new GemMessage { op = OpCollect, id = g.id, target = body.netId });
+            }
+            Log.Info($"magnet: {n} XP gems pulled");
+        }
+
         /// <summary>Host tick: gems near a player fly to them and count once they arrive.</summary>
         public sealed class Server : MonoBehaviour
         {
@@ -124,7 +140,7 @@ namespace RiskOfBonk
         static Mesh gemMesh;
         static readonly Dictionary<int, Material> mats = new Dictionary<int, Material>();
 
-        static Mesh GemMesh()
+        public static Mesh GemMesh()
         {
             if (gemMesh != null) return gemMesh;
             // An octahedron, like Megabonk's XP crystals.

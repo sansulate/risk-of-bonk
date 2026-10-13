@@ -201,6 +201,54 @@
    "system": "xp",
    "note": "Most gems on the ground; past this the oldest gem is collected for the team at once.",
    "verified": false
+  },
+  {
+   "id": "charge_shrines_per_stage",
+   "value": 4,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Charge Shrines placed on each normal stage (with a Teleporter), next to Risk of Rain 2's own shrines.",
+   "verified": false
+  },
+  {
+   "id": "charge_shrine_seconds",
+   "value": 5.0,
+   "unit": "s",
+   "system": "shrines",
+   "note": "Time a player must stand inside a Charge Shrine to charge it fully. Leaving pauses the charge (it slowly drains).",
+   "verified": false
+  },
+  {
+   "id": "charge_shrine_radius",
+   "value": 5.0,
+   "unit": "m",
+   "system": "shrines",
+   "note": "Radius of a Charge Shrine's circle.",
+   "verified": false
+  },
+  {
+   "id": "charge_shrine_picks",
+   "value": 1,
+   "unit": "picks",
+   "system": "shrines",
+   "note": "Upgrade picks every player gets when a Charge Shrine is fully charged.",
+   "verified": false
+  },
+  {
+   "id": "magnet_shrines_per_stage",
+   "value": 1,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Magnet Shrines per stage: stand in one briefly and every XP gem on the map flies to you.",
+   "verified": false
+  },
+  {
+   "id": "magnet_shrine_seconds",
+   "value": 1.0,
+   "unit": "s",
+   "system": "shrines",
+   "note": "Time to stand in a Magnet Shrine to use it.",
+   "verified": false
   }
  ]
 }

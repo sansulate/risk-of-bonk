@@ -8,7 +8,7 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
-    /// F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
+    /// F6 puts you in the next Megabonk shrine, F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
     /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
@@ -27,6 +27,7 @@ namespace RiskOfBonk
                 Log.Info("test: weapon assets checked");
             }
             if (!On || !Run.instance || !NetworkServer.active) return;
+            if (Input.GetKeyDown(KeyCode.F6)) GoToShrine();
             if (Input.GetKeyDown(KeyCode.F7)) Time.timeScale = Time.timeScale < 1f ? 1f : 0.15f;
             if (Input.GetKeyDown(KeyCode.F8)) GiveLevel();
             if (Input.GetKeyDown(KeyCode.F9)) GoToTeleporter();
@@ -40,6 +41,15 @@ namespace RiskOfBonk
             if (!tm) return;
             ulong need = tm.GetTeamNextLevelExperience(TeamIndex.Player) - tm.GetTeamCurrentLevelExperience(TeamIndex.Player);
             tm.GiveTeamExperience(TeamIndex.Player, need + 1);
+        }
+
+        static int shrineIndex;
+
+        static void GoToShrine()
+        {
+            var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
+            var pos = Shrines.Position(shrineIndex++);
+            if (body && pos.HasValue) TeleportHelper.TeleportBody(body, pos.Value + Vector3.up * 1.5f);
         }
 
         static void GoToTeleporter()

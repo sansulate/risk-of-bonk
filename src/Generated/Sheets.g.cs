@@ -150,5 +150,17 @@ namespace RiskOfBonk.Generated
         public static float XpPickupRadius = 7.0f;
         /// <summary>Most gems on the ground; past this the oldest gem is collected for the team at once. (gems)</summary>
         public static float XpGemLimit = 300.0f;
+        /// <summary>Megabonk Charge Shrines placed on each normal stage (with a Teleporter), next to Risk of Rain 2's own shrines. (count)</summary>
+        public static float ChargeShrinesPerStage = 4.0f;
+        /// <summary>Time a player must stand inside a Charge Shrine to charge it fully. Leaving pauses the charge (it slowly drains). (s)</summary>
+        public static float ChargeShrineSeconds = 5.0f;
+        /// <summary>Radius of a Charge Shrine's circle. (m)</summary>
+        public static float ChargeShrineRadius = 5.0f;
+        /// <summary>Upgrade picks every player gets when a Charge Shrine is fully charged. (picks)</summary>
+        public static float ChargeShrinePicks = 1.0f;
+        /// <summary>Megabonk Magnet Shrines per stage: stand in one briefly and every XP gem on the map flies to you. (count)</summary>
+        public static float MagnetShrinesPerStage = 1.0f;
+        /// <summary>Time to stand in a Magnet Shrine to use it. (s)</summary>
+        public static float MagnetShrineSeconds = 1.0f;
     }
 }

@@ -58,6 +58,9 @@ namespace RiskOfBonk
                 "Megabonk XP: kills drop XP gems you collect by walking near them, shown in a Megabonk XP bar. Applies when you host.");
             XpGems.Init(harmony, gameObject, xp.Value);
             gameObject.AddComponent<XpBar>();
+            ConfigEntry<bool> shrines = Config.Bind("Gameplay", "MegabonkShrines", true,
+                "Megabonk Charge Shrines (stand inside to charge, everyone gets an upgrade) and Magnet Shrines (pull every XP gem) on each stage, next to Risk of Rain 2's shrines. Applies when you host.");
+            Shrines.Init(gameObject, shrines.Value);
             gameObject.AddComponent<StageMode.LobbyBeacon>();
             Log.Info($"{Name} {Version} loaded");
         }

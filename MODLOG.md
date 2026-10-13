@@ -144,4 +144,16 @@
   - Survivor descriptions: no RoR2 kit names anymore; they name the start weapon and explain the slot order.
   - Test tools: attacktest.sh (pick, leave the pod, hold attack twice, screenshots; SLOW=1 uses F7 slow motion),
     F7 toggles slow motion (testgod), every weapon attack is logged with testgod. pick.sh no longer needs Python.
+- Update 5 (2026-10-14): Megabonk shrines next to RoR2's. Shrines.cs: host places tuning.charge_shrines_per_stage (4)
+  Charge Shrines and magnet_shrines_per_stage (1) Magnet Shrines on stages with a Teleporter (SceneDirector
+  .onPostPopulateSceneServer; ground nodes for HullMask.Golem without NoShrineSpawn, 30 m apart and from the
+  Teleporter, stage RNG). No network prefabs: message 0x5B0F upserts (kind, position, progress) and removes; the host
+  re-sends every shrine every 2 s, so clients whose scene loaded late still get them. Charging: a living player's feet
+  inside the circle (radius 5 m, |dy| < 4) adds dt/5 s, empty drains at a quarter of that. Charged: every player's
+  master gets the hidden "bonus picks" item (pending picks = level - 1 + bonus - picks); the panel title says "Shrine
+  charged!" once level picks are used. Magnet: XpGems.MagnetTo sends every lying gem to that player. Visuals: flat
+  emissive rings (ring, dim base, fill arc that grows with progress) and a spinning crystal 4.5 m up; used shrines
+  pop and shrink away. Checked in game: 5 shrines placed, charge fills, "Shrine charged!" menu with invincibility
+  countdown, chat line, x2 when two are charged; Magnet Shrine used (log), gem pull not observed with gems lying
+  (they were all collected already). Test key F6 = into the next shrine (testgod).
 - Melty: not done yet (needs a fresh Publish prompt from the user).

@@ -134,7 +134,10 @@ namespace RiskOfBonk
                 Upgrades.MenuOpened();
             }
             Show(true);
-            title.text = pending > 1 ? $"Level up!  <size=70%>x{pending}</size>" : "Level up!";
+            // Level-up picks come first; once they are used up the rest are from Charge Shrines.
+            bool fromLevel = (int)TeamManager.instance.GetTeamLevel(master.teamIndex) - 1 > picks;
+            string head = fromLevel ? "Level up!" : "Shrine charged!";
+            title.text = pending > 1 ? $"{head}  <size=70%>x{pending}</size>" : head;
             Animate();
 
             for (int i = 0; i < 3; i++)

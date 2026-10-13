@@ -15,14 +15,15 @@ namespace RiskOfBonk
     /// gives each player one pick: three random tomes with rolled rarities, chosen with 1/2/3 (UpgradePanel).
     /// Tomes are hidden items, so the game's own inventory sync carries them to every player and the stat bonus is
     /// computed the same everywhere. A pick is sent to the host, which checks it and gives the items.
-    /// Pending picks = team level - 1 - picks taken (the hidden "picks" item), which every machine can compute.
+    /// Pending picks = team level - 1 + Charge Shrine bonus picks - picks taken (hidden "bonus picks" and "picks" items),
+    /// which every machine can compute.
     /// </summary>
     public static class Upgrades
     {
         public const short MsgType = 0x5B0C, MenuMsgType = 0x5B0D;
         public const byte KindTome = 0, KindWeapon = 1;
         public static ItemDef[] TomeItems = new ItemDef[0];
-        public static ItemDef PicksItem;
+        public static ItemDef PicksItem, BonusPicksItem;
 
         sealed class PickMessage : MessageBase
         {
@@ -60,7 +61,8 @@ namespace RiskOfBonk
             }
             TomeItems = Sheets.Upgrades.Select(u => Make("tome_" + u.Id, u.DisplayName)).ToArray();
             PicksItem = Make("upgrade_picks", "Upgrade picks");
-            return TomeItems.Concat(new[] { PicksItem }).ToArray();
+            BonusPicksItem = Make("bonus_picks", "Bonus upgrade picks");
+            return TomeItems.Concat(new[] { PicksItem, BonusPicksItem }).ToArray();
         }
 
         public static int Points(Inventory inv, int upgrade) =>
@@ -79,8 +81,12 @@ namespace RiskOfBonk
         {
             if (!master || !master.inventory || !TeamManager.instance || PicksItem == null || PicksItem.itemIndex == ItemIndex.None) return 0;
             int level = (int)TeamManager.instance.GetTeamLevel(master.teamIndex);
-            return Mathf.Max(0, level - 1 - master.inventory.GetItemCount(PicksItem.itemIndex));
+            return Mathf.Max(0, level - 1 + Bonus(master) - master.inventory.GetItemCount(PicksItem.itemIndex));
         }
+
+        /// <summary>Extra picks from Megabonk Charge Shrines.</summary>
+        public static int Bonus(CharacterMaster master) =>
+            master && master.inventory && BonusPicksItem != null && BonusPicksItem.itemIndex != ItemIndex.None ? master.inventory.GetItemCount(BonusPicksItem.itemIndex) : 0;
 
         /// <summary>Luck shifts rarity weights toward the rarer rows.</summary>
         public static int RollRarity(System.Random rng, Inventory inv)

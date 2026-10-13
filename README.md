@@ -6,9 +6,8 @@ brings its characters and its look into it, read from your own Megabonk install 
 ## What you get (v0.2, "characters, menus and the Megabonk game feel")
 
 - **Megabonk characters as Risk of Rain 2 survivors.** Each one uses its real Megabonk model and textures (loaded from
-  your Megabonk folder, never copied or shipped) fitted onto a Risk of Rain 2 survivor's skeleton, and plays that
-  survivor's moveset: Megachad punches with Loader's gauntlets, Fox throws Huntress's glaives, and so on. The full
-  list is in `sheets/characters.json`.
+  your Megabonk folder, never copied or shipped) fitted onto a Risk of Rain 2 survivor's skeleton (for its animations)
+  and fights with Megabonk weapons (below). The full list is in `sheets/characters.json`.
 - **Megabonk-style main menu.** A "RISK OF BONK" title with Megabonk's logo when it is found, chunky outlined text,
   dark panels and bright buttons. Every Risk of Rain 2 option still works, including online multiplayer.
 - **Megabonk-style character select** with both rosters in one grid: the Risk of Rain 2 survivors and the Megabonk
@@ -29,6 +28,9 @@ brings its characters and its look into it, read from your own Megabonk install 
   left mouse and nothing else. Weapons you pick go on right mouse, then Shift, then R: four weapons per run. Picking a
   weapon you own levels it up. Equipment (Q) works as usual. Risk of Rain 2 survivors keep their own movesets.
   `sheets/weapons.json` (25 weapons), start weapons in `sheets/characters.json`.
+- **Megabonk shrines** on every stage, next to Risk of Rain 2's own shrines: **Charge Shrines** (stand in the golden
+  circle until it is charged and every player gets an upgrade pick) and a **Magnet Shrine** (stand in the blue one and
+  every XP gem on the map flies to you).
 - **Megabonk hordes.** More monsters per wave, more often, each with less health.
 - **Megabonk boss event at the Teleporter.** Instead of the vanilla boss, a Megabonk boss (Ancient Ent, Ghost Lord)
   arrives with a Megabonk swarm; the Teleporter finishes when it dies, with the normal boss rewards.
@@ -38,12 +40,12 @@ brings its characters and its look into it, read from your own Megabonk install 
 - **Multiplayer:** Risk of Rain 2's own online co-op, up to 4 players. Every player needs the mod and both games.
 
 Settings (`BepInEx/config/com.sansulate.riskofbonk.cfg`, section Gameplay): MegabonkMovement, MegabonkHordes,
-MegabonkBossEvent, MegabonkXp.
+MegabonkBossEvent, MegabonkXp, MegabonkShrines.
 
 ## Planned next
 
-Bonk style terrain generation, Megabonk weapons as extra upgrades, Megabonk shrines and chests alongside Risk of
-Rain 2's, Megabonk-styled stage visuals, a Megabonk swarm in the final boss fights, and Megabonk bosses for Voidling and
+Bonk style terrain generation, more Megabonk shrines and Megabonk chests alongside Risk of Rain 2's, Megabonk-styled
+stage visuals, a Megabonk swarm in the final boss fights, and Megabonk bosses for Voidling and
 the other final bosses.
 
 ## Requirements

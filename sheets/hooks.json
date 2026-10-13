@@ -162,6 +162,13 @@
    "kind": "network-message",
    "purpose": "level-up menu opened: host grants HiddenInvincibility for tuning.upgrade_invincibility s, cleared on pick",
    "verified": true
+  },
+  {
+   "id": "shrines",
+   "system": "SceneDirector.onPostPopulateSceneServer + message 0x5B0F",
+   "kind": "event",
+   "purpose": "host places Megabonk Charge/Magnet Shrines on the stage's ground nodes; shrine state reaches every player as messages",
+   "verified": true
   }
  ]
 }
