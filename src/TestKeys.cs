@@ -8,16 +8,26 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
-    /// F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
+    /// F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
     /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
     {
         public static bool On;
 
+        bool assetsChecked;
+
         void Update()
         {
+            if (On && !assetsChecked && RoR2.UI.MainMenu.MainMenuController.instance)
+            {
+                // Load every weapon asset once, so a wrong address shows up in the log right away.
+                assetsChecked = true;
+                foreach (var w in RiskOfBonk.Generated.Sheets.Weapons) { WeaponFire.Prefab(w.Prefab); WeaponFire.Prefab(w.Effect); }
+                Log.Info("test: weapon assets checked");
+            }
             if (!On || !Run.instance || !NetworkServer.active) return;
+            if (Input.GetKeyDown(KeyCode.F7)) Time.timeScale = Time.timeScale < 1f ? 1f : 0.15f;
             if (Input.GetKeyDown(KeyCode.F8)) GiveLevel();
             if (Input.GetKeyDown(KeyCode.F9)) GoToTeleporter();
             if (Input.GetKeyDown(KeyCode.F10)) Spawn();

@@ -124,7 +124,11 @@ namespace RiskOfBonk
             string tok = "RISKOFBONK_" + row.Id.ToUpperInvariant();
             Plugin.Tokens[tok + "_NAME"] = row.DisplayName;
             Plugin.Tokens[tok + "_SUBTITLE"] = "From Megabonk";
-            Plugin.Tokens[tok + "_DESC"] = row.Description + "\n\n<style=cSub>Megabonk character, read from your own Megabonk install. Moveset: " + MovesetLabel(row.MovesetBody) + ".</style>";
+            int start = Weapons.Index(row.StartWeapon);
+            string weapon = start >= 0 ? Sheets.Weapons[start].DisplayName : row.StartWeapon;
+            Plugin.Tokens[tok + "_DESC"] = row.Description + " Starts with the <style=cIsDamage>" + weapon + "</style> on the primary skill."
+                + "\n\n<style=cSub>Every new weapon from a level-up pick takes the next skill slot (secondary, utility, special), up to four weapons. "
+                + "Megabonk character, read from your own Megabonk install; animations from " + MovesetLabel(row.MovesetBody) + ".</style>";
             Plugin.Tokens[tok + "_OUTRO"] = "...and so " + row.DisplayName + " left, still bonking.";
             Plugin.Tokens[tok + "_FAIL"] = "...and so " + row.DisplayName + " vanished, bonked at last.";
             ColorUtility.TryParseHtmlString(row.PrimaryColor, out var color);

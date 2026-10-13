@@ -7,7 +7,7 @@ cd "$(dirname "$0")"
 I=$(cygpath -m "$(pwd)")
 ps() { powershell -ExecutionPolicy Bypass -File "$I/$1" "${@:2}"; }
 out() { cygpath -w "$2_$1.png"; }
-[ "$3" = select ] || { ps click.ps1 -X 255 -Y 554; sleep 18; }
+[ "$3" = select ] || { ps click.ps1 -X 255 -Y 554; sleep 26; }
 bash pick.sh "$1" "$2_select.png" 4 >/dev/null
 ps click.ps1 -X 1030 -Y 868; sleep 32
 ps key.ps1 -Key e; sleep 6

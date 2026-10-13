@@ -15,7 +15,7 @@
    "sortPosition": 200,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Pure gains. Megachad flexes through the horde with Loader's gauntlet kit.",
+   "description": "Pure gains. Megachad flexes through the horde.",
    "mbAssetsVerified": true,
    "startWeapon": "aura",
    "startWeaponVerified": false
@@ -32,7 +32,7 @@
    "sortPosition": 201,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Quick and sly. Fox skirmishes with Huntress's glaives and blink.",
+   "description": "Quick and sly, with a staff of fire.",
    "mbAssetsVerified": true,
    "startWeapon": "firestaff",
    "startWeaponVerified": false
@@ -49,7 +49,7 @@
    "sortPosition": 202,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A skeleton with a grudge, sniping with Railgunner's scope.",
+   "description": "A skeleton with a grudge and a bone to throw.",
    "mbAssetsVerified": true,
    "startWeapon": "bone",
    "startWeaponVerified": false
@@ -66,7 +66,7 @@
    "sortPosition": 203,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A knight who goes oof. Dashes and slashes with Mercenary's blade.",
+   "description": "A knight who goes oof.",
    "mbAssetsVerified": false,
    "mbTexture": "Knight_Default",
    "startWeapon": "sword",
@@ -84,7 +84,7 @@
    "sortPosition": 204,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Return to monke: poison and leap with Acrid's kit.",
+   "description": "Return to monke.",
    "mbAssetsVerified": true,
    "startWeapon": "bananarang",
    "startWeaponVerified": false
@@ -101,7 +101,7 @@
    "sortPosition": 205,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Stealthy strikes with Bandit's cloak and blades.",
+   "description": "Stealthy, fast and sharp.",
    "mbAssetsVerified": false,
    "startWeapon": "katana",
    "startWeaponVerified": false
@@ -119,7 +119,7 @@
    "sortPosition": 206,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Gotta go fast. Double-tap with Commando's pistols.",
+   "description": "Gotta go fast.",
    "mbAssetsVerified": false,
    "startWeapon": "slutty_rocket",
    "startWeaponVerified": false
@@ -136,7 +136,7 @@
    "sortPosition": 207,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "An archer of the woods with Huntress's bow.",
+   "description": "An archer of the woods.",
    "mbAssetsVerified": false,
    "startWeapon": "bow",
    "startWeaponVerified": false
@@ -153,7 +153,7 @@
    "sortPosition": 208,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Steal the show with Bandit's shotgun and revolver.",
+   "description": "Steal the show.",
    "mbAssetsVerified": false,
    "startWeapon": "shotgun",
    "startWeaponVerified": false
@@ -170,7 +170,7 @@
    "sortPosition": 209,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Flies high and rains fire with Artificer's spells.",
+   "description": "Flies high and calls the storm.",
    "mbAssetsVerified": false,
    "startWeapon": "lightning_staff",
    "startWeaponVerified": false
@@ -188,7 +188,7 @@
    "sortPosition": 210,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Ice and fire with Artificer's kit.",
+   "description": "Cold as ice.",
    "mbAssetsVerified": false,
    "startWeapon": "frostwalker",
    "startWeaponVerified": false
@@ -205,7 +205,7 @@
    "sortPosition": 211,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Calls orbital support with Captain's beacons.",
+   "description": "One small step for bonk.",
    "mbAssetsVerified": false,
    "startWeapon": "space_noodle",
    "startWeaponVerified": false
@@ -222,7 +222,7 @@
    "sortPosition": 212,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A vampire who embraces the void with Void Fiend's corruption.",
+   "description": "A vampire with a thirst.",
    "mbAssetsVerified": true,
    "startWeapon": "blood_magic",
    "startWeaponVerified": false
@@ -239,7 +239,7 @@
    "sortPosition": 213,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Divine strikes with Mercenary's blade.",
+   "description": "Divine strikes.",
    "mbAssetsVerified": false,
    "startWeapon": "hero_sword",
    "startWeaponVerified": false
@@ -257,7 +257,7 @@
    "sortPosition": 214,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Big, heavy and loud with MUL-T's tools.",
+   "description": "Big, heavy and loud.",
    "mbAssetsVerified": true,
    "startWeapon": "axe",
    "startWeaponVerified": false
@@ -275,7 +275,7 @@
    "sortPosition": 215,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A robot who builds turrets with Engineer's kit.",
+   "description": "A robot who shoots first.",
    "mbAssetsVerified": true,
    "startWeapon": "revolver",
    "startWeaponVerified": false
@@ -292,7 +292,7 @@
    "sortPosition": 216,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Rolls the dice with Commando's pistols.",
+   "description": "Rolls the dice.",
    "mbAssetsVerified": false,
    "startWeapon": "dice",
    "startWeaponVerified": false
@@ -309,7 +309,7 @@
    "sortPosition": 217,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "Sus. Lays mines and turrets with Engineer's kit.",
+   "description": "Sus.",
    "mbAssetsVerified": false,
    "startWeapon": "mine",
    "startWeaponVerified": false
@@ -326,7 +326,7 @@
    "sortPosition": 218,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A bush with a plan, rooting the horde with REX's kit.",
+   "description": "A bush with a plan.",
    "mbAssetsVerified": true,
    "startWeapon": "sniper",
    "startWeaponVerified": false
@@ -343,7 +343,7 @@
    "sortPosition": 219,
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
-   "description": "A noble chad with Loader's punches.",
+   "description": "A noble chad with a cursed blade.",
    "mbAssetsVerified": false,
    "startWeapon": "corrupted_sword",
    "startWeaponVerified": false

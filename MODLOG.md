@@ -128,4 +128,20 @@
     Firestaff/Lightning Staff/Sword on M2/Shift/R fire without errors; weapon-upgrade cards once 4 weapons are held.
   - Test tools: F11 gives the next weapon from BepInEx/RiskOfBonk/testweapons; shot.ps1 caches its helper DLL in
     %TEMP% (~10 s per shot instead of ~50 s during a run).
+- Update 4 (2026-10-14): run-tested the remaining Megabonk survivors' start weapons (Sir Oofie, Ninja, Tony McZoom,
+  Robinette, Bandit, Birdo, Noelle, Spaceman, Athena, Dicehead, Amog, Sir Chadwell) and fixed what they showed:
+  - Weapons fired every frame while held: the state's minimum interrupt priority equalled the skill's, so the held
+    skill restarted itself. Now PrioritySkill until the attack's interval is over, then Any (checked: 4 attacks in 2 s
+    for a 0.5 s weapon, was ~90/s).
+  - 20 of the weapon addresses were wrong for game 1.5.0 (prefabs moved, e.g. RoR2/Base/Merc/MercSwordSlash.prefab, not
+    .../Characters/Merc/...), so most projectiles never spawned and swings/novas had no effect. Sheet fixed; WeaponFire
+    now falls back to the game's address with the same file name and logs it. With testgod the mod loads every weapon
+    asset at the main menu and logs any it can't find. Note: catalog.json's plain-text strings are bundle paths, not
+    addresses; don't grep it to check an address.
+  - Dice: Mithrix's lunar shards replaced by Engineer's bouncing grenades.
+  - Melee weapons play Mercenary's GroundLight1/2 swing where the body's animator has it (checked: Sir Oofie swings),
+    with the slash on the blade's muzzle; otherwise the slash spawns in front of the body via EffectManager.
+  - Survivor descriptions: no RoR2 kit names anymore; they name the start weapon and explain the slot order.
+  - Test tools: attacktest.sh (pick, leave the pod, hold attack twice, screenshots; SLOW=1 uses F7 slow motion),
+    F7 toggles slow motion (testgod), every weapon attack is logged with testgod. pick.sh no longer needs Python.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

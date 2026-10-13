@@ -20,6 +20,7 @@ namespace RiskOfBonk
     {
         WeaponRow weapon;
         float duration;
+        static int swingCount;
 
         static readonly Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
 
@@ -27,10 +28,40 @@ namespace RiskOfBonk
         {
             if (string.IsNullOrEmpty(address)) return null;
             if (prefabs.TryGetValue(address, out var p)) return p;
-            try { p = Addressables.LoadAssetAsync<GameObject>(address).WaitForCompletion(); }
-            catch (System.Exception e) { Log.Warn($"weapon asset {address}: {e.Message}"); }
+            p = Load(address);
+            if (!p && FindByName(address) is string found)
+            {
+                Log.Warn($"weapon asset {address} not found; using {found}");
+                p = Load(found);
+            }
+            if (!p) Log.Warn($"weapon asset {address} not found");
             prefabs[address] = p;
             return p;
+        }
+
+        static GameObject Load(string address)
+        {
+            try { return Addressables.LoadAssetAsync<GameObject>(address).WaitForCompletion(); }
+            catch (System.Exception) { return null; }
+        }
+
+        static Dictionary<string, string> byName;
+
+        /// <summary>The game's real address for a prefab with the same file name (addresses move between game versions).</summary>
+        static string FindByName(string address)
+        {
+            if (byName == null)
+            {
+                byName = new Dictionary<string, string>();
+                foreach (var locator in Addressables.ResourceLocators)
+                    foreach (var key in locator.Keys)
+                        if (key is string s && s.EndsWith(".prefab"))
+                        {
+                            string n = s.Substring(s.LastIndexOf('/') + 1);
+                            if (!byName.ContainsKey(n)) byName[n] = s;
+                        }
+            }
+            return byName.TryGetValue(address.Substring(address.LastIndexOf('/') + 1), out var a) && a != address ? a : null;
         }
 
         DamageTypeCombo DamageType() => weapon.DamageType switch
@@ -45,12 +76,18 @@ namespace RiskOfBonk
         {
             base.OnEnter();
             weapon = Weapons.Row(activatorSkillSlot ? activatorSkillSlot.skillDef : null);
-            if (weapon == null) { duration = 0.1f; return; }
+            if (weapon == null)
+            {
+                if (TestKeys.On) Log.Warn($"weapon state without a weapon: {(activatorSkillSlot && activatorSkillSlot.skillDef ? activatorSkillSlot.skillDef.skillName : "no skill")}");
+                duration = 0.1f;
+                return;
+            }
             duration = Mathf.Max(0.08f, weapon.Interval / Mathf.Max(0.1f, attackSpeedStat));
             int level = Mathf.Max(1, Weapons.Level(characterBody, Weapons.Index(weapon.Id)));
             float damage = damageStat * weapon.Damage * (1f + 0.25f * (level - 1));
             if (weapon.Id == "dice") damage *= Random.Range(1, 7) / 3.5f;
             var aim = GetAimRay();
+            if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage, authority {isAuthority}, prefab {(Prefab(weapon.Prefab) ? "ok" : "-")}");
             StartAimMode(aim, 2f);
             if (!string.IsNullOrEmpty(weapon.Sound)) Util.PlaySound(weapon.Sound, gameObject);
             switch (weapon.Kind)
@@ -79,7 +116,7 @@ namespace RiskOfBonk
                 procCoefficient = 1f,
                 force = 200f,
                 tracerEffectPrefab = Prefab(weapon.Effect),
-                hitEffectPrefab = Prefab("RoR2/Base/Characters/Commando/HitsparkCommando.prefab"),
+                hitEffectPrefab = Prefab("RoR2/Base/Commando/HitsparkCommando.prefab"),
                 isCrit = RollCrit(),
                 radius = 0.4f,
                 smartCollision = true,
@@ -119,12 +156,31 @@ namespace RiskOfBonk
             var centre = characterBody.corePosition + dir * (weapon.Range * 0.6f);
             // The swing is shown on every machine; the hit is dealt once, by the player who owns the body.
             var fx = Prefab(weapon.Effect);
-            if (fx)
+            // Mercenary's slash animation where the body has it (alternating swings), with the slash on the blade's muzzle.
+            string swing = (swingCount++ & 1) == 0 ? "GroundLight1" : "GroundLight2";
+            var animator = GetModelAnimator();
+            bool hasSwing = false;
+            if (animator)
             {
-                var go = Object.Instantiate(fx, characterBody.corePosition + dir * 0.8f, Util.QuaternionSafeLookRotation(dir));
-                go.transform.localScale *= Mathf.Max(1f, weapon.Range / 3f);
-                Object.Destroy(go, 1.5f);
+                int hash = Animator.StringToHash(swing);
+                foreach (var layer in new[] { "Gesture, Additive", "Gesture, Override" })
+                {
+                    int li = animator.GetLayerIndex(layer);
+                    if (li < 0 || !animator.HasState(li, hash)) continue;
+                    PlayCrossfade(layer, swing, "GroundLight.playbackRate", duration, 0.05f);
+                    hasSwing = true;
+                }
             }
+            var locator = GetModelChildLocator();
+            if (fx && hasSwing && locator && locator.FindChild(swing))
+                EffectManager.SimpleMuzzleFlash(fx, gameObject, swing, false);
+            else if (fx)
+                EffectManager.SpawnEffect(fx, new EffectData
+                {
+                    origin = characterBody.corePosition + dir * 0.8f,
+                    rotation = Util.QuaternionSafeLookRotation(dir),
+                    scale = Mathf.Max(1f, weapon.Range / 3f),
+                }, false);
             if (!isAuthority) return;
             new BlastAttack
             {
@@ -212,6 +268,7 @@ namespace RiskOfBonk
             if (isAuthority && fixedAge >= duration) outer.SetNextStateToMain();
         }
 
-        public override InterruptPriority GetMinimumInterruptPriority() => InterruptPriority.Skill;
+        // Until the attack is over nothing (not even the same weapon, still held) may restart it; then anything may.
+        public override InterruptPriority GetMinimumInterruptPriority() => fixedAge < duration ? InterruptPriority.PrioritySkill : InterruptPriority.Any;
     }
 }
