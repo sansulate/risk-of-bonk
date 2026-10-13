@@ -49,8 +49,8 @@ namespace RiskOfBonk
             if (hordes.Value) Horde.Init(harmony);
             Upgrades.Init(harmony);
             ConfigEntry<bool> bosses = Config.Bind("Gameplay", "MegabonkBossEvent", true,
-                "Teleporter boss event: a Megabonk boss and swarm instead of the vanilla boss. Applies when you host.");
-            if (bosses.Value) MegabonkBosses.Init(harmony);
+                "Teleporter boss event: a Megabonk boss and swarm instead of the vanilla boss; a Megabonk swarm in the final boss fights too. Applies when you host.");
+            if (bosses.Value) { MegabonkBosses.Init(harmony); gameObject.AddComponent<FinalSwarm>(); }
             TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod"));
             gameObject.AddComponent<TestKeys>();
             gameObject.AddComponent<UpgradePanel>();

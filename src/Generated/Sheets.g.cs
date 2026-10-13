@@ -162,5 +162,7 @@ namespace RiskOfBonk.Generated
         public static float MagnetShrinesPerStage = 1.0f;
         /// <summary>Time to stand in a Magnet Shrine to use it. (s)</summary>
         public static float MagnetShrineSeconds = 1.0f;
+        /// <summary>Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient. (credits/s)</summary>
+        public static float FinalSwarmCredit = 12.0f;
     }
 }

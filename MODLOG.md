@@ -156,4 +156,11 @@
   pop and shrink away. Checked in game: 5 shrines placed, charge fills, "Shrine charged!" menu with invincibility
   countdown, chat line, x2 when two are charged; Magnet Shrine used (log), gem pull not observed with gems lying
   (they were all collected already). Test key F6 = into the next shrine (testgod).
+- Update 6 (2026-10-14): Megabonk swarm in the final boss fights. FinalSwarm.cs (host, with MegabonkBossEvent): every
+  second checks for a living non-player body named in a final boss row's replaces (Brother*, FalseSon*) or Voidling's
+  MiniVoidRaidCrabBodyPhase1-3; while one lives, a runtime CombatDirector (created inactive so its fields are set
+  before Awake; creditMultiplier 0, fallBackToStageMonsterCards) gets tuning.final_swarm_credit (12/s) x
+  sqrt(difficulty) and spends it on the stage's monsters (the horde patch applies to it). Removed with credit zeroed
+  when the boss is gone. Checked: F10 BrotherMaster on stage 1 -> "swarm on", beetles stream in. Not checked yet: on
+  the moon itself, swarm off after the kill.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

@@ -249,6 +249,14 @@
    "system": "shrines",
    "note": "Time to stand in a Magnet Shrine to use it.",
    "verified": false
+  },
+  {
+   "id": "final_swarm_credit",
+   "value": 12.0,
+   "unit": "credits/s",
+   "system": "bosses",
+   "note": "Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient.",
+   "verified": false
   }
  ]
 }

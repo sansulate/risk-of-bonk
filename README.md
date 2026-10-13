@@ -35,7 +35,8 @@ brings its characters and its look into it, read from your own Megabonk install 
 - **Megabonk boss event at the Teleporter.** Instead of the vanilla boss, a Megabonk boss (Ancient Ent, Ghost Lord)
   arrives with a Megabonk swarm; the Teleporter finishes when it dies, with the normal boss rewards.
 - **Megabonk final bosses.** Mithrix becomes the **Ghost King** and False Son the **Shadow King**: Megabonk models and
-  names on their own fights. `sheets/bosses.json`.
+  names on their own fights, and like Megabonk's main bosses they bring a swarm: while a final boss (or Voidling) is
+  alive, extra monsters keep coming. `sheets/bosses.json`.
 - **Endless:** Risk of Rain 2's looping stays, so a run goes on as long as you survive.
 - **Multiplayer:** Risk of Rain 2's own online co-op, up to 4 players. Every player needs the mod and both games.
 
@@ -45,7 +46,7 @@ MegabonkBossEvent, MegabonkXp, MegabonkShrines.
 ## Planned next
 
 Bonk style terrain generation, more Megabonk shrines and Megabonk chests alongside Risk of Rain 2's, Megabonk-styled
-stage visuals, a Megabonk swarm in the final boss fights, and Megabonk bosses for Voidling and
+stage visuals, and Megabonk bosses for Voidling and
 the other final bosses.
 
 ## Requirements
