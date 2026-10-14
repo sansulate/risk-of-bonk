@@ -46,7 +46,7 @@ namespace RiskOfBonk
 
         static string Locate(string configured, string ror2Dir)
         {
-            foreach (var c in new[] { Environment.GetEnvironmentVariable(EnvVar), configured })
+            foreach (var c in new[] { Environment.GetEnvironmentVariable(EnvVar), MeltyLink.Property("megabonk"), configured })
                 if (IsMegabonk(c?.Trim().Trim('"'))) return c.Trim().Trim('"');
 
             // Steam libraries, starting from the library Risk of Rain 2 is installed in.

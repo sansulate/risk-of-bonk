@@ -45,6 +45,9 @@ namespace RiskOfBonk
 
         public static bool Open { get; private set; }
 
+        /// <summary>Melty's test mode picks a card through this (0-2), as if its key was pressed.</summary>
+        public static int TestPick = -1;
+
         static Texture2D Icon(string name)
         {
             if (icons.TryGetValue(name, out var t)) return t;
@@ -145,7 +148,8 @@ namespace RiskOfBonk
 
             for (int i = 0; i < 3; i++)
             {
-                if (!Input.GetKeyDown(KeyCode.Alpha1 + i) && !Input.GetKeyDown(KeyCode.Keypad1 + i) && !Input.GetKeyDown(padButtons[i])) continue;
+                if (TestPick != i && !Input.GetKeyDown(KeyCode.Alpha1 + i) && !Input.GetKeyDown(KeyCode.Keypad1 + i) && !Input.GetKeyDown(padButtons[i])) continue;
+                TestPick = -1;
                 Upgrades.RequestPick(offers[i].kind, offers[i].index, offers[i].rarity);
                 waitingForPicks = picks;
                 waitingSince = Time.unscaledTime;

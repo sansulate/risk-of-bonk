@@ -18,7 +18,7 @@
    "description": "Pure gains. Megachad flexes through the horde.",
    "mbAssetsVerified": true,
    "startWeapon": "aura",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "fox",
@@ -35,7 +35,7 @@
    "description": "Quick and sly, with a staff of fire.",
    "mbAssetsVerified": true,
    "startWeapon": "firestaff",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "calcium",
@@ -52,7 +52,7 @@
    "description": "A skeleton with a grudge and a bone to throw.",
    "mbAssetsVerified": true,
    "startWeapon": "bone",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "sir_oofie",
@@ -70,7 +70,7 @@
    "mbAssetsVerified": true,
    "mbTexture": "Knight_Default",
    "startWeapon": "sword",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "monke",
@@ -87,7 +87,7 @@
    "description": "Return to monke.",
    "mbAssetsVerified": true,
    "startWeapon": "bananarang",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "ninja",
@@ -104,7 +104,7 @@
    "description": "Stealthy, fast and sharp.",
    "mbAssetsVerified": true,
    "startWeapon": "katana",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "tony_mczoom",
@@ -121,8 +121,8 @@
    "yawOffsetDeg": 0,
    "description": "Gotta go fast.",
    "mbAssetsVerified": true,
-   "startWeapon": "slutty_rocket",
-   "startWeaponVerified": false
+   "startWeapon": "wireless_dagger",
+   "startWeaponVerified": true
   },
   {
    "id": "robinette",
@@ -139,7 +139,7 @@
    "description": "An archer of the woods.",
    "mbAssetsVerified": true,
    "startWeapon": "bow",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "bandit",
@@ -156,7 +156,7 @@
    "description": "Steal the show.",
    "mbAssetsVerified": true,
    "startWeapon": "shotgun",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "birdo",
@@ -173,7 +173,7 @@
    "description": "Flies high and calls the storm.",
    "mbAssetsVerified": true,
    "startWeapon": "lightning_staff",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "noelle",
@@ -191,7 +191,7 @@
    "description": "Cold as ice.",
    "mbAssetsVerified": true,
    "startWeapon": "frostwalker",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "spaceman",
@@ -207,8 +207,8 @@
    "yawOffsetDeg": 0,
    "description": "One small step for bonk.",
    "mbAssetsVerified": true,
-   "startWeapon": "space_noodle",
-   "startWeaponVerified": false
+   "startWeapon": "black_hole",
+   "startWeaponVerified": true
   },
   {
    "id": "vlad",
@@ -225,7 +225,7 @@
    "description": "A vampire with a thirst.",
    "mbAssetsVerified": true,
    "startWeapon": "blood_magic",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "athena",
@@ -241,8 +241,8 @@
    "yawOffsetDeg": 0,
    "description": "Divine strikes.",
    "mbAssetsVerified": true,
-   "startWeapon": "hero_sword",
-   "startWeaponVerified": false
+   "startWeapon": "aegis",
+   "startWeaponVerified": true
   },
   {
    "id": "ogre",
@@ -260,7 +260,7 @@
    "description": "Big, heavy and loud.",
    "mbAssetsVerified": true,
    "startWeapon": "axe",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "cl4nk",
@@ -278,7 +278,7 @@
    "description": "A robot who shoots first.",
    "mbAssetsVerified": true,
    "startWeapon": "revolver",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "dicehead",
@@ -295,7 +295,7 @@
    "description": "Rolls the dice.",
    "mbAssetsVerified": true,
    "startWeapon": "dice",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "amog",
@@ -311,8 +311,8 @@
    "yawOffsetDeg": 0,
    "description": "Sus.",
    "mbAssetsVerified": true,
-   "startWeapon": "mine",
-   "startWeaponVerified": false
+   "startWeapon": "poison_flask",
+   "startWeaponVerified": true
   },
   {
    "id": "bush",
@@ -329,7 +329,7 @@
    "description": "A bush with a plan.",
    "mbAssetsVerified": true,
    "startWeapon": "sniper",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   },
   {
    "id": "sir_chadwell",
@@ -346,7 +346,7 @@
    "description": "A noble chad with a cursed blade.",
    "mbAssetsVerified": true,
    "startWeapon": "corrupted_sword",
-   "startWeaponVerified": false
+   "startWeaponVerified": true
   }
  ]
 }

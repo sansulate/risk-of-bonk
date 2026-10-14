@@ -18,7 +18,7 @@ namespace RiskOfBonk
     {
         public const string Guid = "com.sansulate.riskofbonk";
         public const string Name = "Risk of Bonk";
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
 
         public static readonly Dictionary<string, string> Tokens = new Dictionary<string, string>();
         public static string DataDir;
@@ -62,6 +62,9 @@ namespace RiskOfBonk
                 "Megabonk Charge Shrines (stand inside to charge, everyone gets an upgrade) and Magnet Shrines (pull every XP gem) on each stage, next to Risk of Rain 2's shrines. Applies when you host.");
             Shrines.Init(gameObject, shrines.Value);
             gameObject.AddComponent<StageMode.LobbyBeacon>();
+            gameObject.AddComponent<MeltyLink>();
+            MeltyTest.Start();
+            gameObject.AddComponent<MeltyTestRun>();
             BonkTerrain.Init(harmony, gameObject);
             ConfigEntry<bool> look = Config.Bind("Gameplay", "MegabonkLook", true,
                 "Megabonk's look on stages: brighter, more saturated colours and lighter fog. Only changes your own screen.");

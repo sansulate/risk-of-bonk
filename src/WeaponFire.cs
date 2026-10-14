@@ -24,6 +24,9 @@ namespace RiskOfBonk
 
         static readonly Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
 
+        /// <summary>Weapon attacks so far (Melty's test mode checks it goes up).</summary>
+        public static int Fired;
+
         public static GameObject Prefab(string address)
         {
             if (string.IsNullOrEmpty(address)) return null;
@@ -88,6 +91,7 @@ namespace RiskOfBonk
             if (weapon.Id == "dice") damage *= Random.Range(1, 7) / 3.5f;
             var aim = GetAimRay();
             if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage, authority {isAuthority}, prefab {(Prefab(weapon.Prefab) ? "ok" : "-")}");
+            Fired++;
             StartAimMode(aim, 2f);
             if (!string.IsNullOrEmpty(weapon.Sound)) Util.PlaySound(weapon.Sound, gameObject);
             switch (weapon.Kind)

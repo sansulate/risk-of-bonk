@@ -60,7 +60,7 @@ the other final bosses.
 ## Requirements
 
 - Risk of Rain 2 with BepInEx 5 (Melty installs it).
-- Megabonk installed. Melty passes its folder in `RISKOFBONK_MEGABONK`. Without Melty, the mod looks in your Steam
+- Megabonk installed. Melty passes its folder (`megabonk=` in `%LOCALAPPDATA%/RiskOfBonk/melty.properties`, or `RISKOFBONK_MEGABONK`). Without Melty, the mod looks in your Steam
   libraries, or you can set `MegabonkFolder` in `BepInEx/config/com.sansulate.riskofbonk.cfg`.
 
 ## How it works
@@ -82,11 +82,24 @@ the other final bosses.
 BEPINEX_CORE=/path/to/BepInEx/core ./build.sh   # -> dist/RiskOfBonk-<version>.zip
 ```
 
-The zip holds `RiskOfBonk/` for `BepInEx/plugins/`: the plugin DLL, AssetsTools.NET.dll and classdata.tpk. It holds no
-files from either game.
+The zip holds `RiskOfBonk/` and `RiskofThunder-RoR2BepInExPack/` (RoR2BepInExPack, unchanged, MIT), both for
+`BepInEx/plugins/`. It holds no files from either game.
 
 ## Credits
 
 - Risk of Rain 2 by Hopoo Games / Gearbox. Megabonk by vedinad. This mod ships no files from either game.
-- AssetsTools.NET and classdata.tpk by nesrak1 (MIT), see `THIRD_PARTY_NOTICES.md`.
+- AssetsTools.NET and classdata.tpk by nesrak1 (MIT); RoR2BepInExPack by Risk of Thunder (MIT) with Newtonsoft.Json by
+  James Newton-King (MIT). See `THIRD_PARTY_NOTICES.md`.
 - Built with AI assistance (Claude Code) for sansulate.
+
+## Melty
+
+- Listed on Melty as "Risk of Bonk" (MIT, remixes allowed). Online co-op: up to 4 players through Risk of Rain 2's
+  Steam lobbies. `MeltyLink` writes `Melty join address: <lobby>.steamlobby` to `%LOCALAPPDATA%/RiskOfBonk/melty.log`
+  when you own a lobby, and joins the lobby in `join=` of `melty.properties` at the main menu.
+- Test mode (`MeltyTest`, `MeltyTestRun`): while Melty's test file exists, the mod starts a run as a Megabonk survivor,
+  fires its weapon, levels up and picks a card, and reports each check.
+
+## License
+
+MIT, see `LICENSE`.

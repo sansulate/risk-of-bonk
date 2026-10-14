@@ -16,7 +16,7 @@
    "replaces": [],
    "airborne": false,
    "healthBoost": 5,
-   "verified": false,
+   "verified": true,
    "retarget": true
   },
   {
@@ -33,7 +33,7 @@
    "replaces": [],
    "airborne": true,
    "healthBoost": 5,
-   "verified": false,
+   "verified": true,
    "retarget": true
   },
   {
@@ -54,7 +54,7 @@
    ],
    "airborne": false,
    "healthBoost": 0,
-   "verified": false,
+   "verified": true,
    "retarget": true
   },
   {
@@ -75,7 +75,7 @@
    ],
    "airborne": false,
    "healthBoost": 0,
-   "verified": false,
+   "verified": true,
    "retarget": true
   }
  ]

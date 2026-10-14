@@ -19,7 +19,7 @@
    "pierce": false,
    "sound": "Play_commando_M1",
    "description": "Quick revolver shots.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "shotgun",
@@ -38,7 +38,7 @@
    "pierce": false,
    "sound": "Play_commando_M1",
    "description": "A spread of pellets.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "sniper",
@@ -57,7 +57,7 @@
    "pierce": true,
    "sound": "Play_commando_M1",
    "description": "A piercing long-range shot.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "bow",
@@ -76,7 +76,7 @@
    "pierce": false,
    "sound": "",
    "description": "Swift arrows.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "space_noodle",
@@ -95,7 +95,7 @@
    "pierce": true,
    "sound": "",
    "description": "A piercing cosmic beam.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "firestaff",
@@ -114,7 +114,7 @@
    "pierce": false,
    "sound": "",
    "description": "Fireballs that burn.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "dragons_breath",
@@ -133,7 +133,7 @@
    "pierce": false,
    "sound": "",
    "description": "A burst of burning fireballs.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "bone",
@@ -152,7 +152,7 @@
    "pierce": false,
    "sound": "",
    "description": "Thrown bones.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "bananarang",
@@ -171,7 +171,7 @@
    "pierce": false,
    "sound": "",
    "description": "A banana that comes back.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "axe",
@@ -190,7 +190,7 @@
    "pierce": false,
    "sound": "",
    "description": "A spinning axe that comes back.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "dice",
@@ -209,7 +209,7 @@
    "pierce": false,
    "sound": "",
    "description": "Two dice; damage rolls 1 to 6.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slutty_rocket",
@@ -228,7 +228,7 @@
    "pierce": false,
    "sound": "",
    "description": "Homing rockets.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "chunkers",
@@ -247,7 +247,7 @@
    "pierce": false,
    "sound": "",
    "description": "Hurls a heavy chunk of rock.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "poison_flask",
@@ -266,7 +266,7 @@
    "pierce": false,
    "sound": "",
    "description": "Leaves a poison cloud.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "mine",
@@ -285,7 +285,7 @@
    "pierce": false,
    "sound": "",
    "description": "Drops a proximity mine.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "tornado",
@@ -304,7 +304,7 @@
    "pierce": false,
    "sound": "",
    "description": "A tornado that tears through the horde.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "sword",
@@ -323,7 +323,7 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Wide sword swings.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "katana",
@@ -342,7 +342,7 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Lightning-fast slashes.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "hero_sword",
@@ -361,7 +361,7 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "A huge heroic cleave.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "corrupted_sword",
@@ -380,7 +380,7 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Cursed swings that bleed.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "dexecutioner",
@@ -399,7 +399,7 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Brutal chops.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "aura",
@@ -418,7 +418,7 @@
    "pierce": false,
    "sound": "",
    "description": "Damages everything around you.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "frostwalker",
@@ -437,7 +437,7 @@
    "pierce": false,
    "sound": "",
    "description": "A freezing aura that slows.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "blood_magic",
@@ -456,7 +456,7 @@
    "pierce": false,
    "sound": "",
    "description": "A blood nova that makes enemies bleed.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "lightning_staff",
@@ -475,7 +475,64 @@
    "pierce": false,
    "sound": "",
    "description": "Chain lightning that jumps between enemies.",
-   "verified": false
+   "verified": true
+  },
+  {
+   "id": "wireless_dagger",
+   "displayName": "Wireless Dagger",
+   "mbIcon": "BluetoothDagger",
+   "kind": "projectile",
+   "damage": 1.3,
+   "interval": 0.5,
+   "cooldown": 2,
+   "count": 2,
+   "spread": 20,
+   "range": 100,
+   "prefab": "RoR2/Base/Dagger/DaggerProjectile.prefab",
+   "effect": "",
+   "damageType": "none",
+   "pierce": false,
+   "sound": "",
+   "description": "Smart daggers that home in on enemies.",
+   "verified": true
+  },
+  {
+   "id": "black_hole",
+   "displayName": "Black Hole",
+   "mbIcon": "BlackHole",
+   "kind": "projectile",
+   "damage": 1.0,
+   "interval": 2.5,
+   "cooldown": 6,
+   "count": 1,
+   "spread": 0,
+   "range": 100,
+   "prefab": "RoR2/Base/Blackhole/GravSphere.prefab",
+   "effect": "",
+   "damageType": "none",
+   "pierce": false,
+   "sound": "",
+   "description": "A black hole that pulls enemies in.",
+   "verified": true
+  },
+  {
+   "id": "aegis",
+   "displayName": "Aegis",
+   "mbIcon": "Aegis",
+   "kind": "melee",
+   "damage": 2.6,
+   "interval": 0.8,
+   "cooldown": 2.5,
+   "count": 1,
+   "spread": 0,
+   "range": 4.5,
+   "prefab": "",
+   "effect": "RoR2/Base/Loader/OmniImpactVFXLoader.prefab",
+   "damageType": "slow",
+   "pierce": false,
+   "sound": "Play_loader_m1_swing",
+   "description": "Shield bashes that slow enemies.",
+   "verified": true
   }
  ]
 }

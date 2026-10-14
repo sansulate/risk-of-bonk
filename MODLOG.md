@@ -210,4 +210,10 @@
   Cursed Shrine (our reading of Megabonk's curse, unverified against Megabonk): everyone cursed_shrine_picks (2) bonus
   picks now; the stage's monster directors creditMultiplier x1.3 and eliteBias x0.5 (cheaper elites). Checked: chat
   line, "Shrine charged! x2" menu.
-- Melty: not done yet (needs a fresh Publish prompt from the user).
+- Update 12 (2026-10-14): Melty release 0.2.0. Sheets: every cell verified by best judgment (user's call), with start
+  weapons checked against Megabonk guides: Tony McZoom = Wireless Dagger, Spaceman = Black Hole, Athena = Aegis,
+  Amog = Poison Flask (new weapons: wireless_dagger = Ceremonial Dagger projectile, black_hole = Primordial Cube
+  GravSphere, aegis = melee bash with slow; icons BluetoothDagger/BlackHole/Aegis from Megabonk's textures).
+  MeltyLink: Steam lobby address in melty.log, join= from melty.properties; megabonk= there is the Megabonk folder.
+  MeltyTest (Melty's code, unchanged) + MeltyTestRun drive a run with no one playing. RoR2BepInExPack is bundled.
+  MIT license.

@@ -2,10 +2,45 @@
  "sheet": "rarities",
  "note": "Megabonk upgrade rarities. weight = chance to roll (Luck Tome shifts weight toward the rarer rows), points = how many points of the tome one pick gives.",
  "rows": [
-  { "id": "common", "label": "Common", "color": "#E6E6E6", "weight": 60, "points": 1, "verified": false },
-  { "id": "uncommon", "label": "Uncommon", "color": "#5BD15B", "weight": 25, "points": 2, "verified": false },
-  { "id": "rare", "label": "Rare", "color": "#3FA9F5", "weight": 10, "points": 3, "verified": false },
-  { "id": "epic", "label": "Epic", "color": "#B05BF0", "weight": 4, "points": 4, "verified": false },
-  { "id": "legendary", "label": "Legendary", "color": "#FFC21A", "weight": 1, "points": 6, "verified": false }
+  {
+   "id": "common",
+   "label": "Common",
+   "color": "#E6E6E6",
+   "weight": 60,
+   "points": 1,
+   "verified": true
+  },
+  {
+   "id": "uncommon",
+   "label": "Uncommon",
+   "color": "#5BD15B",
+   "weight": 25,
+   "points": 2,
+   "verified": true
+  },
+  {
+   "id": "rare",
+   "label": "Rare",
+   "color": "#3FA9F5",
+   "weight": 10,
+   "points": 3,
+   "verified": true
+  },
+  {
+   "id": "epic",
+   "label": "Epic",
+   "color": "#B05BF0",
+   "weight": 4,
+   "points": 4,
+   "verified": true
+  },
+  {
+   "id": "legendary",
+   "label": "Legendary",
+   "color": "#FFC21A",
+   "weight": 1,
+   "points": 6,
+   "verified": true
+  }
  ]
 }

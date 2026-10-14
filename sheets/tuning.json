@@ -8,7 +8,7 @@
    "unit": "bool (1/0)",
    "system": "movement",
    "note": "Megabonk has no sprint: always at full speed while moving (RoR2 still stops sprint when moving backwards or during some skills). The Sprint key becomes Slide.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_min_speed",
@@ -16,7 +16,7 @@
    "unit": "x walk speed",
    "system": "movement",
    "note": "Slide starts when the Slide key is held on the ground at this fraction of walk speed or more.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_boost",
@@ -24,7 +24,7 @@
    "unit": "m/s",
    "system": "movement",
    "note": "Speed added when a slide starts (Megabonk slideForce), once per slide_cooldown.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_cooldown",
@@ -32,7 +32,7 @@
    "unit": "s",
    "system": "movement",
    "note": "Time before another slide start can boost again.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_friction",
@@ -40,7 +40,7 @@
    "unit": "m/s per s",
    "system": "movement",
    "note": "Speed lost per second while sliding on flat ground (Megabonk slideCounterMovement).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_slope_gain",
@@ -48,7 +48,7 @@
    "unit": "x gravity along slope",
    "system": "movement",
    "note": "Sliding downhill speeds you up, uphill slows you down.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "slide_steer",
@@ -56,7 +56,7 @@
    "unit": "deg/s",
    "system": "movement",
    "note": "How fast a slide turns toward the move input.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "momentum_decay",
@@ -64,7 +64,7 @@
    "unit": "m/s per s",
    "system": "movement",
    "note": "On the ground without sliding, speed above walk speed fades at this rate (Megabonk inertiaFriction) instead of being cut off.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "momentum_turn",
@@ -72,7 +72,7 @@
    "unit": "deg/s",
    "system": "movement",
    "note": "How fast kept momentum turns toward the move input on the ground.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "bhop_window",
@@ -80,7 +80,7 @@
    "unit": "s",
    "system": "movement",
    "note": "After landing, momentum is kept fully this long so a quick jump keeps all of it (bunny hop).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "bhop_boost",
@@ -88,7 +88,7 @@
    "unit": "m/s",
    "system": "movement",
    "note": "Speed added per jump that keeps momentum.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "air_control",
@@ -96,7 +96,7 @@
    "unit": "x acceleration",
    "system": "movement",
    "note": "Air strafing strength. Steering in the air never slows you below your speed at take-off (RoR2 default is 0.25 and drags you to walk speed).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "max_speed",
@@ -104,7 +104,7 @@
    "unit": "x walk speed",
    "system": "movement",
    "note": "Hard cap on horizontal speed from momentum.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "jump_height",
@@ -112,7 +112,7 @@
    "unit": "x jump power",
    "system": "movement",
    "note": "Megabonk jumps are a bit higher than RoR2's.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "wallrun_time",
@@ -120,7 +120,7 @@
    "unit": "s",
    "system": "movement",
    "note": "Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "wallrun_fall",
@@ -128,7 +128,7 @@
    "unit": "m/s",
    "system": "movement",
    "note": "Fastest you sink while wallrunning.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "wallrun_min_speed",
@@ -136,7 +136,7 @@
    "unit": "x walk speed",
    "system": "movement",
    "note": "Wallrunning needs at least this much speed along the wall.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "wallrun_kick",
@@ -144,7 +144,7 @@
    "unit": "m/s",
    "system": "movement",
    "note": "Letting go of Jump during a wallrun pushes you off the wall (and up) by this much.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "horde_credit",
@@ -152,7 +152,7 @@
    "unit": "x director credit",
    "system": "hordes",
    "note": "Monster spawn budget over time (stage and Teleporter directors without a boss squad).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "horde_wave_size",
@@ -160,7 +160,7 @@
    "unit": "monsters",
    "system": "hordes",
    "note": "Most monsters one director wave may spawn (RoR2 default 6). Cheap monsters are no longer skipped.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "horde_interval",
@@ -168,7 +168,7 @@
    "unit": "x reroll interval",
    "system": "hordes",
    "note": "Time between director waves.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "horde_health",
@@ -176,7 +176,7 @@
    "unit": "x max health",
    "system": "hordes",
    "note": "Non-boss monsters are weaker so the horde mows down like in Megabonk.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "boss_swarm_credit",
@@ -184,7 +184,7 @@
    "unit": "director credit (x difficulty)",
    "system": "bosses",
    "note": "Extra monster credit for the Teleporter's horde director when the Megabonk boss event starts.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "horde_limit",
@@ -192,7 +192,7 @@
    "unit": "monsters",
    "system": "hordes",
    "note": "Monster team soft limit (RoR2 default 40).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "upgrade_invincibility",
@@ -200,7 +200,7 @@
    "unit": "s",
    "system": "upgrades",
    "note": "Invincibility while the level-up menu is open; ends early when you pick. The countdown turns red and shakes in its last 30%.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "weapon_offer_chance",
@@ -208,7 +208,7 @@
    "unit": "0-1 per card",
    "system": "upgrades",
    "note": "Chance that a level-up card is a Megabonk weapon (Megabonk survivors only), otherwise a tome.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "xp_multiplier",
@@ -216,7 +216,7 @@
    "unit": "x RoR2 kill XP",
    "system": "xp",
    "note": "XP in each gem compared with Risk of Rain 2's own kill XP (Megabonk levels up more often).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "xp_pickup_radius",
@@ -224,7 +224,7 @@
    "unit": "m",
    "system": "xp",
    "note": "XP gems within this distance of a player fly to them and are collected.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "xp_gem_limit",
@@ -232,7 +232,7 @@
    "unit": "gems",
    "system": "xp",
    "note": "Most gems on the ground; past this the oldest gem is collected for the team at once.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "charge_shrines_per_stage",
@@ -240,7 +240,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Charge Shrines placed on each normal stage (with a Teleporter), next to Risk of Rain 2's own shrines.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "charge_shrine_seconds",
@@ -248,7 +248,7 @@
    "unit": "s",
    "system": "shrines",
    "note": "Time a player must stand inside a Charge Shrine to charge it fully. Leaving pauses the charge (it slowly drains).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "charge_shrine_radius",
@@ -256,7 +256,7 @@
    "unit": "m",
    "system": "shrines",
    "note": "Radius of a Charge Shrine's circle.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "charge_shrine_picks",
@@ -264,7 +264,7 @@
    "unit": "picks",
    "system": "shrines",
    "note": "Upgrade picks every player gets when a Charge Shrine is fully charged.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "magnet_shrines_per_stage",
@@ -272,7 +272,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Magnet Shrines per stage: stand in one briefly and every XP gem on the map flies to you.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "magnet_shrine_seconds",
@@ -280,7 +280,7 @@
    "unit": "s",
    "system": "shrines",
    "note": "Time to stand in a Magnet Shrine to use it.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "shrine_use_seconds",
@@ -288,7 +288,7 @@
    "unit": "s",
    "system": "shrines",
    "note": "Time to stand in a Moai, Greed or Challenge Shrine to use it.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "moai_shrines_per_stage",
@@ -296,7 +296,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Moai Shrines per stage: every player gets a random tome at a rolled rarity (luck helps).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "greed_shrines_per_stage",
@@ -304,7 +304,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Greed Shrines per stage: more gold and more monsters for the rest of the stage.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "greed_gold",
@@ -312,7 +312,7 @@
    "unit": "x",
    "system": "shrines",
    "note": "Greed Shrine: gold from monsters spawned afterwards is multiplied by this (stacks per shrine).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "greed_monsters",
@@ -320,7 +320,7 @@
    "unit": "x",
    "system": "shrines",
    "note": "Greed Shrine: the stage's monster directors earn this much more credit (stacks per shrine).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "challenge_shrines_per_stage",
@@ -328,7 +328,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Challenge Shrines per stage: a champion wave; kill it and every player gets an upgrade pick.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "challenge_credit",
@@ -336,7 +336,7 @@
    "unit": "credits",
    "system": "shrines",
    "note": "Challenge Shrine budget, times the run's difficulty coefficient: a champion from the stage's monsters that fits (elite when it can), else the usual Shrine of Combat pick (which uses 100).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "cursed_shrines_per_stage",
@@ -344,7 +344,7 @@
    "unit": "count",
    "system": "shrines",
    "note": "Megabonk Cursed Shrines per stage (our reading of Megabonk's curse: risk for reward).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "cursed_shrine_picks",
@@ -352,7 +352,7 @@
    "unit": "picks",
    "system": "shrines",
    "note": "Upgrade picks every player gets from a Cursed Shrine.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "cursed_monsters",
@@ -360,7 +360,7 @@
    "unit": "x",
    "system": "shrines",
    "note": "Cursed Shrine: the stage's monster directors earn this much more credit, and elites cost half as much, for the rest of the stage.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "final_swarm_credit",
@@ -368,7 +368,7 @@
    "unit": "credits/s",
    "system": "bosses",
    "note": "Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "look_saturation",
@@ -376,7 +376,7 @@
    "unit": "-100..100",
    "system": "look",
    "note": "Colour saturation added on stages (Megabonk's bright colours).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "look_contrast",
@@ -384,7 +384,7 @@
    "unit": "-100..100",
    "system": "look",
    "note": "Contrast added on stages.",
-   "verified": false
+   "verified": true
   },
   {
    "id": "look_exposure",
@@ -392,7 +392,7 @@
    "unit": "EV",
    "system": "look",
    "note": "Brightness added on stages (HDR grading, which the stages checked use: lakes, foggyswamp, sulfurpools, dampcavesimple).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "look_brightness",
@@ -400,7 +400,7 @@
    "unit": "-100..100",
    "system": "look",
    "note": "Brightness added on stages that grade in LDR (none of the stages checked so far).",
-   "verified": false
+   "verified": true
   },
   {
    "id": "look_fog",
@@ -408,7 +408,7 @@
    "unit": "x",
    "system": "look",
    "note": "Stage fog strength is multiplied by this. 1 = unchanged: lighter fog made Risk of Rain 2's stages darker (their fog carries much of the light).",
-   "verified": false
+   "verified": true
   }
  ]
 }

@@ -11,18 +11,18 @@ namespace RiskOfBonk.Generated
             new CharacterRow("sir_oofie", "Sir Oofie", new[] { "Knight" }, "Knight", "MercBody", "#9AA7B8", 203.0f, 1.6f, 0.0f, "A knight who goes oof.", "Knight_Default", "sword"),
             new CharacterRow("monke", "Monke", new[] { "Monke" }, "Monke", "CrocoBody", "#8B5A2B", 204.0f, 1.6f, 0.0f, "Return to monke.", "", "bananarang"),
             new CharacterRow("ninja", "Ninja", new[] { "Ninja" }, "Ninja", "Bandit2Body", "#3B3B58", 205.0f, 1.6f, 0.0f, "Stealthy, fast and sharp.", "", "katana"),
-            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast.", "", "slutty_rocket"),
+            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast.", "", "wireless_dagger"),
             new CharacterRow("robinette", "Robinette", new[] { "Robinette" }, "Robinette", "HuntressBody", "#4E9A51", 207.0f, 1.6f, 0.0f, "An archer of the woods.", "", "bow"),
             new CharacterRow("bandit", "Bandit", new[] { "Bandit" }, "Bandit", "Bandit2Body", "#7A4E2D", 208.0f, 1.6f, 0.0f, "Steal the show.", "", "shotgun"),
             new CharacterRow("birdo", "Birdo", new[] { "Birdo" }, "Birdo", "MageBody", "#5DADE2", 209.0f, 1.6f, 0.0f, "Flies high and calls the storm.", "", "lightning_staff"),
             new CharacterRow("noelle", "Noelle", new[] { "Noelle", "NoelleMesh" }, "Noelle", "MageBody", "#A9DFF5", 210.0f, 1.6f, 0.0f, "Cold as ice.", "", "frostwalker"),
-            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "One small step for bonk.", "", "space_noodle"),
+            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "One small step for bonk.", "", "black_hole"),
             new CharacterRow("vlad", "Vlad", new[] { "BloodMage" }, "BloodMage", "VoidSurvivorBody", "#8E1B2B", 212.0f, 1.6f, 0.0f, "A vampire with a thirst.", "", "blood_magic"),
-            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes.", "", "hero_sword"),
+            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes.", "", "aegis"),
             new CharacterRow("ogre", "Ogre", new[] { "Ogre", "Orc" }, "Ogre", "ToolbotBody", "#6E8B3D", 214.0f, 1.6f, 0.0f, "Big, heavy and loud.", "", "axe"),
             new CharacterRow("cl4nk", "CL4NK", new[] { "RobotCowboy", "CowboyLow" }, "RobotCowboy", "EngiBody", "#B0B7BF", 215.0f, 1.6f, 0.0f, "A robot who shoots first.", "", "revolver"),
             new CharacterRow("dicehead", "Dicehead", new[] { "Dicehead" }, "Dicehead", "CommandoBody", "#FFFFFF", 216.0f, 1.6f, 0.0f, "Rolls the dice.", "", "dice"),
-            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus.", "", "mine"),
+            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus.", "", "poison_flask"),
             new CharacterRow("bush", "Bush", new[] { "Sniperman" }, "Bush", "TreebotBody", "#2E7D32", 218.0f, 1.6f, 0.0f, "A bush with a plan.", "", "sniper"),
             new CharacterRow("sir_chadwell", "Sir Chadwell", new[] { "CorruptedKnight" }, "CorruptedKnight", "LoaderBody", "#B8860B", 219.0f, 1.6f, 0.0f, "A noble chad with a cursed blade.", "", "corrupted_sword"),
         };
@@ -88,6 +88,9 @@ namespace RiskOfBonk.Generated
             new WeaponRow("frostwalker", "Frostwalker", "Frostwalker", "aura", 1.0f, 0.9f, 3.0f, 1, 0.0f, 8.0f, "", "RoR2/Base/Jellyfish/JellyfishNova.prefab", "slow", false, "", "A freezing aura that slows."),
             new WeaponRow("blood_magic", "Blood Magic", "BloodMagic", "aura", 1.6f, 1.0f, 3.0f, 1, 0.0f, 7.0f, "", "RoR2/Base/Vagrant/VagrantNovaExplosion.prefab", "bleed", false, "", "A blood nova that makes enemies bleed."),
             new WeaponRow("lightning_staff", "Lightning Staff", "LightningStaff", "lightning", 2.0f, 0.6f, 2.5f, 1, 0.0f, 40.0f, "", "", "none", false, "", "Chain lightning that jumps between enemies."),
+            new WeaponRow("wireless_dagger", "Wireless Dagger", "BluetoothDagger", "projectile", 1.3f, 0.5f, 2.0f, 2, 20.0f, 100.0f, "RoR2/Base/Dagger/DaggerProjectile.prefab", "", "none", false, "", "Smart daggers that home in on enemies."),
+            new WeaponRow("black_hole", "Black Hole", "BlackHole", "projectile", 1.0f, 2.5f, 6.0f, 1, 0.0f, 100.0f, "RoR2/Base/Blackhole/GravSphere.prefab", "", "none", false, "", "A black hole that pulls enemies in."),
+            new WeaponRow("aegis", "Aegis", "Aegis", "melee", 2.6f, 0.8f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Loader/OmniImpactVFXLoader.prefab", "slow", false, "Play_loader_m1_swing", "Shield bashes that slow enemies."),
         };
         public static readonly BossRow[] Bosses =
         {

@@ -26,3 +26,11 @@ https://github.com/nesrak1/AssetsTools.NET, MIT License:
     SOFTWARE.
 ## classdata.tpk (lib/classdata.tpk)
 The Unity type database distributed with AssetsTools.NET / UABEA by nesrak1 (https://github.com/nesrak1/UABEA, MIT License, same terms as above). It describes Unity's built-in types and contains no game content.
+
+## RoR2BepInExPack 1.46.0 (bundled in the release, BepInEx/plugins/RiskofThunder-RoR2BepInExPack)
+https://github.com/risk-of-thunder/RoR2BepInExPack, MIT License, Copyright (c) 2023 Risk of Thunder (same terms as
+above). Fixes and compatibility layer that Risk of Rain 2 mods load with; the release ships it unchanged from its
+Thunderstore package.
+
+## Newtonsoft.Json (bundled with RoR2BepInExPack)
+https://github.com/JamesNK/Newtonsoft.Json, MIT License, Copyright (c) 2007 James Newton-King (same terms as above).
