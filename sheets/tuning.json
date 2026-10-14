@@ -115,6 +115,38 @@
    "verified": false
   },
   {
+   "id": "wallrun_time",
+   "value": 1.4,
+   "unit": "s",
+   "system": "movement",
+   "note": "Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing).",
+   "verified": false
+  },
+  {
+   "id": "wallrun_fall",
+   "value": 1.5,
+   "unit": "m/s",
+   "system": "movement",
+   "note": "Fastest you sink while wallrunning.",
+   "verified": false
+  },
+  {
+   "id": "wallrun_min_speed",
+   "value": 0.8,
+   "unit": "x walk speed",
+   "system": "movement",
+   "note": "Wallrunning needs at least this much speed along the wall.",
+   "verified": false
+  },
+  {
+   "id": "wallrun_kick",
+   "value": 7.0,
+   "unit": "m/s",
+   "system": "movement",
+   "note": "Letting go of Jump during a wallrun pushes you off the wall (and up) by this much.",
+   "verified": false
+  },
+  {
    "id": "horde_credit",
    "value": 1.8,
    "unit": "x director credit",

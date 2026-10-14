@@ -10,7 +10,7 @@ namespace RiskOfBonk
     /// <summary>
     /// Megabonk movement for player bodies (sheets/tuning.json, system "movement"): always at full speed (the Sprint key
     /// becomes Slide), slides that boost and speed up downhill, momentum that fades instead of being cut off, bunny hops
-    /// that keep it, and air strafing that steers without slowing you down.
+    /// that keep it, air strafing that steers without slowing you down, and hold-Jump wallrunning.
     /// RoR2 moves a body on the client that has authority over it, so all of this runs there; nothing new is networked.
     /// RoR2 still computes gravity and vertical speed; only the horizontal velocity is replaced.
     /// </summary>
@@ -23,8 +23,9 @@ namespace RiskOfBonk
 
         sealed class State
         {
-            public bool sliding;
-            public float boostReady, landedAt = -1f;
+            public bool sliding, wallrunning;
+            public float boostReady, landedAt = -1f, wallTime;
+            public Vector3 wallNormal;
         }
 
         static readonly ConditionalWeakTable<CharacterMotor, State> states = new ConditionalWeakTable<CharacterMotor, State>();
@@ -43,6 +44,23 @@ namespace RiskOfBonk
 
         /// <summary>True while this body is sliding (for effects and animation).</summary>
         public static bool IsSliding(CharacterMotor m) => m && states.TryGetValue(m, out var s) && s.sliding;
+
+        /// <summary>A wall beside the body (left or right of where it is going), or none.</summary>
+        static bool FindWall(CharacterMotor m, Vector3 along, out Vector3 normal)
+        {
+            normal = Vector3.zero;
+            if (along.sqrMagnitude < 0.01f) return false;
+            var side = Vector3.Cross(Vector3.up, along.normalized);
+            float reach = (m.capsuleCollider ? m.capsuleCollider.radius : 0.5f) + 0.7f;
+            var origin = m.body.corePosition;
+            foreach (var dir in new[] { side, -side })
+                if (Physics.Raycast(origin, dir, out var hit, reach, LayerIndex.world.mask, QueryTriggerInteraction.Ignore) && Mathf.Abs(hit.normal.y) < 0.35f)
+                {
+                    normal = hit.normal;
+                    return true;
+                }
+            return false;
+        }
 
         [HarmonyPatch]
         static class Patches
@@ -128,6 +146,33 @@ namespace RiskOfBonk
                     float keep = Mathf.Max(speed, walk);
                     h = before + dir * (m.acceleration * Tune.AirControl * deltaTime);
                     if (h.magnitude > keep) h = h.normalized * keep;
+
+                    // Hold Jump next to a wall: run along it, barely sinking, for a while.
+                    var bank = m.body.inputBank;
+                    bool jumpHeld = bank && bank.jump.down;
+                    Vector3 wallNormal = Vector3.zero;
+                    bool wall = jumpHeld && st.wallTime < Tune.WallrunTime && FindWall(m, h, out wallNormal);
+                    Vector3 alongWall = wall ? Vector3.ProjectOnPlane(h, wallNormal) : Vector3.zero;
+                    if (wall && alongWall.magnitude >= walk * Tune.WallrunMinSpeed)
+                    {
+                        if (!st.wallrunning && LogSpeed) Log.Info("move: wallrun start");
+                        st.wallrunning = true;
+                        st.wallNormal = wallNormal;
+                        st.wallTime += deltaTime;
+                        h = alongWall.normalized * Mathf.Max(alongWall.magnitude, speed) - wallNormal * 0.5f; // keep the speed, stick to the wall
+                        m.velocity = new Vector3(m.velocity.x, Mathf.Max(m.velocity.y, -Tune.WallrunFall), m.velocity.z);
+                    }
+                    else if (st.wallrunning)
+                    {
+                        st.wallrunning = false;
+                        if (LogSpeed) Log.Info($"move: wallrun end after {st.wallTime:F2} s at {h.magnitude:F1} m/s ({(jumpHeld ? "wall or time ran out" : "let go: kick")})");
+                        if (!jumpHeld)
+                        {
+                            // Let go: kicked off the wall and up a little.
+                            h += st.wallNormal * Tune.WallrunKick;
+                            m.velocity = new Vector3(m.velocity.x, Mathf.Max(m.velocity.y, Tune.WallrunKick), m.velocity.z);
+                        }
+                    }
                 }
 
                 float cap = walk * Tune.MaxSpeed;
@@ -144,7 +189,11 @@ namespace RiskOfBonk
             [HarmonyPostfix, HarmonyPatch(typeof(CharacterMotor), "OnLanded")]
             static void Landed(CharacterMotor __instance)
             {
-                if (Applies(__instance)) states.GetOrCreateValue(__instance).landedAt = Time.fixedTime;
+                if (!Applies(__instance)) return;
+                var st = states.GetOrCreateValue(__instance);
+                st.landedAt = Time.fixedTime;
+                st.wallTime = 0f;
+                st.wallrunning = false;
             }
 
             // Jumps keep momentum (bunny hop, slide jump) and are a bit higher.

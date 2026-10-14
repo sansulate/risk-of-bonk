@@ -128,6 +128,14 @@ namespace RiskOfBonk.Generated
         public static float MaxSpeed = 3.5f;
         /// <summary>Megabonk jumps are a bit higher than RoR2's. (x jump power)</summary>
         public static float JumpHeight = 1.15f;
+        /// <summary>Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing). (s)</summary>
+        public static float WallrunTime = 1.4f;
+        /// <summary>Fastest you sink while wallrunning. (m/s)</summary>
+        public static float WallrunFall = 1.5f;
+        /// <summary>Wallrunning needs at least this much speed along the wall. (x walk speed)</summary>
+        public static float WallrunMinSpeed = 0.8f;
+        /// <summary>Letting go of Jump during a wallrun pushes you off the wall (and up) by this much. (m/s)</summary>
+        public static float WallrunKick = 7.0f;
         /// <summary>Monster spawn budget over time (stage and Teleporter directors without a boss squad). (x director credit)</summary>
         public static float HordeCredit = 1.8f;
         /// <summary>Most monsters one director wave may spawn (RoR2 default 6). Cheap monsters are no longer skipped. (monsters)</summary>

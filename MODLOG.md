@@ -191,4 +191,10 @@
 - Update 9 (2026-10-14): gamepad picks in the level-up menu: X / Y / B (JoystickButton2/3/1, Unity's legacy input)
   pick the left / middle / right card; cards show "1 / X" etc. Keyboard checked; gamepad not checked (no controller
   on this PC).
+- Update 10 (2026-10-14): wallrun (BonkMovement air branch). In the air with Jump held, a raycast left/right of the
+  horizontal velocity (capsule radius + 0.7 m, world layer, |normal.y| < 0.35) finds a wall; with at least
+  wallrun_min_speed x walk along it, velocity is projected along the wall (speed kept, slight push into it) and the
+  fall is capped at wallrun_fall, for up to wallrun_time per landing. Releasing Jump mid-run kicks off the wall and up
+  (wallrun_kick). Checked with test key F4 (a 60 m test wall beside you) + testmove log: two runs of 1.42 s at
+  10.2 m/s, ended by the time limit.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

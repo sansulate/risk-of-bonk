@@ -8,7 +8,7 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
-    /// F5 toggles the Megabonk look, F6 puts you in the next Megabonk shrine, F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
+    /// F4 puts a long wall 2.5 m to your right (for wallrunning), F5 toggles the Megabonk look, F6 puts you in the next Megabonk shrine, F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
     /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons, F12 goes to the next stage.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
@@ -27,6 +27,7 @@ namespace RiskOfBonk
                 Log.Info("test: weapon assets checked");
             }
             if (!On || !Run.instance || !NetworkServer.active) return;
+            if (Input.GetKeyDown(KeyCode.F4)) TestWall();
             if (Input.GetKeyDown(KeyCode.F5)) StageLook.Toggle();
             if (Input.GetKeyDown(KeyCode.F6)) GoToShrine();
             if (Input.GetKeyDown(KeyCode.F7)) Time.timeScale = Time.timeScale < 1f ? 1f : 0.15f;
@@ -43,6 +44,20 @@ namespace RiskOfBonk
             if (!tm) return;
             ulong need = tm.GetTeamNextLevelExperience(TeamIndex.Player) - tm.GetTeamCurrentLevelExperience(TeamIndex.Player);
             tm.GiveTeamExperience(TeamIndex.Player, need + 1);
+        }
+
+        static void TestWall()
+        {
+            var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
+            if (!body || !body.inputBank) return;
+            var fwd = body.inputBank.aimDirection; fwd.y = 0f; fwd.Normalize();
+            var right = Vector3.Cross(Vector3.up, fwd);
+            var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            wall.name = "RiskOfBonkTestWall";
+            wall.layer = LayerIndex.world.intVal;
+            wall.transform.position = body.footPosition + right * 3f + fwd * 25f + Vector3.up * 6f;
+            wall.transform.rotation = Quaternion.LookRotation(fwd);
+            wall.transform.localScale = new Vector3(1f, 14f, 60f);
         }
 
         static int shrineIndex;

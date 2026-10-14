@@ -21,7 +21,8 @@ brings its characters and its look into it, read from your own Megabonk install 
   own grading; setting MegabonkLook, numbers in `sheets/tuning.json`).
 - **Megabonk movement.** You always run at full speed (no sprint toggle), and the **Sprint key slides**: a slide
   gives a burst of speed and keeps building speed down slopes. Momentum fades instead of stopping dead, bunny hops
-  keep it, and air strafing steers without slowing you down. Jumps are a little higher. Numbers in `sheets/tuning.json`.
+  keep it, and air strafing steers without slowing you down. Jumps are a little higher. In the air, **hold Jump next to
+  a wall to wallrun** along it; let go to kick off. Numbers in `sheets/tuning.json`.
 - **Megabonk XP.** Kills drop XP gems on the ground; walk near them and they fly to you. A Megabonk XP bar runs
   across the top of the screen, pulses as gems land and bursts into "LEVEL UP!" when you level.
 - **Megabonk level-up menu.** Every level-up pops up three cards, picked with **1, 2 or 3**: Megabonk tomes (Damage,
