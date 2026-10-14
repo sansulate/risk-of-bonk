@@ -208,6 +208,12 @@ namespace RiskOfBonk
             mesh.bindposes = used.Select(i => mT[i].worldToLocalMatrix * go.transform.localToWorldMatrix).ToArray();
             mesh.RecalculateBounds();
 
+            // Megabonk's own rest pose, for playing Megabonk's clips on this skeleton (MegabonkAnimator).
+            var restBones = Enumerable.Range(0, raw.Bones.Count).Where(i => mT[i] != null).ToArray();
+            var restPos = restBones.Select(i => mT[i].localPosition).ToArray();
+            var restRot = restBones.Select(i => mT[i].localRotation).ToArray();
+            var restScale = restBones.Select(i => mT[i].localScale).ToArray();
+
             // Pose the Megabonk skeleton like the survivor's bind pose: limb and neck directions, parent first.
             var model = modelRoot;
             Vector3 MPos(int i) => model.InverseTransformPoint(mT[i].position);
@@ -241,6 +247,11 @@ namespace RiskOfBonk
             var pairs = mMap.Where(kv => tMap.ContainsKey(kv.Key)).OrderBy(kv => Depth(mParents, kv.Value)).ToList();
             var drv = go.AddComponent<MegabonkRig>();
             drv.modelRoot = modelRoot;
+            drv.skeleton = rig;
+            drv.allBones = restBones.Select(i => mT[i]).ToArray();
+            drv.restPos = restPos;
+            drv.restRot = restRot;
+            drv.restScale = restScale;
             drv.megabonk = pairs.Select(kv => mT[kv.Value]).ToArray();
             drv.survivor = pairs.Select(kv => tBones[tMap[kv.Key]]).ToArray();
             drv.survivorBind = pairs.Select(kv => tRot[tMap[kv.Key]]).ToArray();
@@ -284,8 +295,11 @@ namespace RiskOfBonk
     /// <summary>Copies a survivor skeleton's motion onto the Megabonk skeleton after the survivor's animation ran.</summary>
     public sealed class MegabonkRig : MonoBehaviour
     {
-        public Transform modelRoot;
+        public Transform modelRoot, skeleton;
         public Transform[] megabonk, survivor;
+        public Transform[] allBones;            // every Megabonk bone, with its rest pose (local)
+        public Vector3[] restPos, restScale;
+        public Quaternion[] restRot;
         public Quaternion[] survivorBind, megabonkRest; // model space
         public int hips = -1;
         public Vector3 hipsRest, survivorHipsBind;      // model space

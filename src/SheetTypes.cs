@@ -83,4 +83,11 @@ namespace RiskOfBonk.Generated
             Spread = spread; Range = range; Prefab = prefab; Effect = effect; DamageType = damageType; Pierce = pierce; Sound = sound; Description = description;
         }
     }
+    /// <summary>One row of sheets/animations.json: a clip role and the words that pick a Megabonk clip for it.</summary>
+    public sealed class AnimRow
+    {
+        public readonly string Id;
+        public readonly string[] ClipWords;
+        public AnimRow(string id, string[] clipWords) { Id = id; ClipWords = clipWords; }
+    }
 }

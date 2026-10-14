@@ -18,7 +18,14 @@
    "description": "Pure gains. Megachad flexes through the horde.",
    "mbAssetsVerified": true,
    "startWeapon": "aura",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Walking",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "fox",
@@ -35,7 +42,14 @@
    "description": "Quick and sly, with a staff of fire.",
    "mbAssetsVerified": true,
    "startWeapon": "firestaff",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "FoxIdle",
+    "FoxRun",
+    "FoxJump4",
+    "FoxFalling",
+    "FoxGrind2"
+   ]
   },
   {
    "id": "calcium",
@@ -52,7 +66,15 @@
    "description": "A skeleton with a grudge and a bone to throw.",
    "mbAssetsVerified": true,
    "startWeapon": "bone",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "A_Cruise",
+    "A_Push",
+    "A_Jump",
+    "A_Falling",
+    "A_Idle",
+    "A_Grinding"
+   ]
   },
   {
    "id": "sir_oofie",
@@ -70,7 +92,14 @@
    "mbAssetsVerified": true,
    "mbTexture": "Knight_Default",
    "startWeapon": "sword",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "KnightIdle",
+    "KnightRun",
+    "KnightJump",
+    "KnightFalling",
+    "KnightGrind"
+   ]
   },
   {
    "id": "monke",
@@ -87,7 +116,14 @@
    "description": "Return to monke.",
    "mbAssetsVerified": true,
    "startWeapon": "bananarang",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Walk",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "ninja",
@@ -104,7 +140,14 @@
    "description": "Stealthy, fast and sharp.",
    "mbAssetsVerified": true,
    "startWeapon": "katana",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle2",
+    "Run",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "tony_mczoom",
@@ -122,7 +165,14 @@
    "description": "Gotta go fast.",
    "mbAssetsVerified": true,
    "startWeapon": "wireless_dagger",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "HoverIdle",
+    "HoverMove",
+    "HoverJump",
+    "HoverFalling",
+    "HoverGrind"
+   ]
   },
   {
    "id": "robinette",
@@ -139,7 +189,14 @@
    "description": "An archer of the woods.",
    "mbAssetsVerified": true,
    "startWeapon": "bow",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Running",
+    "Jump",
+    "Falling",
+    "Grinding"
+   ]
   },
   {
    "id": "bandit",
@@ -156,7 +213,15 @@
    "description": "Steal the show.",
    "mbAssetsVerified": true,
    "startWeapon": "shotgun",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Run",
+    "Jump",
+    "Falling",
+    "Grind",
+    "RunForEnemyAnimation"
+   ]
   },
   {
    "id": "birdo",
@@ -173,7 +238,14 @@
    "description": "Flies high and calls the storm.",
    "mbAssetsVerified": true,
    "startWeapon": "lightning_staff",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "BirdoIdle",
+    "BirdoRun",
+    "BirdoJump",
+    "BirdoFall",
+    "BirdoGrind"
+   ]
   },
   {
    "id": "noelle",
@@ -191,7 +263,14 @@
    "description": "Cold as ice.",
    "mbAssetsVerified": true,
    "startWeapon": "frostwalker",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "NoelleIdle",
+    "NoelleRun",
+    "NoelleJump",
+    "NoelleFalling",
+    "NoelleGrind"
+   ]
   },
   {
    "id": "spaceman",
@@ -208,7 +287,14 @@
    "description": "One small step for bonk.",
    "mbAssetsVerified": true,
    "startWeapon": "black_hole",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle2",
+    "Run",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "vlad",
@@ -225,7 +311,14 @@
    "description": "A vampire with a thirst.",
    "mbAssetsVerified": true,
    "startWeapon": "blood_magic",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Run",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "athena",
@@ -242,7 +335,14 @@
    "description": "Divine strikes.",
    "mbAssetsVerified": true,
    "startWeapon": "aegis",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "IdleNew2",
+    "Running",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "ogre",
@@ -260,7 +360,14 @@
    "description": "Big, heavy and loud.",
    "mbAssetsVerified": true,
    "startWeapon": "axe",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Orc_Idle",
+    "Orc_Walk",
+    "Orc_Jump",
+    "Orc_Falling",
+    "Orc_Grind"
+   ]
   },
   {
    "id": "cl4nk",
@@ -278,7 +385,13 @@
    "description": "A robot who shoots first.",
    "mbAssetsVerified": true,
    "startWeapon": "revolver",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "CowboyIdle",
+    "CowboyRun",
+    "CowboyJump",
+    "CowboyFalling"
+   ]
   },
   {
    "id": "dicehead",
@@ -295,7 +408,14 @@
    "description": "Rolls the dice.",
    "mbAssetsVerified": true,
    "startWeapon": "dice",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle2",
+    "Run",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "amog",
@@ -312,7 +432,14 @@
    "description": "Sus.",
    "mbAssetsVerified": true,
    "startWeapon": "poison_flask",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Running",
+    "Jump",
+    "Falling",
+    "Grind"
+   ]
   },
   {
    "id": "bush",
@@ -329,7 +456,14 @@
    "description": "A bush with a plan.",
    "mbAssetsVerified": true,
    "startWeapon": "sniper",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "Idle",
+    "Moving",
+    "Jumping",
+    "Falling",
+    "Sliding"
+   ]
   },
   {
    "id": "sir_chadwell",
@@ -346,7 +480,14 @@
    "description": "A noble chad with a cursed blade.",
    "mbAssetsVerified": true,
    "startWeapon": "corrupted_sword",
-   "startWeaponVerified": true
+   "startWeaponVerified": true,
+   "mbClips": [
+    "KnightIdle",
+    "KnightRun",
+    "KnightJump",
+    "KnightFalling",
+    "KnightGrind"
+   ]
   }
  ]
 }

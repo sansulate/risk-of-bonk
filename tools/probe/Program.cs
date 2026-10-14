@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.Globalization;
 using System.IO;
@@ -12,6 +13,40 @@ CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
 string mb = Environment.GetEnvironmentVariable("RISKOFBONK_MEGABONK") ?? @"C:\Program Files (x86)\Steam\steamapps\common\Megabonk";
+if (args.Length > 0 && args[0] == "anim")
+{
+    var lib2 = new MegabonkLibrary(s => Console.WriteLine("  " + s));
+    lib2.Open(mb, Path.Combine(repo, "lib", "classdata.tpk"));
+    var doc2 = JsonDocument.Parse(File.ReadAllText(Path.Combine(repo, "sheets", "characters.json")));
+    foreach (var row in doc2.RootElement.GetProperty("rows").EnumerateArray())
+    {
+        string id = row.GetProperty("id").GetString();
+        if (args.Length > 1 && !args.Skip(1).Contains(id)) continue;
+        var m = lib2.FindModel(row.GetProperty("mbNameHints").EnumerateArray().Select(e => e.GetString()).ToArray());
+        if (m == null) continue;
+        // every suffix path of every bone
+        var paths = new Dictionary<uint, string>();
+        for (int i = 0; i < m.Bones.Count; i++)
+        {
+            var parts = new List<string>();
+            for (int b = i; b >= 0; b = m.Bones[b].Parent)
+            {
+                parts.Insert(0, m.Bones[b].Name);
+                paths[MegabonkLibrary.PathHash(string.Join("/", parts))] = string.Join("/", parts);
+            }
+        }
+        var clips = lib2.FindClips(m);
+        foreach (var c in clips)
+        {
+            int matched = c.Tracks.Count(t => paths.ContainsKey(t.PathHash));
+            var rot = c.Tracks.FirstOrDefault(t => t.Kind == 2);
+            string q = rot == null ? "-" : string.Join(" ", Enumerable.Range(0, 3).Select(fr => { int o = fr * (c.Frames / 3) * 4; var v = rot.Values; return $"|q|={Math.Sqrt(v[o]*v[o]+v[o+1]*v[o+1]+v[o+2]*v[o+2]+v[o+3]*v[o+3]):0.000}"; }));
+            Console.WriteLine($"{id,-12} {c.Name,-14} len {c.Length:0.00}s loop {c.Loop} tracks {c.Tracks.Count} matched {matched} kinds {string.Join("", c.Tracks.Select(t => t.Kind))} {q}");
+            foreach (var t in c.Tracks.Where(t => !paths.ContainsKey(t.PathHash)).Take(3)) Console.WriteLine($"    unmatched {t.PathHash} kind {t.Kind}");
+        }
+    }
+    return;
+}
 string outDir = args.Length > 0 ? args[0] : "out";
 var only = args.Skip(1).ToHashSet();
 Directory.CreateDirectory(outDir);

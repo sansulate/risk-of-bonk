@@ -22,6 +22,7 @@ REQUIRED = {
     "rarities": ["id", "label", "color", "weight", "points", "verified"],
     "weapons": ["id", "displayName", "mbIcon", "kind", "damage", "interval", "cooldown", "count", "range", "description", "verified"],
     "bosses": ["id", "displayName", "subtitle", "role", "mbNameHints", "rorBody", "rorMaster", "airborne", "healthBoost", "verified"],
+    "animations": ["id", "clipWords", "plays", "verified"],
 }
 STATS = {"damage", "cooldown", "crit", "health", "regen", "armor", "speed", "shield", "evasion", "luck"}
 
@@ -74,6 +75,9 @@ def preflight(s):
             errors.append(f"bosses[{r['id']}].role: '{r['role']}' is not teleporter or final")
         if r["role"] == "final" and not r.get("replaces"):
             errors.append(f"bosses[{r['id']}].replaces: a final boss needs the bodies it replaces")
+    for r in s["animations"]:
+        if r["id"] not in ("idle", "run", "jump", "fall", "slide"):
+            errors.append(f"animations[{r['id']}]: not a role MegabonkAnimator knows (idle, run, jump, fall, slide)")
     for r in s["upgrades"]:
         if r["stat"] not in STATS:
             errors.append(f"upgrades[{r['id']}].stat: '{r['stat']}' is not one of {sorted(STATS)}")
@@ -128,6 +132,10 @@ def generate(s):
     for r in s["bosses"]:
         L.append(f"            new BossRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['subtitle'])}, {cs(r['mbNameHints'])}, {cs(r.get('mbTexture', ''))}, "
                  f"{cs(r['rorBody'])}, {cs(r['rorMaster'])}, {cs(r['airborne'])}, {int(r['healthBoost'])}, {cs(r['role'])}, {cs(r.get('replaces', []))}, {cs(r.get('retarget', True))}),")
+    L.append("        };")
+    L.append("        public static readonly AnimRow[] Animations =\n        {")
+    for r in s["animations"]:
+        L.append(f"            new AnimRow({cs(r['id'])}, {cs(r['clipWords'])}),")
     L.append("        };")
     L.append("    }")
     L.append("    /// <summary>sheets/tuning.json, one field per row.</summary>")

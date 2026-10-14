@@ -56,7 +56,7 @@ namespace RiskOfBonk
     /// game code. Nothing is copied to disk: data lives in memory for the session.
     /// Runs on a worker thread; it never touches UnityEngine.
     /// </summary>
-    public sealed class MegabonkLibrary
+    public sealed partial class MegabonkLibrary
     {
         const int GameObjectId = 1, TransformId = 4, MeshRendererId = 23, MeshFilterId = 33, MeshId = 43,
                   MaterialId = 21, Texture2DId = 28, SkinnedMeshRendererId = 137, SpriteId = 213, RectTransformId = 224;

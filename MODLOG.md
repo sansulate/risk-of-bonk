@@ -228,4 +228,13 @@
   BonkMovement rebuilt from them (gravityScale per step for Megabonk's gravity). Checked with tools/ingame/movetest.sh
   on a Bonk style map (testmove log every 0.1 s): 0 to 10 m/s in about 0.1 s, stop in about 0.25 s after the 0.3 s
   landing grace, jump apex 1.26 m, slide boost 4 m/s and downhill gain, bunny hops keep 10 m/s.
+- Update 14 (2026-10-15): Megabonk's own animations. Megabonk has no Avatar assets: its character clips are generic
+  (Transform curves keyed by CRC-32 path hashes), not humanoid. MegabonkAnimations.cs reads each character's
+  AnimatorController (the Animator on its prefab in sharedassets1) and decodes its clips (streamed cubic segments,
+  dense samples, constants) into 30 fps tracks; MegabonkAnimator plays them on the rebuilt Megabonk skeleton (the
+  survivor's poses no longer drive it) with roles from sheets/animations.json: idle, run (speed-scaled), jump (once),
+  fall, slide. All 20 characters have 5 clips (mbClips in characters.json). No attack clips exist in Megabonk;
+  slides use the rail Grind pose (Bush has a real Sliding clip). Spawned bodies set themselves up in Awake (only
+  serialized fields survive Instantiate). Checked in game: Sir Oofie switches Idle/Run/Jump/Falling/Grind as he
+  moves (anim log with testmove) and shows Megabonk's run and idle poses.
 

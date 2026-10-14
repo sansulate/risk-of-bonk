@@ -433,6 +433,38 @@
    "system": "look",
    "note": "Stage fog strength is multiplied by this. 1 = unchanged: lighter fog made Risk of Rain 2's stages darker (their fog carries much of the light).",
    "verified": true
+  },
+  {
+   "id": "anim_run_speed",
+   "value": 1.0,
+   "unit": "m/s",
+   "system": "animation",
+   "note": "Above this ground speed the run clip plays instead of idle. Ours: Megabonk's Animator transitions are not read.",
+   "verified": true
+  },
+  {
+   "id": "anim_fall_speed",
+   "value": 0.5,
+   "unit": "m/s",
+   "system": "animation",
+   "note": "In the air, rising faster than this plays the jump clip, otherwise the falling clip. Ours: Megabonk's Animator transitions are not read.",
+   "verified": true
+  },
+  {
+   "id": "anim_blend",
+   "value": 0.15,
+   "unit": "s",
+   "system": "animation",
+   "note": "Crossfade time between clips. Ours: Megabonk's Animator transitions are not read.",
+   "verified": true
+  },
+  {
+   "id": "anim_hold",
+   "value": 0.12,
+   "unit": "s",
+   "system": "animation",
+   "note": "A clip change has to be wanted this long before it happens (jumps start at once), so walking at the edge of run speed does not flicker. Ours: Megabonk's Animator transitions are not read.",
+   "verified": true
   }
  ]
 }

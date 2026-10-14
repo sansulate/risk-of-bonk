@@ -1,0 +1,52 @@
+{
+ "sheet": "animations",
+ "note": "Megabonk's own animation clips on the Megabonk survivors (MegabonkAnimator). Each Megabonk character's AnimatorController (its Animator on the character prefab in Megabonk's sharedassets1) holds five generic clips; a clip takes the first role whose clipWords appear in its name. Megabonk has no attack clips (weapons fire by themselves), so attacking keeps the idle/run animation. The clips each character uses are in characters.json (mbClips).",
+ "rows": [
+  {
+   "id": "idle",
+   "clipWords": [
+    "idle"
+   ],
+   "plays": "standing still on the ground",
+   "verified": true
+  },
+  {
+   "id": "run",
+   "clipWords": [
+    "run",
+    "walk",
+    "moving",
+    "move",
+    "cruise"
+   ],
+   "plays": "moving on the ground; playback speed follows speed / run_speed (0.6x to 1.8x)",
+   "verified": true
+  },
+  {
+   "id": "jump",
+   "clipWords": [
+    "jump"
+   ],
+   "plays": "in the air while rising faster than anim_fall_speed (played once, holds its last frame)",
+   "verified": true
+  },
+  {
+   "id": "fall",
+   "clipWords": [
+    "fall"
+   ],
+   "plays": "in the air otherwise",
+   "verified": true
+  },
+  {
+   "id": "slide",
+   "clipWords": [
+    "slide",
+    "sliding",
+    "grind"
+   ],
+   "plays": "sliding. Megabonk characters have no slide clip of their own, only the rail Grind pose (crouched, gliding), which stands in for it (Bush has a real Sliding clip)",
+   "verified": true
+  }
+ ]
+}

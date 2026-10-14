@@ -99,6 +99,14 @@ namespace RiskOfBonk.Generated
             new BossRow("ghost_king", "Ghost King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_gold", "BrotherBody", "BrotherMaster", false, 0, "final", new[] { "BrotherBody", "BrotherHurtBody", "BrotherGlassBody" }, true),
             new BossRow("shadow_king", "Shadow King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_black", "FalseSonBossBody", "FalseSonBossMaster", false, 0, "final", new[] { "FalseSonBossBody", "FalseSonBossBodyLunarShard", "FalseSonBossBodyBrokenLunarShard" }, true),
         };
+        public static readonly AnimRow[] Animations =
+        {
+            new AnimRow("idle", new[] { "idle" }),
+            new AnimRow("run", new[] { "run", "walk", "moving", "move", "cruise" }),
+            new AnimRow("jump", new[] { "jump" }),
+            new AnimRow("fall", new[] { "fall" }),
+            new AnimRow("slide", new[] { "slide", "sliding", "grind" }),
+        };
     }
     /// <summary>sheets/tuning.json, one field per row.</summary>
     public static class Tune
@@ -211,5 +219,13 @@ namespace RiskOfBonk.Generated
         public static float LookBrightness = 12.0f;
         /// <summary>Stage fog strength is multiplied by this. 1 = unchanged: lighter fog made Risk of Rain 2's stages darker (their fog carries much of the light). (x)</summary>
         public static float LookFog = 1.0f;
+        /// <summary>Above this ground speed the run clip plays instead of idle. Ours: Megabonk's Animator transitions are not read. (m/s)</summary>
+        public static float AnimRunSpeed = 1.0f;
+        /// <summary>In the air, rising faster than this plays the jump clip, otherwise the falling clip. Ours: Megabonk's Animator transitions are not read. (m/s)</summary>
+        public static float AnimFallSpeed = 0.5f;
+        /// <summary>Crossfade time between clips. Ours: Megabonk's Animator transitions are not read. (s)</summary>
+        public static float AnimBlend = 0.15f;
+        /// <summary>A clip change has to be wanted this long before it happens (jumps start at once), so walking at the edge of run speed does not flicker. Ours: Megabonk's Animator transitions are not read. (s)</summary>
+        public static float AnimHold = 0.12f;
     }
 }

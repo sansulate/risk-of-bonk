@@ -128,7 +128,7 @@ namespace RiskOfBonk
             string weapon = start >= 0 ? Sheets.Weapons[start].DisplayName : row.StartWeapon;
             Plugin.Tokens[tok + "_DESC"] = row.Description + " Starts with the <style=cIsDamage>" + weapon + "</style> on the primary skill."
                 + "\n\n<style=cSub>Every new weapon from a level-up pick takes the next skill slot (secondary, utility, special), up to four weapons. "
-                + "Megabonk character, read from your own Megabonk install; animations from " + MovesetLabel(row.MovesetBody) + ".</style>";
+                + "Megabonk character with its own Megabonk animations, read from your own Megabonk install; skeleton and hitbox from " + MovesetLabel(row.MovesetBody) + ".</style>";
             Plugin.Tokens[tok + "_OUTRO"] = "...and so " + row.DisplayName + " left, still bonking.";
             Plugin.Tokens[tok + "_FAIL"] = "...and so " + row.DisplayName + " vanished, bonked at last.";
             ColorUtility.TryParseHtmlString(row.PrimaryColor, out var color);
@@ -150,6 +150,11 @@ namespace RiskOfBonk
                 Reskin(displayModel, raw, mesh, row, lib);
                 FillLight(displayModel);
             }
+            // Megabonk's own animation clips for this character, when its skeleton could be rebuilt.
+            List<RawClip> clips;
+            lock (lib) clips = lib.FindClips(raw);
+            int animated = MegabonkAnimator.Attach(bodyModel, clips) + (displayModel != null ? MegabonkAnimator.Attach(displayModel, clips) : 0);
+            Log.Info($"{row.DisplayName}: Megabonk animations {(animated > 0 ? string.Join(", ", clips.Select(c => c.Name)) : "none (" + clips.Count + " clips, no rebuilt skeleton)")}");
 
             var def = ScriptableObject.CreateInstance<SurvivorDef>();
             def.cachedName = "RiskOfBonk" + id;
