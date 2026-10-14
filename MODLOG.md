@@ -197,4 +197,14 @@
   fall is capped at wallrun_fall, for up to wallrun_time per landing. Releasing Jump mid-run kicks off the wall and up
   (wallrun_kick). Checked with test key F4 (a 60 m test wall beside you) + testmove log: two runs of 1.42 s at
   10.2 m/s, ended by the time limit.
+- Update 11 (2026-10-14): more Megabonk shrines (names from Megabonk's files: ChargeShrine, MagnetShrine, ShrineMaoi,
+  GreedShrine, ChallengeShrine, CursedShrine). New kinds in Shrines.cs, 1 each per stage, stand 1.5 s
+  (shrine_use_seconds): Moai = every player a random tome at a rolled rarity (luck counts); Greed = every monster
+  CombatDirector on the stage gets goldRewardCoefficient x1.5 and creditMultiplier x1.5; Challenge = a runtime
+  CombatDirector (one wave, eliteBias 0.5) with challenge_credit (400) x difficulty, preferring a champion card from
+  ClassicStageInfo.monsterSelection, else SelectMonsterCardForCombatShrine; spawned masters tracked through
+  onSpawnedServer (no CombatSquad: it is a NetworkBehaviour); all dead -> everyone a bonus pick (nothing spawned in
+  10 s -> reward anyway). Checked in game: chat lines for all three, Moai gave "Common Armor Tome (+1)", Greed used,
+  Challenge sent 5 Golems and paid out once they died (test key F3 kills every monster). F6 now visits the rarest
+  shrine kind first. Not done: Cursed Shrine.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

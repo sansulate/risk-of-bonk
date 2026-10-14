@@ -283,6 +283,62 @@
    "verified": false
   },
   {
+   "id": "shrine_use_seconds",
+   "value": 1.5,
+   "unit": "s",
+   "system": "shrines",
+   "note": "Time to stand in a Moai, Greed or Challenge Shrine to use it.",
+   "verified": false
+  },
+  {
+   "id": "moai_shrines_per_stage",
+   "value": 1,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Moai Shrines per stage: every player gets a random tome at a rolled rarity (luck helps).",
+   "verified": false
+  },
+  {
+   "id": "greed_shrines_per_stage",
+   "value": 1,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Greed Shrines per stage: more gold and more monsters for the rest of the stage.",
+   "verified": false
+  },
+  {
+   "id": "greed_gold",
+   "value": 1.5,
+   "unit": "x",
+   "system": "shrines",
+   "note": "Greed Shrine: gold from monsters spawned afterwards is multiplied by this (stacks per shrine).",
+   "verified": false
+  },
+  {
+   "id": "greed_monsters",
+   "value": 1.5,
+   "unit": "x",
+   "system": "shrines",
+   "note": "Greed Shrine: the stage's monster directors earn this much more credit (stacks per shrine).",
+   "verified": false
+  },
+  {
+   "id": "challenge_shrines_per_stage",
+   "value": 1,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Challenge Shrines per stage: a champion wave; kill it and every player gets an upgrade pick.",
+   "verified": false
+  },
+  {
+   "id": "challenge_credit",
+   "value": 400.0,
+   "unit": "credits",
+   "system": "shrines",
+   "note": "Challenge Shrine budget, times the run's difficulty coefficient: a champion from the stage's monsters that fits (elite when it can), else the usual Shrine of Combat pick (which uses 100).",
+   "verified": false
+  },
+  {
    "id": "final_swarm_credit",
    "value": 12.0,
    "unit": "credits/s",

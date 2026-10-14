@@ -34,8 +34,10 @@ brings its characters and its look into it, read from your own Megabonk install 
   weapon you own levels it up. Equipment (Q) works as usual. Risk of Rain 2 survivors keep their own movesets.
   `sheets/weapons.json` (25 weapons), start weapons in `sheets/characters.json`.
 - **Megabonk shrines** on every stage, next to Risk of Rain 2's own shrines: **Charge Shrines** (stand in the golden
-  circle until it is charged and every player gets an upgrade pick) and a **Magnet Shrine** (stand in the blue one and
-  every XP gem on the map flies to you).
+  circle until it is charged and every player gets an upgrade pick), a **Magnet Shrine** (blue: every XP gem on the
+  map flies to you), a **Moai Shrine** (lilac: everyone gets a random tome), a **Greed Shrine** (green: more gold and
+  more monsters for the rest of the stage) and a **Challenge Shrine** (red: a wave of champions; beat it and everyone
+  gets an upgrade pick).
 - **Megabonk hordes.** More monsters per wave, more often, each with less health.
 - **Megabonk boss event at the Teleporter.** Instead of the vanilla boss, a Megabonk boss (Ancient Ent, Ghost Lord)
   arrives with a Megabonk swarm; the Teleporter finishes when it dies, with the normal boss rewards.
@@ -50,7 +52,7 @@ MegabonkBossEvent, MegabonkXp, MegabonkShrines, MegabonkLook.
 
 ## Planned next
 
-More Megabonk shrines and Megabonk chests alongside Risk of Rain 2's, Megabonk-styled
+Megabonk's Cursed Shrine and chests alongside Risk of Rain 2's, Megabonk-styled
 stage visuals, and Megabonk bosses for Voidling and
 the other final bosses.
 

@@ -170,6 +170,20 @@ namespace RiskOfBonk.Generated
         public static float MagnetShrinesPerStage = 1.0f;
         /// <summary>Time to stand in a Magnet Shrine to use it. (s)</summary>
         public static float MagnetShrineSeconds = 1.0f;
+        /// <summary>Time to stand in a Moai, Greed or Challenge Shrine to use it. (s)</summary>
+        public static float ShrineUseSeconds = 1.5f;
+        /// <summary>Megabonk Moai Shrines per stage: every player gets a random tome at a rolled rarity (luck helps). (count)</summary>
+        public static float MoaiShrinesPerStage = 1.0f;
+        /// <summary>Megabonk Greed Shrines per stage: more gold and more monsters for the rest of the stage. (count)</summary>
+        public static float GreedShrinesPerStage = 1.0f;
+        /// <summary>Greed Shrine: gold from monsters spawned afterwards is multiplied by this (stacks per shrine). (x)</summary>
+        public static float GreedGold = 1.5f;
+        /// <summary>Greed Shrine: the stage's monster directors earn this much more credit (stacks per shrine). (x)</summary>
+        public static float GreedMonsters = 1.5f;
+        /// <summary>Megabonk Challenge Shrines per stage: a champion wave; kill it and every player gets an upgrade pick. (count)</summary>
+        public static float ChallengeShrinesPerStage = 1.0f;
+        /// <summary>Challenge Shrine budget, times the run's difficulty coefficient: a champion from the stage's monsters that fits (elite when it can), else the usual Shrine of Combat pick (which uses 100). (credits)</summary>
+        public static float ChallengeCredit = 400.0f;
         /// <summary>Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient. (credits/s)</summary>
         public static float FinalSwarmCredit = 12.0f;
         /// <summary>Colour saturation added on stages (Megabonk's bright colours). (-100..100)</summary>

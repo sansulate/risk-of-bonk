@@ -8,7 +8,7 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
-    /// F4 puts a long wall 2.5 m to your right (for wallrunning), F5 toggles the Megabonk look, F6 puts you in the next Megabonk shrine, F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
+    /// F3 kills every monster, F4 puts a long wall 2.5 m to your right (for wallrunning), F5 toggles the Megabonk look, F6 puts you in a Megabonk shrine (rarest kind first), F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
     /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons, F12 goes to the next stage.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
@@ -27,6 +27,7 @@ namespace RiskOfBonk
                 Log.Info("test: weapon assets checked");
             }
             if (!On || !Run.instance || !NetworkServer.active) return;
+            if (Input.GetKeyDown(KeyCode.F3)) KillMonsters();
             if (Input.GetKeyDown(KeyCode.F4)) TestWall();
             if (Input.GetKeyDown(KeyCode.F5)) StageLook.Toggle();
             if (Input.GetKeyDown(KeyCode.F6)) GoToShrine();
@@ -44,6 +45,12 @@ namespace RiskOfBonk
             if (!tm) return;
             ulong need = tm.GetTeamNextLevelExperience(TeamIndex.Player) - tm.GetTeamCurrentLevelExperience(TeamIndex.Player);
             tm.GiveTeamExperience(TeamIndex.Player, need + 1);
+        }
+
+        static void KillMonsters()
+        {
+            foreach (var tc in new System.Collections.Generic.List<TeamComponent>(TeamComponent.GetTeamMembers(TeamIndex.Monster)))
+                if (tc && tc.body && tc.body.healthComponent) tc.body.healthComponent.Suicide();
         }
 
         static void TestWall()
@@ -67,6 +74,7 @@ namespace RiskOfBonk
             var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
             var pos = Shrines.Position(shrineIndex++);
             if (body && pos.HasValue) TeleportHelper.TeleportBody(body, pos.Value + Vector3.up * 1.5f);
+            shrineIndex = 0; // the shrine just visited is used up soon; the next press goes to the next rarest kind
         }
 
         static void GoToTeleporter()
