@@ -82,14 +82,14 @@ the other final bosses.
 BEPINEX_CORE=/path/to/BepInEx/core ./build.sh   # -> dist/RiskOfBonk-<version>.zip
 ```
 
-The zip holds `RiskOfBonk/` and `RiskofThunder-RoR2BepInExPack/` (RoR2BepInExPack, unchanged, MIT), both for
-`BepInEx/plugins/`. It holds no files from either game.
+The zip holds `RiskOfBonk/` for `BepInEx/plugins/`: the plugin DLL, AssetsTools.NET.dll, classdata.tpk and
+Newtonsoft.Json.dll (Risk of Rain 2's code refers to it but the game does not ship it). It holds no files from either game.
 
 ## Credits
 
 - Risk of Rain 2 by Hopoo Games / Gearbox. Megabonk by vedinad. This mod ships no files from either game.
-- AssetsTools.NET and classdata.tpk by nesrak1 (MIT); RoR2BepInExPack by Risk of Thunder (MIT) with Newtonsoft.Json by
-  James Newton-King (MIT). See `THIRD_PARTY_NOTICES.md`.
+- AssetsTools.NET and classdata.tpk by nesrak1 (MIT); Newtonsoft.Json by James Newton-King (MIT). See
+  `THIRD_PARTY_NOTICES.md`.
 - Built with AI assistance (Claude Code) for sansulate.
 
 ## Melty

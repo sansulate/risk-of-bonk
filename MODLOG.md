@@ -215,5 +215,7 @@
   Amog = Poison Flask (new weapons: wireless_dagger = Ceremonial Dagger projectile, black_hole = Primordial Cube
   GravSphere, aegis = melee bash with slow; icons BluetoothDagger/BlackHole/Aegis from Megabonk's textures).
   MeltyLink: Steam lobby address in melty.log, join= from melty.properties; megabonk= there is the Megabonk folder.
-  MeltyTest (Melty's code, unchanged) + MeltyTestRun drive a run with no one playing. RoR2BepInExPack is bundled.
+  MeltyTest (Melty's code, unchanged) + MeltyTestRun drive a run with no one playing. Only Newtonsoft.Json.dll is bundled (in RiskOfBonk/): the whole RoR2BepInExPack
+  logged Debug hook lines with "Exception" in their names, which Melty's test read as errors, and other mashups that
+  ship it would conflict with ours.
   MIT license.

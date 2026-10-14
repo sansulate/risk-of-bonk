@@ -14,7 +14,7 @@ VER=$(grep -oP '(?<=<Version>)[^<]+' src/RiskOfBonk.csproj)
 STAGE=dist/stage/RiskOfBonk
 rm -rf dist/stage && mkdir -p "$STAGE"
 cp src/bin/Release/netstandard2.1/RiskOfBonk.dll "$STAGE/"
-cp lib/AssetsTools.NET.dll lib/classdata.tpk "$STAGE/"
-cp README.md THIRD_PARTY_NOTICES.md "$STAGE/"
+cp lib/AssetsTools.NET.dll lib/classdata.tpk lib/Newtonsoft.Json.dll "$STAGE/"
+cp README.md THIRD_PARTY_NOTICES.md LICENSE "$STAGE/"
 (cd dist/stage && rm -f "../RiskOfBonk-$VER.zip" && zip -qr "../RiskOfBonk-$VER.zip" RiskOfBonk)
 echo "dist/RiskOfBonk-$VER.zip"
