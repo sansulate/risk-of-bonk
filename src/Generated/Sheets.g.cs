@@ -105,38 +105,44 @@ namespace RiskOfBonk.Generated
     {
         /// <summary>Megabonk has no sprint: always at full speed while moving (RoR2 still stops sprint when moving backwards or during some skills). The Sprint key becomes Slide. (bool (1/0))</summary>
         public static float AutoSprint = 1.0f;
-        /// <summary>Slide starts when the Slide key is held on the ground at this fraction of walk speed or more. (x walk speed)</summary>
-        public static float SlideMinSpeed = 0.6f;
-        /// <summary>Speed added when a slide starts (Megabonk slideForce), once per slide_cooldown. (m/s)</summary>
-        public static float SlideBoost = 6.0f;
-        /// <summary>Time before another slide start can boost again. (s)</summary>
-        public static float SlideCooldown = 0.8f;
-        /// <summary>Speed lost per second while sliding on flat ground (Megabonk slideCounterMovement). (m/s per s)</summary>
-        public static float SlideFriction = 4.0f;
-        /// <summary>Sliding downhill speeds you up, uphill slows you down. (x gravity along slope)</summary>
-        public static float SlideSlopeGain = 1.6f;
-        /// <summary>How fast a slide turns toward the move input. (deg/s)</summary>
-        public static float SlideSteer = 120.0f;
-        /// <summary>On the ground without sliding, speed above walk speed fades at this rate (Megabonk inertiaFriction) instead of being cut off. (m/s per s)</summary>
-        public static float MomentumDecay = 7.0f;
-        /// <summary>How fast kept momentum turns toward the move input on the ground. (deg/s)</summary>
-        public static float MomentumTurn = 360.0f;
-        /// <summary>After landing, momentum is kept fully this long so a quick jump keeps all of it (bunny hop). (s)</summary>
-        public static float BhopWindow = 0.15f;
-        /// <summary>Speed added per jump that keeps momentum. (m/s)</summary>
-        public static float BhopBoost = 0.5f;
-        /// <summary>Air strafing strength. Steering in the air never slows you below your speed at take-off (RoR2 default is 0.25 and drags you to walk speed). (x acceleration)</summary>
-        public static float AirControl = 0.6f;
-        /// <summary>Hard cap on horizontal speed from momentum. (x walk speed)</summary>
-        public static float MaxSpeed = 3.5f;
-        /// <summary>Megabonk jumps are a bit higher than RoR2's. (x jump power)</summary>
-        public static float JumpHeight = 1.15f;
+        /// <summary>Top running speed from input (maxRunSpeed 10 x MoveSpeedMultiplier). Risk of Rain 2 speed items scale it. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float RunSpeed = 10.0f;
+        /// <summary>Acceleration from input on the ground (moveSpeed force 2700 x fixed step 0.02). Input along a direction stops pushing once you already go faster than run_speed that way. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        public static float RunAccel = 54.0f;
+        /// <summary>Counter-movement on the ground: speed in a direction you are not pushing fades at this rate (counterMovement 0.25 x 54). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (per s)</summary>
+        public static float GroundFriction = 13.5f;
+        /// <summary>On the ground, speed above run_speed fades at this rate while you keep moving (slowDownSpeed 0.01 x 54): momentum lasts. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (per s)</summary>
+        public static float OverspeedDecayHold = 0.54f;
+        /// <summary>Same, when you let go of the movement keys (slowDownSpeed 0.1 x 54). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (per s)</summary>
+        public static float OverspeedDecayRelease = 5.4f;
+        /// <summary>After landing, no counter-movement or speed fade for this long (justLandedCounter 15 ticks), so a quick jump keeps all your speed (bunny hop). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (s)</summary>
+        public static float LandGrace = 0.3f;
+        /// <summary>Steering in the air (0.45 x run_accel). Like on the ground it cannot push you past run_speed, but never slows you either: no air drag. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        public static float AirAccel = 24.3f;
+        /// <summary>Jump launch speed (JumpHeight stat 7 x mass as an impulse). Jumping while still rising halves the old upward speed first. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float JumpSpeed = 7.0f;
+        /// <summary>Megabonk's gravity (Physics gravity -19.62); Risk of Rain 2 uses 30, so players fall slower and jumps hang longer. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        public static float Gravity = 19.62f;
+        /// <summary>Speed added when a slide starts (slideForce 200 x 0.02), only if you went faster than slide_boost_min_speed since the last slide. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float SlideBoost = 4.0f;
+        /// <summary>slideThresholdSpeed: the next slide boost is ready once you reach this speed. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float SlideBoostMinSpeed = 8.0f;
+        /// <summary>Time before another slide can boost (slideCooldownCounterMax 25 ticks). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (s)</summary>
+        public static float SlideCooldown = 0.5f;
+        /// <summary>Speed lost per second while sliding (slideCounterMovement 0.1 x 54), the same at any speed. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        public static float SlideFriction = 5.4f;
+        /// <summary>Sliding downhill speeds you up by gravity along the slope (Megabonk's rigidbody has no friction while sliding); uphill slows you. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (x gravity along slope)</summary>
+        public static float SlideSlopeGain = 1.0f;
+        /// <summary>Sideways steering while sliding (forward input does nothing in a slide; sideways input pushes at run_accel). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        public static float SlideSteer = 54.0f;
+        /// <summary>Wallrunning needs at least this speed along the wall (minWallClimbSpeed 10). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float WallrunMinSpeed = 10.0f;
+        /// <summary>Safety cap on horizontal speed (Megabonk has none; this only stops runaway physics). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
+        public static float MaxSpeed = 40.0f;
         /// <summary>Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing). (s)</summary>
         public static float WallrunTime = 1.4f;
         /// <summary>Fastest you sink while wallrunning. (m/s)</summary>
         public static float WallrunFall = 1.5f;
-        /// <summary>Wallrunning needs at least this much speed along the wall. (x walk speed)</summary>
-        public static float WallrunMinSpeed = 0.8f;
         /// <summary>Letting go of Jump during a wallrun pushes you off the wall (and up) by this much. (m/s)</summary>
         public static float WallrunKick = 7.0f;
         /// <summary>Monster spawn budget over time (stage and Teleporter directors without a boss squad). (x director credit)</summary>

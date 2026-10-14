@@ -219,3 +219,13 @@
   logged Debug hook lines with "Exception" in their names, which Melty's test read as errors, and other mashups that
   ship it would conflict with ours.
   MIT license.
+- Update 13 (2026-10-15): Megabonk movement measured from Megabonk itself. Il2CppDumper on GameAssembly.dll gave
+  PlayerMovement / PlayerMovementValues; their constructors and methods (disassembled with capstone) hold the numbers:
+  moveSpeed force 2700 x mass at 50 Hz (54 m/s per s), maxRunSpeed 10, counterMovement 0.25, slowDownSpeed 0.01 / 0.1
+  above max speed, slideForce 200 (4 m/s), slideCounterMovement 0.1 (5.4 m/s per s), slideThresholdSpeed 8, slide
+  cooldown 25 ticks, justLanded 15 ticks, air input 0.45, JumpHeight stat 7 (impulse), Physics gravity -19.62
+  (PhysicsManager in globalgamemanagers), minWallClimbSpeed 10. All in sheets/tuning.json (system movement);
+  BonkMovement rebuilt from them (gravityScale per step for Megabonk's gravity). Checked with tools/ingame/movetest.sh
+  on a Bonk style map (testmove log every 0.1 s): 0 to 10 m/s in about 0.1 s, stop in about 0.25 s after the 0.3 s
+  landing grace, jump apex 1.26 m, slide boost 4 m/s and downhill gain, bunny hops keep 10 m/s.
+

@@ -8,11 +8,12 @@ using UnityEngine;
 namespace RiskOfBonk
 {
     /// <summary>
-    /// Megabonk movement for player bodies (sheets/tuning.json, system "movement"): always at full speed (the Sprint key
-    /// becomes Slide), slides that boost and speed up downhill, momentum that fades instead of being cut off, bunny hops
-    /// that keep it, air strafing that steers without slowing you down, and hold-Jump wallrunning.
+    /// Megabonk movement for player bodies, with the numbers measured from Megabonk's own PlayerMovement (sheets/tuning.json,
+    /// system "movement"): always running (the Sprint key becomes Slide), quick acceleration to 10 m/s, counter-movement
+    /// that stops you fast, speed above that which fades slowly while you keep moving (momentum), air steering that never
+    /// slows you, a lower jump in lower gravity, slides that boost and speed up downhill, and hold-Jump wallrunning.
     /// RoR2 moves a body on the client that has authority over it, so all of this runs there; nothing new is networked.
-    /// RoR2 still computes gravity and vertical speed; only the horizontal velocity is replaced.
+    /// RoR2 still computes vertical speed (with Megabonk's gravity); the horizontal velocity is replaced.
     /// </summary>
     public static class BonkMovement
     {
@@ -23,7 +24,7 @@ namespace RiskOfBonk
 
         sealed class State
         {
-            public bool sliding, wallrunning;
+            public bool sliding, wallrunning, slideReady = true;
             public float boostReady, landedAt = -1f, wallTime;
             public Vector3 wallNormal;
         }
@@ -34,6 +35,27 @@ namespace RiskOfBonk
             Enabled && m && m.body && m.body.isPlayerControlled && m.hasEffectiveAuthority && !m.isFlying;
 
         static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
+        /// <summary>Megabonk's run speed for this body: 10 m/s, scaled by its move speed items and buffs.</summary>
+        static float RunSpeed(CharacterMotor m)
+        {
+            var b = m.body;
+            float baseSpeed = b.baseMoveSpeed * (b.isSprinting ? b.sprintingSpeedMultiplier : 1f);
+            return Tune.RunSpeed * (baseSpeed > 0.01f ? m.walkSpeed / baseSpeed : 1f);
+        }
+
+        /// <summary>
+        /// Megabonk's input push: accelerate along the input, but only while the speed that way is below run speed (input
+        /// never brakes momentum, it just stops adding to it).
+        /// </summary>
+        static Vector3 Push(Vector3 h, Vector3 dir, float run, float accel, float dt)
+        {
+            if (dir.sqrMagnitude < 0.0001f) return h;
+            Vector3 d = dir.normalized;
+            float along = Vector3.Dot(h, d);
+            float add = Mathf.Min(accel * dir.magnitude * dt, Mathf.Max(0f, run * dir.magnitude - along));
+            return h + d * add;
+        }
 
         // The raw (held) Sprint key; newer game builds than the reference assemblies have it, older ones fall back to sprint.
         static readonly AccessTools.FieldRef<InputBankTest, InputBankTest.ButtonState> rawSprint =
@@ -79,73 +101,86 @@ namespace RiskOfBonk
                 ___bodyInputs.sprint.wasDown = __state;
             }
 
+            sealed class Before { public Vector3 v; public float g; }
+
             [HarmonyPrefix, HarmonyPatch(typeof(CharacterMotor), "PreMove")]
-            static void MoveBefore(CharacterMotor __instance, out Vector3 __state) => __state = __instance.velocity;
+            static void MoveBefore(CharacterMotor __instance, out Before __state)
+            {
+                __state = new Before { v = __instance.velocity, g = __instance.gravityScale };
+                // Megabonk's gravity for this step (RoR2 multiplies Physics.gravity by gravityScale).
+                if (Applies(__instance) && Physics.gravity.y < 0f) __instance.gravityScale *= Tune.Gravity / -Physics.gravity.y;
+            }
 
             [HarmonyPostfix, HarmonyPatch(typeof(CharacterMotor), "PreMove")]
-            static void MoveAfter(CharacterMotor __instance, float deltaTime, Vector3 __state)
+            static void MoveAfter(CharacterMotor __instance, float deltaTime, Before __state)
             {
                 var m = __instance;
+                m.gravityScale = __state.g;
                 if (!Applies(m) || m.disableAirControlUntilCollision || m.isAirControlForced) return;
                 var st = states.GetOrCreateValue(m);
                 st.boostReady -= deltaTime;
 
-                float walk = m.walkSpeed;
-                Vector3 before = Flat(__state), after = Flat(m.velocity);
+                float run = RunSpeed(m);
+                Vector3 before = Flat(__state.v);
                 Vector3 dir = Flat(m.moveDirection);
                 if (dir.sqrMagnitude > 1f) dir.Normalize();
                 bool hasInput = dir.sqrMagnitude > 0.01f;
                 bool slideHeld = SlideHeld(m.body.inputBank);
                 float speed = before.magnitude;
-                Vector3 h;
+                if (speed >= Tune.SlideBoostMinSpeed) st.slideReady = true;
+                bool landing = Time.fixedTime - st.landedAt <= Tune.LandGrace;
+                Vector3 h = before;
 
                 if (m.isGrounded)
                 {
-                    if (slideHeld && (st.sliding || speed >= walk * Tune.SlideMinSpeed))
+                    if (slideHeld && speed > 0.5f)
                     {
                         if (!st.sliding)
                         {
                             st.sliding = true;
-                            if (st.boostReady <= 0f)
+                            if (st.slideReady && st.boostReady <= 0f)
                             {
-                                Vector3 along = hasInput ? dir.normalized : before.normalized;
-                                before += along * Tune.SlideBoost;
+                                // Megabonk's slide push, along where you are going.
+                                h += (hasInput ? dir.normalized : before.normalized) * Tune.SlideBoost;
                                 st.boostReady = Tune.SlideCooldown;
+                                st.slideReady = false;
                             }
                         }
-                        // Gravity along the ground: downhill speeds the slide up, uphill slows it.
-                        Vector3 n = m.estimatedGroundNormal;
-                        Vector3 downhill = Flat(Vector3.ProjectOnPlane(Physics.gravity, n));
-                        h = before + downhill * (Tune.SlideSlopeGain * deltaTime);
+                        // Gravity along the ground (downhill faster, uphill slower), a fixed slide friction, and sideways
+                        // steering only (forward input does nothing in a slide).
+                        Vector3 downhill = Flat(Vector3.ProjectOnPlane(Vector3.down * Tune.Gravity, m.estimatedGroundNormal));
+                        h += downhill * (Tune.SlideSlopeGain * deltaTime);
+                        if (hasInput && h.sqrMagnitude > 0.01f)
+                        {
+                            Vector3 side = Vector3.Cross(Vector3.up, h.normalized);
+                            h += side * (Vector3.Dot(dir, side) * Tune.SlideSteer * deltaTime);
+                        }
                         float mag = Mathf.Max(0f, h.magnitude - Tune.SlideFriction * deltaTime);
                         h = h.sqrMagnitude > 1e-6f ? h.normalized * mag : Vector3.zero;
-                        if (hasInput && mag > 0.1f)
-                            h = Vector3.RotateTowards(h, dir.normalized * mag, Tune.SlideSteer * Mathf.Deg2Rad * deltaTime, 0f);
-                        if (mag < walk * 0.6f) st.sliding = false;
+                        if (mag < 1f) st.sliding = false;
                     }
                     else
                     {
                         st.sliding = false;
-                        if (speed > walk + 0.05f && Time.fixedTime - st.landedAt <= Tune.BhopWindow)
-                            h = before; // just landed: keep everything for a bunny hop
-                        else if (speed > walk + 0.05f && hasInput)
+                        h = Push(h, dir, run, Tune.RunAccel, deltaTime);
+                        if (!landing)
                         {
-                            // Momentum fades toward walk speed and turns toward the input, instead of snapping.
-                            float mag = Mathf.Max(walk * dir.magnitude, speed - Tune.MomentumDecay * deltaTime);
-                            h = Vector3.RotateTowards(before, dir.normalized * mag, Tune.MomentumTurn * Mathf.Deg2Rad * deltaTime, 0f);
-                            h = h.normalized * mag;
+                            // Counter-movement: speed in directions you are not pushing fades fast.
+                            Vector3 along = hasInput && Vector3.Dot(h, dir) > 0f ? dir.normalized * Vector3.Dot(h, dir.normalized) : Vector3.zero;
+                            Vector3 rest = h - along;
+                            h = along + rest * Mathf.Exp(-Tune.GroundFriction * deltaTime);
+                            // Momentum: speed above run speed fades slowly while you keep moving, faster when you let go.
+                            float over = h.magnitude - run;
+                            if (over > 0f)
+                                h = h.normalized * (run + over * Mathf.Exp(-(hasInput ? Tune.OverspeedDecayHold : Tune.OverspeedDecayRelease) * deltaTime));
                         }
-                        else
-                            h = after; // normal RoR2 ground movement (also braking when there is no input)
                     }
                 }
                 else
                 {
                     st.sliding = false;
-                    // Air strafing: steer freely, but never slower than the speed you had (no air drag to walk speed).
-                    float keep = Mathf.Max(speed, walk);
-                    h = before + dir * (m.acceleration * Tune.AirControl * deltaTime);
-                    if (h.magnitude > keep) h = h.normalized * keep;
+                    // Air steering: pushes like on the ground but weaker, and never slows you (no air drag).
+                    h = Push(h, dir, run, Tune.AirAccel, deltaTime);
 
                     // Hold Jump next to a wall: run along it, barely sinking, for a while.
                     var bank = m.body.inputBank;
@@ -153,7 +188,7 @@ namespace RiskOfBonk
                     Vector3 wallNormal = Vector3.zero;
                     bool wall = jumpHeld && st.wallTime < Tune.WallrunTime && FindWall(m, h, out wallNormal);
                     Vector3 alongWall = wall ? Vector3.ProjectOnPlane(h, wallNormal) : Vector3.zero;
-                    if (wall && alongWall.magnitude >= walk * Tune.WallrunMinSpeed)
+                    if (wall && alongWall.magnitude >= Tune.WallrunMinSpeed * run / Tune.RunSpeed - 0.5f)
                     {
                         if (!st.wallrunning && LogSpeed) Log.Info("move: wallrun start");
                         st.wallrunning = true;
@@ -175,14 +210,13 @@ namespace RiskOfBonk
                     }
                 }
 
-                float cap = walk * Tune.MaxSpeed;
-                if (h.magnitude > cap) h = h.normalized * cap;
+                if (h.magnitude > Tune.MaxSpeed) h = h.normalized * Tune.MaxSpeed;
                 m.velocity = new Vector3(h.x, m.velocity.y, h.z);
                 if (LogSpeed && Time.time >= nextLog)
                 {
-                    nextLog = Time.time + 0.5f;
-                    Log.Info($"move: {h.magnitude:F1} m/s (walk {walk:F1}) {(m.isGrounded ? "ground" : "air")}{(st.sliding ? " sliding" : "")}" +
-                             $" sprint {m.body.isSprinting} slideKey {slideHeld} monsters {TeamComponent.GetTeamMembers(TeamIndex.Monster).Count}");
+                    nextLog = Time.time + 0.1f;
+                    Log.Info($"move: {h.magnitude:F2} m/s vy {m.velocity.y:F2} (run {run:F1}) {(m.isGrounded ? "ground" : "air")}{(st.sliding ? " sliding" : "")}" +
+                             $" y {m.transform.position.y:F2} input {dir.magnitude:F1} slideKey {slideHeld} t {System.DateTime.Now:HH:mm:ss.ff}");
                 }
             }
 
@@ -196,24 +230,21 @@ namespace RiskOfBonk
                 st.wallrunning = false;
             }
 
-            // Jumps keep momentum (bunny hop, slide jump) and are a bit higher.
+            // Megabonk jumps: launch at jump_speed (scaled by jump items), keeping all horizontal speed (bunny hop, slide jump).
             [HarmonyPrefix, HarmonyPatch(typeof(GenericCharacterMain), nameof(GenericCharacterMain.ApplyJumpVelocity))]
             static void JumpBefore(CharacterMotor characterMotor, out Vector3 __state) => __state = characterMotor ? characterMotor.velocity : Vector3.zero;
 
             [HarmonyPostfix, HarmonyPatch(typeof(GenericCharacterMain), nameof(GenericCharacterMain.ApplyJumpVelocity))]
-            static void JumpAfter(CharacterMotor characterMotor, bool vault, Vector3 __state)
+            static void JumpAfter(CharacterMotor characterMotor, CharacterBody characterBody, float horizontalBonus, float verticalBonus, bool vault, Vector3 __state)
             {
-                if (vault || !Applies(characterMotor)) return;
+                if (vault || !Applies(characterMotor) || !characterBody) return;
                 var m = characterMotor;
-                Vector3 v = m.velocity, before = Flat(__state), now = Flat(v);
-                if (before.magnitude > now.magnitude)
-                {
-                    Vector3 dir = Flat(m.moveDirection);
-                    Vector3 along = dir.sqrMagnitude > 0.01f ? dir.normalized : before.normalized;
-                    float mag = Mathf.Min(before.magnitude + Tune.BhopBoost, m.walkSpeed * Tune.MaxSpeed);
-                    now = along * mag;
-                }
-                m.velocity = new Vector3(now.x, v.y * Tune.JumpHeight, now.z);
+                float items = characterBody.baseJumpPower > 0.01f ? characterBody.jumpPower / characterBody.baseJumpPower : 1f;
+                // Jumping while still rising keeps half of the old upward speed, like Megabonk.
+                float up = Tune.JumpSpeed * items * verticalBonus + (__state.y > 0.5f ? __state.y * 0.5f : 0f);
+                Vector3 h = Flat(__state), pushed = Flat(m.velocity);
+                if (horizontalBonus > 1.001f && pushed.magnitude > h.magnitude) h = pushed; // a jump with its own push keeps it
+                m.velocity = new Vector3(h.x, up, h.z);
                 if (states.TryGetValue(m, out var st)) st.sliding = false;
             }
         }
