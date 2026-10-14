@@ -188,4 +188,7 @@
   sulfurpools, dampcavesimple). Result is subtle (A/B with the F5 test key); values are for the user to tune.
   Test key F5 toggles the look; F12 goes to the next stage. Bonk style checked over stages 1-4 (new map each stage,
   5 shrines each, palettes).
+- Update 9 (2026-10-14): gamepad picks in the level-up menu: X / Y / B (JoystickButton2/3/1, Unity's legacy input)
+  pick the left / middle / right card; cards show "1 / X" etc. Keyboard checked; gamepad not checked (no controller
+  on this PC).
 - Melty: not done yet (needs a fresh Publish prompt from the user).

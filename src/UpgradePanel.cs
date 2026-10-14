@@ -39,6 +39,9 @@ namespace RiskOfBonk
         readonly System.Random rng = new System.Random();
         static readonly Dictionary<string, Texture2D> icons = new Dictionary<string, Texture2D>();
         static readonly string[] slotNames = { "right mouse", "Shift", "R" };
+        // Gamepad: the face buttons in the cards' order on the pad (X left, Y top, B right).
+        static readonly KeyCode[] padButtons = { KeyCode.JoystickButton2, KeyCode.JoystickButton3, KeyCode.JoystickButton1 };
+        static readonly string[] padNames = { "X", "Y", "B" };
 
         public static bool Open { get; private set; }
 
@@ -89,8 +92,8 @@ namespace RiskOfBonk
                 c.tag = BonkUI.Label(inner, "Tag", 20, TextAlignmentOptions.Center, new Vector2(0.5f, 1f), new Vector2(0, -216), new Vector2(290, 28));
                 c.desc = BonkUI.Label(inner, "Desc", 21, TextAlignmentOptions.Top, new Vector2(0.5f, 1f), new Vector2(0, -278), new Vector2(270, 90));
                 c.desc.fontStyle = FontStyles.Bold;
-                var key = BonkUI.Label(c.rt, "Key", 36, TextAlignmentOptions.Center, new Vector2(0.5f, 0f), new Vector2(0, -2), new Vector2(60, 50));
-                key.text = (i + 1).ToString();
+                var key = BonkUI.Label(c.rt, "Key", 36, TextAlignmentOptions.Center, new Vector2(0.5f, 0f), new Vector2(0, -2), new Vector2(140, 50));
+                key.text = $"{i + 1} <size=55%>/ {padNames[i]}</size>";
                 key.color = MenuStyle.C("accent");
                 var flashRt = BonkUI.Fill(c.rt, "Flash");
                 c.flash = BonkUI.Image(flashRt, new Color(1, 1, 1, 0));
@@ -142,7 +145,7 @@ namespace RiskOfBonk
 
             for (int i = 0; i < 3; i++)
             {
-                if (!Input.GetKeyDown(KeyCode.Alpha1 + i) && !Input.GetKeyDown(KeyCode.Keypad1 + i)) continue;
+                if (!Input.GetKeyDown(KeyCode.Alpha1 + i) && !Input.GetKeyDown(KeyCode.Keypad1 + i) && !Input.GetKeyDown(padButtons[i])) continue;
                 Upgrades.RequestPick(offers[i].kind, offers[i].index, offers[i].rarity);
                 waitingForPicks = picks;
                 waitingSince = Time.unscaledTime;

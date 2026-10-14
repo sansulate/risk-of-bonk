@@ -26,7 +26,7 @@ brings its characters and its look into it, read from your own Megabonk install 
   across the top of the screen, pulses as gems land and bursts into "LEVEL UP!" when you level.
 - **Megabonk level-up menu.** Every level-up pops up three cards, picked with **1, 2 or 3**: Megabonk tomes (Damage,
   Cooldown, Precision, HP, Regen, Armor, Agility, Shield, Evasion, Luck) with rarities from Common to Legendary, and
-  for Megabonk characters also weapons. The game does not pause (co-op keeps going): you are **invincible for 10
+  for Megabonk characters also weapons (on a gamepad: X, Y, B). The game does not pause (co-op keeps going): you are **invincible for 10
   seconds** while the menu is open, shown as a countdown that turns red and shakes near the end; picking ends it.
 - **Megabonk weapons (Megabonk characters only).** Each Megabonk character starts with its own Megabonk weapon on
   left mouse and nothing else. Weapons you pick go on right mouse, then Shift, then R: four weapons per run. Picking a
