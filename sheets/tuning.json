@@ -339,6 +339,30 @@
    "verified": false
   },
   {
+   "id": "cursed_shrines_per_stage",
+   "value": 1,
+   "unit": "count",
+   "system": "shrines",
+   "note": "Megabonk Cursed Shrines per stage (our reading of Megabonk's curse: risk for reward).",
+   "verified": false
+  },
+  {
+   "id": "cursed_shrine_picks",
+   "value": 2,
+   "unit": "picks",
+   "system": "shrines",
+   "note": "Upgrade picks every player gets from a Cursed Shrine.",
+   "verified": false
+  },
+  {
+   "id": "cursed_monsters",
+   "value": 1.3,
+   "unit": "x",
+   "system": "shrines",
+   "note": "Cursed Shrine: the stage's monster directors earn this much more credit, and elites cost half as much, for the rest of the stage.",
+   "verified": false
+  },
+  {
    "id": "final_swarm_credit",
    "value": 12.0,
    "unit": "credits/s",

@@ -15,7 +15,8 @@ namespace RiskOfBonk
     /// it is charged (leaving pauses it and slowly drains it) and every player gets an upgrade pick. Magnet Shrine: stand
     /// in it briefly and every XP gem on the map flies to you. Moai Shrine: every player gets a random tome. Greed Shrine:
     /// more gold and more monsters for the rest of the stage. Challenge Shrine: elite champions come; kill them all and
-    /// every player gets an upgrade pick. The host places them on the stage's ground nodes and runs
+    /// every player gets an upgrade pick. Cursed Shrine: every player gets upgrade picks now, but the rest of the stage has
+    /// more monsters and more elites (our reading of Megabonk's curse: risk for reward). The host places them on the stage's ground nodes and runs
     /// the charging; every player sees them through messages (sent again every few seconds, so a player whose stage
     /// loaded late still gets them).
     /// </summary>
@@ -23,8 +24,8 @@ namespace RiskOfBonk
     {
         public const short MsgType = 0x5B0F;
         const byte OpUpsert = 0, OpRemove = 1;
-        public const byte KindCharge = 0, KindMagnet = 1, KindMoai = 2, KindGreed = 3, KindChallenge = 4;
-        static readonly string[] kindNames = { "Charge", "Magnet", "Moai", "Greed", "Challenge" };
+        public const byte KindCharge = 0, KindMagnet = 1, KindMoai = 2, KindGreed = 3, KindChallenge = 4, KindCursed = 5;
+        static readonly string[] kindNames = { "Charge", "Magnet", "Moai", "Greed", "Challenge", "Cursed" };
 
         sealed class ShrineMessage : MessageBase
         {
@@ -93,6 +94,7 @@ namespace RiskOfBonk
             Add(KindMoai, (int)Tune.MoaiShrinesPerStage);
             Add(KindGreed, (int)Tune.GreedShrinesPerStage);
             Add(KindChallenge, (int)Tune.ChallengeShrinesPerStage);
+            Add(KindCursed, (int)Tune.CursedShrinesPerStage);
             Log.Info($"Megabonk shrines placed: {shrines.Count}");
         }
 
@@ -118,6 +120,7 @@ namespace RiskOfBonk
             else if (s.kind == KindMoai) Moai();
             else if (s.kind == KindGreed) Greed();
             else if (s.kind == KindChallenge) Challenge(s.pos);
+            else if (s.kind == KindCursed) Cursed();
             Log.Info($"{kindNames[s.kind]} Shrine used{(by ? " by " + by.GetUserName() : "")}");
             Send(new ShrineMessage { op = OpRemove, id = s.id, used = true });
         }
@@ -150,6 +153,21 @@ namespace RiskOfBonk
                 d.creditMultiplier *= Tune.GreedMonsters;
             }
             Say("Greed Shrine: more gold, and more monsters, for the rest of this stage.");
+        }
+
+        /// <summary>Cursed: picks for everyone now; more monsters and cheaper elites for the rest of the stage.</summary>
+        static void Cursed()
+        {
+            int picks = Mathf.Max(1, (int)Tune.CursedShrinePicks);
+            foreach (var pc in PlayerCharacterMasterController.instances)
+                if (pc && pc.master && pc.master.inventory) pc.master.inventory.GiveItemPermanent(Upgrades.BonusPicksItem, picks);
+            foreach (var d in CombatDirector.instancesList)
+            {
+                if (!d || d.teamIndex != TeamIndex.Monster) continue;
+                d.creditMultiplier *= Tune.CursedMonsters;
+                d.eliteBias *= 0.5f;
+            }
+            Say($"Cursed Shrine: everyone gets {picks} upgrades, but this stage grows more dangerous.");
         }
 
         sealed class Trial { public GameObject director; public readonly List<CharacterMaster> masters = new List<CharacterMaster>(); public float started; }
@@ -278,6 +296,7 @@ namespace RiskOfBonk
             new Color(0.7f, 0.6f, 0.9f),  // moai: lilac stone
             new Color(0.3f, 0.95f, 0.35f), // greed: green
             new Color(1f, 0.25f, 0.2f),   // challenge: red
+            new Color(0.55f, 0.15f, 0.8f), // cursed: purple
         };
         static readonly Dictionary<Color, Material> mats = new Dictionary<Color, Material>();
 

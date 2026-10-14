@@ -206,5 +206,8 @@
   onSpawnedServer (no CombatSquad: it is a NetworkBehaviour); all dead -> everyone a bonus pick (nothing spawned in
   10 s -> reward anyway). Checked in game: chat lines for all three, Moai gave "Common Armor Tome (+1)", Greed used,
   Challenge sent 5 Golems and paid out once they died (test key F3 kills every monster). F6 now visits the rarest
-  shrine kind first. Not done: Cursed Shrine.
+  shrine kind first.
+  Cursed Shrine (our reading of Megabonk's curse, unverified against Megabonk): everyone cursed_shrine_picks (2) bonus
+  picks now; the stage's monster directors creditMultiplier x1.3 and eliteBias x0.5 (cheaper elites). Checked: chat
+  line, "Shrine charged! x2" menu.
 - Melty: not done yet (needs a fresh Publish prompt from the user).

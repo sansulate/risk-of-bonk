@@ -184,6 +184,12 @@ namespace RiskOfBonk.Generated
         public static float ChallengeShrinesPerStage = 1.0f;
         /// <summary>Challenge Shrine budget, times the run's difficulty coefficient: a champion from the stage's monsters that fits (elite when it can), else the usual Shrine of Combat pick (which uses 100). (credits)</summary>
         public static float ChallengeCredit = 400.0f;
+        /// <summary>Megabonk Cursed Shrines per stage (our reading of Megabonk's curse: risk for reward). (count)</summary>
+        public static float CursedShrinesPerStage = 1.0f;
+        /// <summary>Upgrade picks every player gets from a Cursed Shrine. (picks)</summary>
+        public static float CursedShrinePicks = 2.0f;
+        /// <summary>Cursed Shrine: the stage's monster directors earn this much more credit, and elites cost half as much, for the rest of the stage. (x)</summary>
+        public static float CursedMonsters = 1.3f;
         /// <summary>Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient. (credits/s)</summary>
         public static float FinalSwarmCredit = 12.0f;
         /// <summary>Colour saturation added on stages (Megabonk's bright colours). (-100..100)</summary>
