@@ -20,6 +20,8 @@ namespace RiskOfBonk
         static string TestFile => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Melty", "test", "risk-of-bonk-3.json");
 
         int seed, run = 1;
+        DateTime until = DateTime.MaxValue;
+        bool quitting;
 
         void Start()
         {
@@ -31,10 +33,27 @@ namespace RiskOfBonk
                 if (m.Success) seed = (int)(long.Parse(m.Groups[1].Value) & 0x7fffffff);
                 m = Regex.Match(json, "\"run\"\\s*:\\s*(\\d+)");
                 if (m.Success) run = int.Parse(m.Groups[1].Value);
+                m = Regex.Match(json, "\"until\"\\s*:\\s*\"([^\"]+)\"");
+                if (m.Success && DateTime.TryParse(m.Groups[1].Value, null, System.Globalization.DateTimeStyles.AdjustToUniversal | System.Globalization.DateTimeStyles.AssumeUniversal, out var u)) until = u;
             }
             catch (Exception e) { Log.Warn("Melty test: " + e.Message); }
             Log.Info($"Melty test run {run}, seed {seed}");
             StartCoroutine(Play());
+        }
+
+        void Update()
+        {
+            // Closing the game at the run's end could hang on this PC (the window gone, the process left behind), so a
+            // test run ends itself a few seconds early, once its checks are in; a stuck exit is cut short.
+            if (quitting || DateTime.UtcNow < until.AddSeconds(-8)) return;
+            quitting = true;
+            Log.Info("Melty test: run time is up, closing the game");
+            new System.Threading.Thread(() =>
+            {
+                System.Threading.Thread.Sleep(15000);
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            }) { IsBackground = true }.Start();
+            Application.Quit();
         }
 
         static IEnumerator WaitFor(Func<bool> done, float seconds)
@@ -52,8 +71,15 @@ namespace RiskOfBonk
         IEnumerator Play()
         {
             // 1. Megabonk's characters read from the player's Megabonk install.
-            yield return WaitFor(() => MegabonkLoader.Done && FindObjectOfType<RoR2.UI.MainMenu.MainMenuController>() && LocalUserManager.isAnyUserSignedIn, 240f);
-            var survivors = SurvivorCatalog.allSurvivorDefs.Where(s => s && s.bodyPrefab && s.bodyPrefab.GetComponent<Weapons.WeaponLoadout>()).ToList();
+            // The main menu's own Start (the catalogs are filled by then), and the Megabonk survivors in SurvivorCatalog.
+            System.Collections.Generic.List<SurvivorDef> survivors = null;
+            yield return WaitFor(() =>
+            {
+                if (!MegabonkLoader.Done || !Plugin.MainMenuReached || !LocalUserManager.isAnyUserSignedIn) return false;
+                survivors = SurvivorCatalog.allSurvivorDefs.Where(s => s && s.bodyPrefab && s.bodyPrefab.GetComponent<Weapons.WeaponLoadout>()).ToList();
+                return survivors.Count > 0 || MegabonkLoader.Library == null;
+            }, 300f);
+            survivors = survivors ?? new System.Collections.Generic.List<SurvivorDef>();
             bool loaded = MegabonkLoader.Library != null && survivors.Count > 0;
             Report("megabonk-loaded", loaded, loaded ? null : (MegabonkLoader.Error != "" ? MegabonkLoader.Error : "no Megabonk survivors registered"));
             if (!loaded) yield break;

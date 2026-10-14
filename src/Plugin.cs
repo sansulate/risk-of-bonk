@@ -18,10 +18,11 @@ namespace RiskOfBonk
     {
         public const string Guid = "com.sansulate.riskofbonk";
         public const string Name = "Risk of Bonk";
-        public const string Version = "0.2.1";
+        public const string Version = "0.2.3";
 
         public static readonly Dictionary<string, string> Tokens = new Dictionary<string, string>();
         public static string DataDir;
+        public static bool MainMenuReached;
 
         void Awake()
         {
@@ -85,6 +86,7 @@ namespace RiskOfBonk
             {
                 var s = __instance.gameObject.AddComponent<MenuStyle.Styler>();
                 s.title = true;
+                MainMenuReached = true;
                 Log.Info("Main menu: Megabonk style applied");
             }
 
