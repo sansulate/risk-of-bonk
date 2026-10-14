@@ -17,7 +17,8 @@ brings its characters and its look into it, read from your own Megabonk install 
   Megabonk-style random map: low-poly hills with flat tops and steps, groves of trees, rocks and walls round the edge,
   coloured to fit the stage (grass, snow, sand, autumn, dusk) under the stage's own sky. The Teleporter, chests,
   shrines and monsters all use the new map; every player gets the same map. Hidden realms and the final stages stay
-  as they are.
+  as they are. Both styles also get a light Megabonk colour grade (more saturated and punchier, on top of each stage's
+  own grading; setting MegabonkLook, numbers in `sheets/tuning.json`).
 - **Megabonk movement.** You always run at full speed (no sprint toggle), and the **Sprint key slides**: a slide
   gives a burst of speed and keeps building speed down slopes. Momentum fades instead of stopping dead, bunny hops
   keep it, and air strafing steers without slowing you down. Jumps are a little higher. Numbers in `sheets/tuning.json`.
@@ -44,7 +45,7 @@ brings its characters and its look into it, read from your own Megabonk install 
 - **Multiplayer:** Risk of Rain 2's own online co-op, up to 4 players. Every player needs the mod and both games.
 
 Settings (`BepInEx/config/com.sansulate.riskofbonk.cfg`, section Gameplay): MegabonkMovement, MegabonkHordes,
-MegabonkBossEvent, MegabonkXp, MegabonkShrines.
+MegabonkBossEvent, MegabonkXp, MegabonkShrines, MegabonkLook.
 
 ## Planned next
 

@@ -257,6 +257,46 @@
    "system": "bosses",
    "note": "Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient.",
    "verified": false
+  },
+  {
+   "id": "look_saturation",
+   "value": 35.0,
+   "unit": "-100..100",
+   "system": "look",
+   "note": "Colour saturation added on stages (Megabonk's bright colours).",
+   "verified": false
+  },
+  {
+   "id": "look_contrast",
+   "value": 15.0,
+   "unit": "-100..100",
+   "system": "look",
+   "note": "Contrast added on stages.",
+   "verified": false
+  },
+  {
+   "id": "look_exposure",
+   "value": 0.35,
+   "unit": "EV",
+   "system": "look",
+   "note": "Brightness added on stages (HDR grading, which the stages checked use: lakes, foggyswamp, sulfurpools, dampcavesimple).",
+   "verified": false
+  },
+  {
+   "id": "look_brightness",
+   "value": 12.0,
+   "unit": "-100..100",
+   "system": "look",
+   "note": "Brightness added on stages that grade in LDR (none of the stages checked so far).",
+   "verified": false
+  },
+  {
+   "id": "look_fog",
+   "value": 1.0,
+   "unit": "x",
+   "system": "look",
+   "note": "Stage fog strength is multiplied by this. 1 = unchanged: lighter fog made Risk of Rain 2's stages darker (their fog carries much of the light).",
+   "verified": false
   }
  ]
 }

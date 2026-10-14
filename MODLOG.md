@@ -178,4 +178,14 @@
   120 m. MapNodeGroup.Bake works at runtime but its physics tests took 23 s for this map; the heightfield version takes
   0.5 s. Checked in game: terrain, trees, rocks, walls, monsters and chests on it, Teleporter placed on it and the
   Megabonk boss event there. Not checked yet: a client seeing the same map, later stages/palettes.
+- Update 8 (2026-10-14): Megabonk look on stages (StageLook.cs, setting MegabonkLook, tuning system "look"). On
+  every Stage scene each PostProcessVolume's own ColorGrading copy (volume.profile) gets saturation +35, contrast +15,
+  post exposure +0.35 (LDR brightness +12) added to the stage's values. Lessons: a separate global volume replaces the
+  stage's values instead of adding (stages came out darker); a volume destroyed with a scene stays in RoR2's
+  PostProcessLayer volume list (NullReferenceException in PPVolumeInfo every frame), so the fallback volume (stages
+  without grading) is one DontDestroyOnLoad object switched on and off; lighter RampFog made stages darker (their fog
+  carries much of the light), so look_fog is 1 (unchanged). Stages checked grade in HDR (lakes, foggyswamp,
+  sulfurpools, dampcavesimple). Result is subtle (A/B with the F5 test key); values are for the user to tune.
+  Test key F5 toggles the look; F12 goes to the next stage. Bonk style checked over stages 1-4 (new map each stage,
+  5 shrines each, palettes).
 - Melty: not done yet (needs a fresh Publish prompt from the user).

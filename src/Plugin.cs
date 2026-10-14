@@ -63,6 +63,9 @@ namespace RiskOfBonk
             Shrines.Init(gameObject, shrines.Value);
             gameObject.AddComponent<StageMode.LobbyBeacon>();
             BonkTerrain.Init(harmony, gameObject);
+            ConfigEntry<bool> look = Config.Bind("Gameplay", "MegabonkLook", true,
+                "Megabonk's look on stages: brighter, more saturated colours and lighter fog. Only changes your own screen.");
+            if (look.Value) StageLook.Init();
             Log.Info($"{Name} {Version} loaded");
         }
 

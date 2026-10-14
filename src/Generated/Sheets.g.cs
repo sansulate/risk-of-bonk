@@ -164,5 +164,15 @@ namespace RiskOfBonk.Generated
         public static float MagnetShrineSeconds = 1.0f;
         /// <summary>Monster credit per second for the Megabonk swarm during a final boss fight (Mithrix/Ghost King, False Son/Shadow King, Voidling), times the square root of the difficulty coefficient. (credits/s)</summary>
         public static float FinalSwarmCredit = 12.0f;
+        /// <summary>Colour saturation added on stages (Megabonk's bright colours). (-100..100)</summary>
+        public static float LookSaturation = 35.0f;
+        /// <summary>Contrast added on stages. (-100..100)</summary>
+        public static float LookContrast = 15.0f;
+        /// <summary>Brightness added on stages (HDR grading, which the stages checked use: lakes, foggyswamp, sulfurpools, dampcavesimple). (EV)</summary>
+        public static float LookExposure = 0.35f;
+        /// <summary>Brightness added on stages that grade in LDR (none of the stages checked so far). (-100..100)</summary>
+        public static float LookBrightness = 12.0f;
+        /// <summary>Stage fog strength is multiplied by this. 1 = unchanged: lighter fog made Risk of Rain 2's stages darker (their fog carries much of the light). (x)</summary>
+        public static float LookFog = 1.0f;
     }
 }
