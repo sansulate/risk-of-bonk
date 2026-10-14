@@ -67,7 +67,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A knight who goes oof.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "mbTexture": "Knight_Default",
    "startWeapon": "sword",
    "startWeaponVerified": false
@@ -102,7 +102,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Stealthy, fast and sharp.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "katana",
    "startWeaponVerified": false
   },
@@ -120,7 +120,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Gotta go fast.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "slutty_rocket",
    "startWeaponVerified": false
   },
@@ -137,7 +137,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "An archer of the woods.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "bow",
    "startWeaponVerified": false
   },
@@ -154,7 +154,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Steal the show.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "shotgun",
    "startWeaponVerified": false
   },
@@ -171,7 +171,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Flies high and calls the storm.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "lightning_staff",
    "startWeaponVerified": false
   },
@@ -189,7 +189,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Cold as ice.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "frostwalker",
    "startWeaponVerified": false
   },
@@ -206,7 +206,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "One small step for bonk.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "space_noodle",
    "startWeaponVerified": false
   },
@@ -240,7 +240,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Divine strikes.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "hero_sword",
    "startWeaponVerified": false
   },
@@ -293,7 +293,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Rolls the dice.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "dice",
    "startWeaponVerified": false
   },
@@ -310,7 +310,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "Sus.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "mine",
    "startWeaponVerified": false
   },
@@ -344,7 +344,7 @@
    "heightMeters": 1.6,
    "yawOffsetDeg": 0,
    "description": "A noble chad with a cursed blade.",
-   "mbAssetsVerified": false,
+   "mbAssetsVerified": true,
    "startWeapon": "corrupted_sword",
    "startWeaponVerified": false
   }
