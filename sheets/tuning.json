@@ -465,6 +465,14 @@
    "system": "animation",
    "note": "A clip change has to be wanted this long before it happens (jumps start at once), so walking at the edge of run speed does not flicker. Ours: Megabonk's Animator transitions are not read.",
    "verified": true
+  },
+  {
+   "id": "sound_volume",
+   "value": 0.8,
+   "unit": "x",
+   "system": "sound",
+   "note": "Volume of Megabonk's sounds, on top of Risk of Rain 2's master and sound effect volume.",
+   "verified": true
   }
  ]
 }

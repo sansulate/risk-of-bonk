@@ -93,7 +93,7 @@ namespace RiskOfBonk
             if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage, authority {isAuthority}, prefab {(Prefab(weapon.Prefab) ? "ok" : "-")}");
             Fired++;
             StartAimMode(aim, 2f);
-            if (!string.IsNullOrEmpty(weapon.Sound)) Util.PlaySound(weapon.Sound, gameObject);
+            WeaponVisuals.Fired(gameObject, weapon, characterBody.corePosition); // Megabonk's sound, and its projectile look
             switch (weapon.Kind)
             {
                 case "bullet": Bullet(aim, damage); break;

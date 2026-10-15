@@ -1,6 +1,6 @@
 {
  "sheet": "weapons",
- "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name.",
+ "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's.",
  "rows": [
   {
    "id": "revolver",
@@ -19,7 +19,11 @@
    "pierce": false,
    "sound": "Play_commando_M1",
    "description": "Quick revolver shots.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Revolver",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "shotgun",
@@ -38,7 +42,11 @@
    "pierce": false,
    "sound": "Play_commando_M1",
    "description": "A spread of pellets.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Shotgun",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "sniper",
@@ -57,7 +65,11 @@
    "pierce": true,
    "sound": "Play_commando_M1",
    "description": "A piercing long-range shot.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Sniper",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "bow",
@@ -76,7 +88,11 @@
    "pierce": false,
    "sound": "",
    "description": "Swift arrows.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Bow",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "space_noodle",
@@ -95,7 +111,11 @@
    "pierce": true,
    "sound": "",
    "description": "A piercing cosmic beam.",
-   "verified": true
+   "verified": true,
+   "mbSound": "NoodleWhipStart",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "firestaff",
@@ -114,7 +134,11 @@
    "pierce": false,
    "sound": "",
    "description": "Fireballs that burn.",
-   "verified": true
+   "verified": true,
+   "mbSound": "retro_shoot_fireball3",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "dragons_breath",
@@ -133,7 +157,11 @@
    "pierce": false,
    "sound": "",
    "description": "A burst of burning fireballs.",
-   "verified": true
+   "verified": true,
+   "mbSound": "retro_shoot_fireball3",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "bone",
@@ -152,7 +180,11 @@
    "pierce": false,
    "sound": "",
    "description": "Thrown bones.",
-   "verified": true
+   "verified": true,
+   "mbSound": "BoneThrow",
+   "mbProjectile": "Bone0",
+   "projScale": 0.8,
+   "projSpin": 900
   },
   {
    "id": "bananarang",
@@ -171,7 +203,11 @@
    "pierce": false,
    "sound": "",
    "description": "A banana that comes back.",
-   "verified": true
+   "verified": true,
+   "mbSound": "AxeThrow",
+   "mbProjectile": "BananaProjectile",
+   "projScale": 0.5,
+   "projSpin": 900
   },
   {
    "id": "axe",
@@ -190,7 +226,11 @@
    "pierce": false,
    "sound": "",
    "description": "A spinning axe that comes back.",
-   "verified": true
+   "verified": true,
+   "mbSound": "AxeThrow",
+   "mbProjectile": "AxeProjectile",
+   "projScale": 0.45,
+   "projSpin": 900
   },
   {
    "id": "dice",
@@ -209,7 +249,11 @@
    "pierce": false,
    "sound": "",
    "description": "Two dice; damage rolls 1 to 6.",
-   "verified": true
+   "verified": true,
+   "mbSound": "DiceThrow",
+   "mbProjectile": "DiceProjectile",
+   "projScale": 0.7,
+   "projSpin": 500
   },
   {
    "id": "slutty_rocket",
@@ -228,7 +272,11 @@
    "pierce": false,
    "sound": "",
    "description": "Homing rockets.",
-   "verified": true
+   "verified": true,
+   "mbSound": "",
+   "mbProjectile": "RocketProjectile",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "chunkers",
@@ -247,7 +295,11 @@
    "pierce": false,
    "sound": "",
    "description": "Hurls a heavy chunk of rock.",
-   "verified": true
+   "verified": true,
+   "mbSound": "",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "poison_flask",
@@ -266,7 +318,11 @@
    "pierce": false,
    "sound": "",
    "description": "Leaves a poison cloud.",
-   "verified": true
+   "verified": true,
+   "mbSound": "",
+   "mbProjectile": "PoisonFlaskProjectile",
+   "projScale": 0.6,
+   "projSpin": 400
   },
   {
    "id": "mine",
@@ -285,7 +341,11 @@
    "pierce": false,
    "sound": "",
    "description": "Drops a proximity mine.",
-   "verified": true
+   "verified": true,
+   "mbSound": "MineSpawn",
+   "mbProjectile": "MinesProjectile",
+   "projScale": 0.6,
+   "projSpin": 0
   },
   {
    "id": "tornado",
@@ -304,7 +364,11 @@
    "pierce": false,
    "sound": "",
    "description": "A tornado that tears through the horde.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Tornado",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "sword",
@@ -323,7 +387,11 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Wide sword swings.",
-   "verified": true
+   "verified": true,
+   "mbSound": "SwordSwing",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "katana",
@@ -342,7 +410,11 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Lightning-fast slashes.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Katana",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "hero_sword",
@@ -361,7 +433,11 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "A huge heroic cleave.",
-   "verified": true
+   "verified": true,
+   "mbSound": "HeroSwordAttack",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "corrupted_sword",
@@ -380,7 +456,11 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Cursed swings that bleed.",
-   "verified": true
+   "verified": true,
+   "mbSound": "CorruptedSword",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "dexecutioner",
@@ -399,7 +479,11 @@
    "pierce": false,
    "sound": "Play_merc_sword_swing",
    "description": "Brutal chops.",
-   "verified": true
+   "verified": true,
+   "mbSound": "Dexecutioner",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "aura",
@@ -418,7 +502,11 @@
    "pierce": false,
    "sound": "",
    "description": "Damages everything around you.",
-   "verified": true
+   "verified": true,
+   "mbSound": "",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "frostwalker",
@@ -437,7 +525,11 @@
    "pierce": false,
    "sound": "",
    "description": "A freezing aura that slows.",
-   "verified": true
+   "verified": true,
+   "mbSound": "IceRing",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "blood_magic",
@@ -456,7 +548,11 @@
    "pierce": false,
    "sound": "",
    "description": "A blood nova that makes enemies bleed.",
-   "verified": true
+   "verified": true,
+   "mbSound": "BloodMagic",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "lightning_staff",
@@ -475,7 +571,11 @@
    "pierce": false,
    "sound": "",
    "description": "Chain lightning that jumps between enemies.",
-   "verified": true
+   "verified": true,
+   "mbSound": "retro_lightningstrike",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "wireless_dagger",
@@ -494,7 +594,11 @@
    "pierce": false,
    "sound": "",
    "description": "Smart daggers that home in on enemies.",
-   "verified": true
+   "verified": true,
+   "mbSound": "BluetoothDagger",
+   "mbProjectile": "BluetoothProjectile",
+   "projScale": 0.8,
+   "projSpin": 0
   },
   {
    "id": "black_hole",
@@ -513,7 +617,11 @@
    "pierce": false,
    "sound": "",
    "description": "A black hole that pulls enemies in.",
-   "verified": true
+   "verified": true,
+   "mbSound": "BlackHole",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   },
   {
    "id": "aegis",
@@ -532,7 +640,11 @@
    "pierce": false,
    "sound": "Play_loader_m1_swing",
    "description": "Shield bashes that slow enemies.",
-   "verified": true
+   "verified": true,
+   "mbSound": "AegisUse",
+   "mbProjectile": "",
+   "projScale": 1.0,
+   "projSpin": 0
   }
  ]
 }

@@ -23,6 +23,7 @@ REQUIRED = {
     "weapons": ["id", "displayName", "mbIcon", "kind", "damage", "interval", "cooldown", "count", "range", "description", "verified"],
     "bosses": ["id", "displayName", "subtitle", "role", "mbNameHints", "rorBody", "rorMaster", "airborne", "healthBoost", "verified"],
     "animations": ["id", "clipWords", "plays", "verified"],
+    "sounds": ["id", "mbSound", "verified"],
 }
 STATS = {"damage", "cooldown", "crit", "health", "regen", "armor", "speed", "shield", "evasion", "luck"}
 
@@ -126,12 +127,17 @@ def generate(s):
     for r in s["weapons"]:
         L.append(f"            new WeaponRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbIcon'])}, {cs(r['kind'])}, {cs(r['damage'])}, {cs(r['interval'])}, "
                  f"{cs(r['cooldown'])}, {int(r['count'])}, {cs(r.get('spread', 0))}, {cs(r['range'])}, {cs(r.get('prefab', ''))}, {cs(r.get('effect', ''))}, "
-                 f"{cs(r.get('damageType', 'none'))}, {cs(r.get('pierce', False))}, {cs(r.get('sound', ''))}, {cs(r['description'])}),")
+                 f"{cs(r.get('damageType', 'none'))}, {cs(r.get('pierce', False))}, {cs(r.get('sound', ''))}, {cs(r['description'])}, "
+                 f"{cs(r.get('mbSound', ''))}, {cs(r.get('mbProjectile', ''))}, {cs(r.get('projScale', 1))}, {cs(r.get('projSpin', 0))}),")
     L.append("        };")
     L.append("        public static readonly BossRow[] Bosses =\n        {")
     for r in s["bosses"]:
         L.append(f"            new BossRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['subtitle'])}, {cs(r['mbNameHints'])}, {cs(r.get('mbTexture', ''))}, "
                  f"{cs(r['rorBody'])}, {cs(r['rorMaster'])}, {cs(r['airborne'])}, {int(r['healthBoost'])}, {cs(r['role'])}, {cs(r.get('replaces', []))}, {cs(r.get('retarget', True))}),")
+    L.append("        };")
+    L.append("        public static readonly SoundRow[] Sounds =\n        {")
+    for r in s["sounds"]:
+        L.append(f"            new SoundRow({cs(r['id'])}, {cs(r['mbSound'])}),")
     L.append("        };")
     L.append("        public static readonly AnimRow[] Animations =\n        {")
     for r in s["animations"]:

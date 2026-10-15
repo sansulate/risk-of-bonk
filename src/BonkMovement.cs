@@ -36,6 +36,14 @@ namespace RiskOfBonk
 
         static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
 
+        /// <summary>Megabonk's jump, landing and slide sounds for Megabonk characters (sheets/sounds.json).</summary>
+        static void MovementSound(CharacterMotor m, string id)
+        {
+            if (!m || !Weapons.IsMegabonk(m.body)) return;
+            foreach (var s in Sheets.Sounds)
+                if (s.Id == id) { MegabonkSounds.Play(s.MbSound, m.body.footPosition, 0.6f); return; }
+        }
+
         /// <summary>Megabonk's run speed for this body: 10 m/s, scaled by its move speed items and buffs.</summary>
         static float RunSpeed(CharacterMotor m)
         {
@@ -143,6 +151,7 @@ namespace RiskOfBonk
                                 // Megabonk's slide push, along where you are going.
                                 h += (hasInput ? dir.normalized : before.normalized) * Tune.SlideBoost;
                                 st.boostReady = Tune.SlideCooldown;
+                                MovementSound(m, "slide");
                                 st.slideReady = false;
                             }
                         }
@@ -225,6 +234,7 @@ namespace RiskOfBonk
             {
                 if (!Applies(__instance)) return;
                 var st = states.GetOrCreateValue(__instance);
+                if (Time.fixedTime - st.landedAt > 0.3f) MovementSound(__instance, "land");
                 st.landedAt = Time.fixedTime;
                 st.wallTime = 0f;
                 st.wallrunning = false;
@@ -246,6 +256,7 @@ namespace RiskOfBonk
                 if (horizontalBonus > 1.001f && pushed.magnitude > h.magnitude) h = pushed; // a jump with its own push keeps it
                 m.velocity = new Vector3(h.x, up, h.z);
                 if (states.TryGetValue(m, out var st)) st.sliding = false;
+                MovementSound(m, "jump");
             }
         }
 

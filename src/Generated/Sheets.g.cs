@@ -63,34 +63,34 @@ namespace RiskOfBonk.Generated
         };
         public static readonly WeaponRow[] Weapons =
         {
-            new WeaponRow("revolver", "Revolver", "Revolver", "bullet", 2.4f, 0.35f, 1.5f, 1, 0.0f, 150.0f, "", "RoR2/Base/Bandit2/TracerBanditPistol.prefab", "none", false, "Play_commando_M1", "Quick revolver shots."),
-            new WeaponRow("shotgun", "Shotgun", "Shotgun", "bullet", 0.9f, 0.8f, 2.5f, 6, 6.0f, 45.0f, "", "RoR2/Base/Bandit2/TracerBandit2Shotgun.prefab", "none", false, "Play_commando_M1", "A spread of pellets."),
-            new WeaponRow("sniper", "Sniper", "Sniper", "bullet", 6.0f, 1.4f, 4.0f, 1, 0.0f, 400.0f, "", "RoR2/Base/Huntress/TracerHuntressSnipe.prefab", "none", true, "Play_commando_M1", "A piercing long-range shot."),
-            new WeaponRow("bow", "Bow", "Bow", "bullet", 2.8f, 0.5f, 2.0f, 1, 0.0f, 200.0f, "", "RoR2/Base/Huntress/TracerHuntressSnipe.prefab", "none", false, "", "Swift arrows."),
-            new WeaponRow("space_noodle", "Space Noodle", "Space Noodle", "bullet", 1.6f, 0.25f, 1.5f, 1, 0.0f, 120.0f, "", "RoR2/Base/Golem/TracerGolem.prefab", "none", true, "", "A piercing cosmic beam."),
-            new WeaponRow("firestaff", "Firestaff", "Firestaff", "projectile", 2.2f, 0.45f, 2.0f, 1, 0.0f, 100.0f, "RoR2/Base/Mage/MageFireboltBasic.prefab", "", "none", false, "", "Fireballs that burn."),
-            new WeaponRow("dragons_breath", "Dragon's Breath", "DragonsBreath", "projectile", 0.8f, 0.3f, 2.0f, 3, 10.0f, 100.0f, "RoR2/Base/Lemurian/Fireball.prefab", "", "ignite", false, "", "A burst of burning fireballs."),
-            new WeaponRow("bone", "Bone", "Bone", "projectile", 2.0f, 0.4f, 1.5f, 1, 0.0f, 100.0f, "RoR2/Base/Bandit2/Bandit2ShivProjectile.prefab", "", "none", false, "", "Thrown bones."),
-            new WeaponRow("bananarang", "Bananarang", "Bananarang", "projectile", 1.8f, 0.9f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Saw/Sawmerang.prefab", "", "none", false, "", "A banana that comes back."),
-            new WeaponRow("axe", "Axe", "Axe", "projectile", 2.6f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Saw/Sawmerang.prefab", "", "none", false, "", "A spinning axe that comes back."),
-            new WeaponRow("dice", "Dice", "Dice", "projectile", 1.0f, 0.5f, 2.0f, 2, 6.0f, 100.0f, "RoR2/Base/Engi/EngiGrenadeProjectile.prefab", "", "none", false, "", "Two dice; damage rolls 1 to 6."),
-            new WeaponRow("slutty_rocket", "Slutty Rocket", "SluttyRocket", "projectile", 2.5f, 0.9f, 3.0f, 2, 12.0f, 100.0f, "RoR2/Base/Common/MissileProjectile.prefab", "", "none", false, "", "Homing rockets."),
-            new WeaponRow("chunkers", "Chunkers", "Chunkers", "projectile", 4.0f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Titan/TitanRockProjectile.prefab", "", "none", false, "", "Hurls a heavy chunk of rock."),
-            new WeaponRow("poison_flask", "Poison Flask", "Poison Flask", "projectile", 1.2f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/MiniMushroom/SporeGrenadeProjectile.prefab", "", "none", false, "", "Leaves a poison cloud."),
-            new WeaponRow("mine", "Mine", "Mine", "projectile", 4.0f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Engi/EngiMine.prefab", "", "none", false, "", "Drops a proximity mine."),
-            new WeaponRow("tornado", "Tornado", "Tornado", "projectile", 1.5f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Huntress/HuntressCycloneProjectileKickable.prefab", "", "none", false, "", "A tornado that tears through the horde."),
-            new WeaponRow("sword", "Sword", "Sword", "melee", 3.0f, 0.6f, 2.0f, 1, 0.0f, 4.0f, "", "RoR2/Base/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Wide sword swings."),
-            new WeaponRow("katana", "Katana", "Katana", "melee", 1.8f, 0.3f, 1.5f, 1, 0.0f, 3.2f, "", "RoR2/Base/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Lightning-fast slashes."),
-            new WeaponRow("hero_sword", "Hero Sword", "HeroSword", "melee", 5.0f, 1.1f, 3.0f, 1, 0.0f, 6.0f, "", "RoR2/Base/Merc/MercSwordFinisherSlash.prefab", "none", false, "Play_merc_sword_swing", "A huge heroic cleave."),
-            new WeaponRow("corrupted_sword", "Corrupted Sword", "CorruptedSword", "melee", 3.5f, 0.8f, 2.5f, 1, 0.0f, 5.0f, "", "RoR2/Base/Merc/MercSwordSlashWhirlwind.prefab", "bleed", false, "Play_merc_sword_swing", "Cursed swings that bleed."),
-            new WeaponRow("dexecutioner", "Dexecutioner", "Dexecutioner", "melee", 4.0f, 0.9f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Croco/CrocoSlash.prefab", "none", false, "Play_merc_sword_swing", "Brutal chops."),
-            new WeaponRow("aura", "Aura", "Aura", "aura", 1.4f, 0.9f, 3.0f, 1, 0.0f, 9.0f, "", "RoR2/Base/Jellyfish/JellyfishNova.prefab", "none", false, "", "Damages everything around you."),
-            new WeaponRow("frostwalker", "Frostwalker", "Frostwalker", "aura", 1.0f, 0.9f, 3.0f, 1, 0.0f, 8.0f, "", "RoR2/Base/Jellyfish/JellyfishNova.prefab", "slow", false, "", "A freezing aura that slows."),
-            new WeaponRow("blood_magic", "Blood Magic", "BloodMagic", "aura", 1.6f, 1.0f, 3.0f, 1, 0.0f, 7.0f, "", "RoR2/Base/Vagrant/VagrantNovaExplosion.prefab", "bleed", false, "", "A blood nova that makes enemies bleed."),
-            new WeaponRow("lightning_staff", "Lightning Staff", "LightningStaff", "lightning", 2.0f, 0.6f, 2.5f, 1, 0.0f, 40.0f, "", "", "none", false, "", "Chain lightning that jumps between enemies."),
-            new WeaponRow("wireless_dagger", "Wireless Dagger", "BluetoothDagger", "projectile", 1.3f, 0.5f, 2.0f, 2, 20.0f, 100.0f, "RoR2/Base/Dagger/DaggerProjectile.prefab", "", "none", false, "", "Smart daggers that home in on enemies."),
-            new WeaponRow("black_hole", "Black Hole", "BlackHole", "projectile", 1.0f, 2.5f, 6.0f, 1, 0.0f, 100.0f, "RoR2/Base/Blackhole/GravSphere.prefab", "", "none", false, "", "A black hole that pulls enemies in."),
-            new WeaponRow("aegis", "Aegis", "Aegis", "melee", 2.6f, 0.8f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Loader/OmniImpactVFXLoader.prefab", "slow", false, "Play_loader_m1_swing", "Shield bashes that slow enemies."),
+            new WeaponRow("revolver", "Revolver", "Revolver", "bullet", 2.4f, 0.35f, 1.5f, 1, 0.0f, 150.0f, "", "RoR2/Base/Bandit2/TracerBanditPistol.prefab", "none", false, "Play_commando_M1", "Quick revolver shots.", "Revolver", "", 1.0f, 0.0f),
+            new WeaponRow("shotgun", "Shotgun", "Shotgun", "bullet", 0.9f, 0.8f, 2.5f, 6, 6.0f, 45.0f, "", "RoR2/Base/Bandit2/TracerBandit2Shotgun.prefab", "none", false, "Play_commando_M1", "A spread of pellets.", "Shotgun", "", 1.0f, 0.0f),
+            new WeaponRow("sniper", "Sniper", "Sniper", "bullet", 6.0f, 1.4f, 4.0f, 1, 0.0f, 400.0f, "", "RoR2/Base/Huntress/TracerHuntressSnipe.prefab", "none", true, "Play_commando_M1", "A piercing long-range shot.", "Sniper", "", 1.0f, 0.0f),
+            new WeaponRow("bow", "Bow", "Bow", "bullet", 2.8f, 0.5f, 2.0f, 1, 0.0f, 200.0f, "", "RoR2/Base/Huntress/TracerHuntressSnipe.prefab", "none", false, "", "Swift arrows.", "Bow", "", 1.0f, 0.0f),
+            new WeaponRow("space_noodle", "Space Noodle", "Space Noodle", "bullet", 1.6f, 0.25f, 1.5f, 1, 0.0f, 120.0f, "", "RoR2/Base/Golem/TracerGolem.prefab", "none", true, "", "A piercing cosmic beam.", "NoodleWhipStart", "", 1.0f, 0.0f),
+            new WeaponRow("firestaff", "Firestaff", "Firestaff", "projectile", 2.2f, 0.45f, 2.0f, 1, 0.0f, 100.0f, "RoR2/Base/Mage/MageFireboltBasic.prefab", "", "none", false, "", "Fireballs that burn.", "retro_shoot_fireball3", "", 1.0f, 0.0f),
+            new WeaponRow("dragons_breath", "Dragon's Breath", "DragonsBreath", "projectile", 0.8f, 0.3f, 2.0f, 3, 10.0f, 100.0f, "RoR2/Base/Lemurian/Fireball.prefab", "", "ignite", false, "", "A burst of burning fireballs.", "retro_shoot_fireball3", "", 1.0f, 0.0f),
+            new WeaponRow("bone", "Bone", "Bone", "projectile", 2.0f, 0.4f, 1.5f, 1, 0.0f, 100.0f, "RoR2/Base/Bandit2/Bandit2ShivProjectile.prefab", "", "none", false, "", "Thrown bones.", "BoneThrow", "Bone0", 0.8f, 900.0f),
+            new WeaponRow("bananarang", "Bananarang", "Bananarang", "projectile", 1.8f, 0.9f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Saw/Sawmerang.prefab", "", "none", false, "", "A banana that comes back.", "AxeThrow", "BananaProjectile", 0.5f, 900.0f),
+            new WeaponRow("axe", "Axe", "Axe", "projectile", 2.6f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Saw/Sawmerang.prefab", "", "none", false, "", "A spinning axe that comes back.", "AxeThrow", "AxeProjectile", 0.45f, 900.0f),
+            new WeaponRow("dice", "Dice", "Dice", "projectile", 1.0f, 0.5f, 2.0f, 2, 6.0f, 100.0f, "RoR2/Base/Engi/EngiGrenadeProjectile.prefab", "", "none", false, "", "Two dice; damage rolls 1 to 6.", "DiceThrow", "DiceProjectile", 0.7f, 500.0f),
+            new WeaponRow("slutty_rocket", "Slutty Rocket", "SluttyRocket", "projectile", 2.5f, 0.9f, 3.0f, 2, 12.0f, 100.0f, "RoR2/Base/Common/MissileProjectile.prefab", "", "none", false, "", "Homing rockets.", "", "RocketProjectile", 1.0f, 0.0f),
+            new WeaponRow("chunkers", "Chunkers", "Chunkers", "projectile", 4.0f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Titan/TitanRockProjectile.prefab", "", "none", false, "", "Hurls a heavy chunk of rock.", "", "", 1.0f, 0.0f),
+            new WeaponRow("poison_flask", "Poison Flask", "Poison Flask", "projectile", 1.2f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/MiniMushroom/SporeGrenadeProjectile.prefab", "", "none", false, "", "Leaves a poison cloud.", "", "PoisonFlaskProjectile", 0.6f, 400.0f),
+            new WeaponRow("mine", "Mine", "Mine", "projectile", 4.0f, 1.0f, 3.0f, 1, 0.0f, 100.0f, "RoR2/Base/Engi/EngiMine.prefab", "", "none", false, "", "Drops a proximity mine.", "MineSpawn", "MinesProjectile", 0.6f, 0.0f),
+            new WeaponRow("tornado", "Tornado", "Tornado", "projectile", 1.5f, 1.2f, 4.0f, 1, 0.0f, 100.0f, "RoR2/Base/Huntress/HuntressCycloneProjectileKickable.prefab", "", "none", false, "", "A tornado that tears through the horde.", "Tornado", "", 1.0f, 0.0f),
+            new WeaponRow("sword", "Sword", "Sword", "melee", 3.0f, 0.6f, 2.0f, 1, 0.0f, 4.0f, "", "RoR2/Base/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Wide sword swings.", "SwordSwing", "", 1.0f, 0.0f),
+            new WeaponRow("katana", "Katana", "Katana", "melee", 1.8f, 0.3f, 1.5f, 1, 0.0f, 3.2f, "", "RoR2/Base/Merc/MercSwordSlash.prefab", "none", false, "Play_merc_sword_swing", "Lightning-fast slashes.", "Katana", "", 1.0f, 0.0f),
+            new WeaponRow("hero_sword", "Hero Sword", "HeroSword", "melee", 5.0f, 1.1f, 3.0f, 1, 0.0f, 6.0f, "", "RoR2/Base/Merc/MercSwordFinisherSlash.prefab", "none", false, "Play_merc_sword_swing", "A huge heroic cleave.", "HeroSwordAttack", "", 1.0f, 0.0f),
+            new WeaponRow("corrupted_sword", "Corrupted Sword", "CorruptedSword", "melee", 3.5f, 0.8f, 2.5f, 1, 0.0f, 5.0f, "", "RoR2/Base/Merc/MercSwordSlashWhirlwind.prefab", "bleed", false, "Play_merc_sword_swing", "Cursed swings that bleed.", "CorruptedSword", "", 1.0f, 0.0f),
+            new WeaponRow("dexecutioner", "Dexecutioner", "Dexecutioner", "melee", 4.0f, 0.9f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Croco/CrocoSlash.prefab", "none", false, "Play_merc_sword_swing", "Brutal chops.", "Dexecutioner", "", 1.0f, 0.0f),
+            new WeaponRow("aura", "Aura", "Aura", "aura", 1.4f, 0.9f, 3.0f, 1, 0.0f, 9.0f, "", "RoR2/Base/Jellyfish/JellyfishNova.prefab", "none", false, "", "Damages everything around you.", "", "", 1.0f, 0.0f),
+            new WeaponRow("frostwalker", "Frostwalker", "Frostwalker", "aura", 1.0f, 0.9f, 3.0f, 1, 0.0f, 8.0f, "", "RoR2/Base/Jellyfish/JellyfishNova.prefab", "slow", false, "", "A freezing aura that slows.", "IceRing", "", 1.0f, 0.0f),
+            new WeaponRow("blood_magic", "Blood Magic", "BloodMagic", "aura", 1.6f, 1.0f, 3.0f, 1, 0.0f, 7.0f, "", "RoR2/Base/Vagrant/VagrantNovaExplosion.prefab", "bleed", false, "", "A blood nova that makes enemies bleed.", "BloodMagic", "", 1.0f, 0.0f),
+            new WeaponRow("lightning_staff", "Lightning Staff", "LightningStaff", "lightning", 2.0f, 0.6f, 2.5f, 1, 0.0f, 40.0f, "", "", "none", false, "", "Chain lightning that jumps between enemies.", "retro_lightningstrike", "", 1.0f, 0.0f),
+            new WeaponRow("wireless_dagger", "Wireless Dagger", "BluetoothDagger", "projectile", 1.3f, 0.5f, 2.0f, 2, 20.0f, 100.0f, "RoR2/Base/Dagger/DaggerProjectile.prefab", "", "none", false, "", "Smart daggers that home in on enemies.", "BluetoothDagger", "BluetoothProjectile", 0.8f, 0.0f),
+            new WeaponRow("black_hole", "Black Hole", "BlackHole", "projectile", 1.0f, 2.5f, 6.0f, 1, 0.0f, 100.0f, "RoR2/Base/Blackhole/GravSphere.prefab", "", "none", false, "", "A black hole that pulls enemies in.", "BlackHole", "", 1.0f, 0.0f),
+            new WeaponRow("aegis", "Aegis", "Aegis", "melee", 2.6f, 0.8f, 2.5f, 1, 0.0f, 4.5f, "", "RoR2/Base/Loader/OmniImpactVFXLoader.prefab", "slow", false, "Play_loader_m1_swing", "Shield bashes that slow enemies.", "AegisUse", "", 1.0f, 0.0f),
         };
         public static readonly BossRow[] Bosses =
         {
@@ -98,6 +98,12 @@ namespace RiskOfBonk.Generated
             new BossRow("ghost_lord", "Ghost Lord", "Megabonk Boss", new[] { "Ghost" }, "t_ghost_purple", "VagrantBody", "VagrantMaster", true, 5, "teleporter", new string[0], true),
             new BossRow("ghost_king", "Ghost King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_gold", "BrotherBody", "BrotherMaster", false, 0, "final", new[] { "BrotherBody", "BrotherHurtBody", "BrotherGlassBody" }, true),
             new BossRow("shadow_king", "Shadow King", "Megabonk Final Boss", new[] { "Ghost" }, "t_ghost_black", "FalseSonBossBody", "FalseSonBossMaster", false, 0, "final", new[] { "FalseSonBossBody", "FalseSonBossBodyLunarShard", "FalseSonBossBodyBrokenLunarShard" }, true),
+        };
+        public static readonly SoundRow[] Sounds =
+        {
+            new SoundRow("jump", "Player_Jump"),
+            new SoundRow("land", "Player_Landing"),
+            new SoundRow("slide", "StartSlide"),
         };
         public static readonly AnimRow[] Animations =
         {
@@ -227,5 +233,7 @@ namespace RiskOfBonk.Generated
         public static float AnimBlend = 0.15f;
         /// <summary>A clip change has to be wanted this long before it happens (jumps start at once), so walking at the edge of run speed does not flicker. Ours: Megabonk's Animator transitions are not read. (s)</summary>
         public static float AnimHold = 0.12f;
+        /// <summary>Volume of Megabonk's sounds, on top of Risk of Rain 2's master and sound effect volume. (x)</summary>
+        public static float SoundVolume = 0.8f;
     }
 }

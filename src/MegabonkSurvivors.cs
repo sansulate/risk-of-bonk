@@ -55,6 +55,7 @@ namespace RiskOfBonk
                 if (def != null) survivors.Add(def);
                 yield return null;
             }
+            try { WeaponVisuals.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk projectile models: {e.Message}"); }
             var masters = new List<GameObject>();
             MegabonkBosses.BuildAll(keys, bodies, masters);
             pack.bodyPrefabs.Add(bodies.ToArray());
@@ -229,6 +230,7 @@ namespace RiskOfBonk
             var cm = modelRoot.GetComponent<CharacterModel>();
             var oldInfos = cm != null && cm.baseRendererInfos != null ? cm.baseRendererInfos : new CharacterModel.RendererInfo[0];
             var template = TemplateMaterial(modelRoot, oldInfos);
+            if (!WeaponVisuals.Template) WeaponVisuals.Template = template;
 
             // The survivor's body mesh drives the Megabonk model: the skinned mesh with the most vertices (weapons and
             // gauntlets often reference the whole skeleton too). Its bind pose is where the model is fitted.

@@ -30,3 +30,13 @@ The Unity type database distributed with AssetsTools.NET / UABEA by nesrak1 (htt
 ## Newtonsoft.Json (lib/Newtonsoft.Json.dll, bundled in RiskOfBonk/)
 https://github.com/JamesNK/Newtonsoft.Json, MIT License, Copyright (c) 2007 James Newton-King (same terms as above). Risk of Rain 2's own code refers to it but the game
 does not ship it; the copy is the one RoR2BepInExPack 1.46.0 (Risk of Thunder, MIT) distributes.
+
+## NVorbis 0.8.6 (lib/NVorbis.dll, bundled in RiskOfBonk/)
+https://github.com/NVorbis/NVorbis, MIT License, Copyright (c) Andrew Ward (same terms as above). Decodes Megabonk's
+sounds (read from the player's own Megabonk install) so the mod can play them.
+
+## python-fsb5 (method only, no code or data shipped)
+https://github.com/HearthSim/python-fsb5, MIT License, Copyright (c) 2016 Simon Pinfold. FsbVorbis.cs follows its way of
+rebuilding FMOD FSB5 Vorbis samples as Ogg Vorbis; the Vorbis setup headers are read from the FMOD inside the player's own
+Megabonk install, never shipped.
+

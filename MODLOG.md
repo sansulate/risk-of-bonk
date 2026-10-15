@@ -237,4 +237,14 @@
   slides use the rail Grind pose (Bush has a real Sliding clip). Spawned bodies set themselves up in Awake (only
   serialized fields survive Instantiate). Checked in game: Sir Oofie switches Idle/Run/Jump/Falling/Grind as he
   moves (anim log with testmove) and shows Megabonk's run and idle poses.
+- Update 15 (2026-10-15): Megabonk weapon sounds and projectile models. Sounds: Megabonk's AudioClips are FSB5
+  Vorbis in .resS; FsbVorbis rebuilds them as Ogg Vorbis (python-fsb5's method) with the Vorbis setup headers read from
+  the FMOD table inside Megabonk's own UnityPlayer.dll (64-bit entries {ptr, len, crc, basePtr, ofs, len2}), NVorbis
+  decodes them, and since Risk of Rain 2 disables Unity audio ("Audio system is disabled"; it uses Wwise) they play
+  through winmm waveOut (a pool of 12 voices), at volume_master x volume_sfx x sound_volume, fading with distance.
+  25/25 load (mbSound per weapon in weapons.json; jump, land, slide in sounds.json). Projectiles: weapons with a
+  Megabonk projectile model (bone, banana, axe, dice, rocket, flask, mine, dagger) dress the RoR2 projectile's ghost
+  on every machine (the body's last fired weapon picks the look), spinning (projSpin). Checked: Calcium throws
+  Megabonk bones, Monke bananas, with BoneThrow / AxeThrow logged. Megabonk's slashes, fire, lightning, aura and
+  tornado are particle effects with no mesh, so those weapons keep Risk of Rain 2's effects.
 

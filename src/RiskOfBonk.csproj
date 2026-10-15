@@ -25,5 +25,6 @@
     <Reference Include="BepInEx"><HintPath>$(BepInExCore)/BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(BepInExCore)/0Harmony.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="AssetsTools.NET"><HintPath>../lib/AssetsTools.NET.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="NVorbis"><HintPath>../lib/NVorbis.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 </Project>

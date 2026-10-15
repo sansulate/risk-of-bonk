@@ -64,6 +64,10 @@ namespace RiskOfBonk
             Shrines.Init(gameObject, shrines.Value);
             gameObject.AddComponent<StageMode.LobbyBeacon>();
             gameObject.AddComponent<MeltyLink>();
+            gameObject.AddComponent<MegabonkSounds>();
+            MegabonkSounds.LoadAll(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Weapons, w => w.MbSound),
+                System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Sounds, s => s.MbSound)));
+            WeaponVisuals.Init(harmony);
             MeltyTest.Start();
             gameObject.AddComponent<MeltyTestRun>();
             BonkTerrain.Init(harmony, gameObject);

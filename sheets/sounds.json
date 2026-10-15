@@ -1,0 +1,21 @@
+{
+ "sheet": "sounds",
+ "note": "Megabonk sounds for movement (MegabonkSounds), by Megabonk AudioClip name.",
+ "rows": [
+  {
+   "id": "jump",
+   "mbSound": "Player_Jump",
+   "verified": true
+  },
+  {
+   "id": "land",
+   "mbSound": "Player_Landing",
+   "verified": true
+  },
+  {
+   "id": "slide",
+   "mbSound": "StartSlide",
+   "verified": true
+  }
+ ]
+}

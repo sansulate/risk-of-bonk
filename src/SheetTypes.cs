@@ -73,14 +73,19 @@ namespace RiskOfBonk.Generated
     public sealed class WeaponRow
     {
         public readonly string Id, DisplayName, MbIcon, Kind, Prefab, Effect, DamageType, Sound, Description;
+        /// <summary>Megabonk AudioClip for the attack, and the Megabonk model a projectile shows (with its scale and spin).</summary>
+        public readonly string MbSound, MbProjectile;
+        public readonly float ProjScale, ProjSpin;
         public readonly float Damage, Interval, Cooldown, Spread, Range;
         public readonly int Count;
         public readonly bool Pierce;
         public WeaponRow(string id, string displayName, string mbIcon, string kind, float damage, float interval, float cooldown, int count, float spread,
-            float range, string prefab, string effect, string damageType, bool pierce, string sound, string description)
+            float range, string prefab, string effect, string damageType, bool pierce, string sound, string description,
+            string mbSound = "", string mbProjectile = "", float projScale = 1f, float projSpin = 0f)
         {
             Id = id; DisplayName = displayName; MbIcon = mbIcon; Kind = kind; Damage = damage; Interval = interval; Cooldown = cooldown; Count = count;
             Spread = spread; Range = range; Prefab = prefab; Effect = effect; DamageType = damageType; Pierce = pierce; Sound = sound; Description = description;
+            MbSound = mbSound; MbProjectile = mbProjectile; ProjScale = projScale; ProjSpin = projSpin;
         }
     }
     /// <summary>One row of sheets/animations.json: a clip role and the words that pick a Megabonk clip for it.</summary>
@@ -89,5 +94,11 @@ namespace RiskOfBonk.Generated
         public readonly string Id;
         public readonly string[] ClipWords;
         public AnimRow(string id, string[] clipWords) { Id = id; ClipWords = clipWords; }
+    }
+    /// <summary>One row of sheets/sounds.json.</summary>
+    public sealed class SoundRow
+    {
+        public readonly string Id, MbSound;
+        public SoundRow(string id, string mbSound) { Id = id; MbSound = mbSound; }
     }
 }

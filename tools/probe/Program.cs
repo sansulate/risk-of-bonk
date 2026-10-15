@@ -13,6 +13,20 @@ CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
 string mb = Environment.GetEnvironmentVariable("RISKOFBONK_MEGABONK") ?? @"C:\Program Files (x86)\Steam\steamapps\common\Megabonk";
+if (args.Length > 0 && args[0] == "find")
+{
+    var lib3 = new MegabonkLibrary(s => { });
+    lib3.Open(mb, Path.Combine(repo, "lib", "classdata.tpk"));
+    foreach (var n in args.Skip(1))
+    {
+        var m = lib3.FindModel(new[] { n });
+        if (m == null) { Console.WriteLine($"{n,-30} none"); continue; }
+        float[] mn = { 1e9f, 1e9f, 1e9f }, mx = { -1e9f, -1e9f, -1e9f };
+        for (int i = 0; i < m.Positions.Count; i++) { int k = i % 3; mn[k] = Math.Min(mn[k], m.Positions[i]); mx[k] = Math.Max(mx[k], m.Positions[i]); }
+        Console.WriteLine($"{n,-30} -> {m.SourceName,-28} v={m.VertexCount,5} parts={m.SubMeshes.Count} size {mx[0]-mn[0]:0.00}x{mx[1]-mn[1]:0.00}x{mx[2]-mn[2]:0.00} tex=[{string.Join(",", m.SubMeshes.Select(s => s.Texture?.Name ?? "-"))}]");
+    }
+    return;
+}
 if (args.Length > 0 && args[0] == "anim")
 {
     var lib2 = new MegabonkLibrary(s => Console.WriteLine("  " + s));
