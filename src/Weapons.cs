@@ -140,8 +140,18 @@ namespace RiskOfBonk
             if (locator.secondary) familyField(locator.secondary) = Family(id + "Secondary", emptyDef);
             if (locator.utility) familyField(locator.utility) = Family(id + "Utility", emptyDef);
             if (locator.special) familyField(locator.special) = Family(id + "Special", emptyDef);
+            // MUL-T's stance machine swaps skillLocator.primary to the GenericSkill whose family is named
+            // "ToolbotBodyPrimary1/2"; with our family in its place that lookup is null and the weapon is gone. Its
+            // stances only switch between MUL-T's two primaries, so a Megabonk survivor built on it has no use for them.
+            foreach (var m in body.GetComponents<EntityStateMachine>())
+                if (m.customName == "Stance")
+                {
+                    m.initialStateType = new SerializableEntityStateType(typeof(Idle));
+                    m.mainStateType = new SerializableEntityStateType(typeof(Idle));
+                }
             var lo = body.AddComponent<WeaponLoadout>();
             lo.startWeapon = start;
+            lo.primary = locator.primary;
         }
 
         public static bool IsMegabonk(CharacterBody body) => body && body.GetComponent<WeaponLoadout>();
@@ -176,6 +186,8 @@ namespace RiskOfBonk
         public sealed class WeaponLoadout : MonoBehaviour
         {
             public int startWeapon = -1;
+            /// <summary>The GenericSkill holding the start weapon; put back if the moveset survivor's own code moves primary.</summary>
+            public GenericSkill primary;
             CharacterBody body;
             readonly SkillDef[] applied = new SkillDef[3];
 
@@ -187,6 +199,11 @@ namespace RiskOfBonk
             }
 
             void OnDestroy() { if (body) body.onInventoryChanged -= Apply; }
+
+            void LateUpdate()
+            {
+                if (primary && body && body.skillLocator && body.skillLocator.primary != primary) body.skillLocator.primary = primary;
+            }
 
             void Apply()
             {

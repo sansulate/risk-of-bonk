@@ -6,7 +6,7 @@
     <LangVersion>9.0</LangVersion>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Version>0.2.3</Version>
+    <Version>0.2.4</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
   <!-- Default: reference assemblies from nuget (older game build). With -p:RoR2Managed=<game>/Risk of Rain 2_Data/Managed the
