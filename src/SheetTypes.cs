@@ -91,17 +91,19 @@ namespace RiskOfBonk.Generated
         public readonly float MbDamage, MbBurstTime, MbMinBurstInterval, MbEndCooldown, MbRange, MbCritChance, MbProc;
         public readonly int MbProjectiles;
         public readonly bool MbOnlyClose;
+        /// <summary>Megabonk's level-up upgrades for this weapon, "stat:value" (damage, projectiles, size, crit), applied in order.</summary>
+        public readonly string[] MbUpgrades;
         public WeaponRow(string id, string displayName, string mbIcon, string kind, float damage, float interval, float cooldown, int count, float spread,
             float range, string prefab, string effect, string damageType, bool pierce, string sound, string description,
             string mbSound = "", string mbProjectile = "", float projScale = 1f, float projSpin = 0f,
             float mbDamage = 0f, int mbProjectiles = 1, float mbBurstTime = 0f, float mbMinBurstInterval = 0f, float mbEndCooldown = 1f, float mbRange = 0f,
-            float mbCritChance = 0f, float mbProc = 1f, bool mbOnlyClose = false)
+            float mbCritChance = 0f, float mbProc = 1f, bool mbOnlyClose = false, string[] mbUpgrades = null)
         {
             Id = id; DisplayName = displayName; MbIcon = mbIcon; Kind = kind; Damage = damage; Interval = interval; Cooldown = cooldown; Count = count;
             Spread = spread; Range = range; Prefab = prefab; Effect = effect; DamageType = damageType; Pierce = pierce; Sound = sound; Description = description;
             MbSound = mbSound; MbProjectile = mbProjectile; ProjScale = projScale; ProjSpin = projSpin;
             MbDamage = mbDamage; MbProjectiles = mbProjectiles; MbBurstTime = mbBurstTime; MbMinBurstInterval = mbMinBurstInterval; MbEndCooldown = mbEndCooldown;
-            MbRange = mbRange; MbCritChance = mbCritChance; MbProc = mbProc; MbOnlyClose = mbOnlyClose;
+            MbRange = mbRange; MbCritChance = mbCritChance; MbProc = mbProc; MbOnlyClose = mbOnlyClose; MbUpgrades = mbUpgrades ?? new string[0];
         }
     }
     /// <summary>One row of sheets/animations.json: a clip role and the words that pick a Megabonk clip for it.</summary>

@@ -297,3 +297,10 @@
   MegabonkAnimator tilts the Megabonk skeleton root about the feet that way after posing. PlayerRenderer's animator
   only has moving / grounded / jumping / grinding (no slide or attack state), which the clip roles already cover.
   Checked: Monke runs and stands on stage 1 slopes, no errors.
+- Update 21 (2026-10-23): weapon levels use Megabonk's UpgradeData (tools/mbdata/upgrades.py): each weapon's list of
+  stat upgrades (e.g. Revolver: damage +2.5, projectiles +1, crit +10%, bounces, crit damage, projectile speed). The
+  ones this mod can apply (damage as flat Megabonk damage, projectiles as more shots per burst, size as melee/aura
+  reach, crit chance) are mbUpgrades in weapons.json; each level above 1 applies the next in order, cycling (Megabonk
+  rolls a random few per level; a fixed order needs no network message). Replaces +25% damage per level; level-up
+  cards and the chat line say what the levels add. F11 levels the first testweapons entry once all are owned.
+  Checked: CL4NK's revolver 28 -> 42 damage (lv 2), 7 shots (lv 3), 56 damage (lv 5).

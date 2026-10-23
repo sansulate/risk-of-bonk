@@ -254,7 +254,7 @@ namespace RiskOfBonk
                     {
                         int lv = Weapons.Level(body, o.index);
                         c.tag.text = $"{rar.Label} weapon upgrade";
-                        c.desc.text = $"Level {lv} -> {lv + rar.Points}\n+{25 * rar.Points}% damage";
+                        c.desc.text = $"Level {lv} -> {lv + rar.Points}\n{Weapons.Describe(w, lv, rar.Points)}";
                     }
                 }
                 else

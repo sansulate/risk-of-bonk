@@ -145,7 +145,7 @@ namespace RiskOfBonk
                         if (!owned && Weapons.Extras(body).Count >= Weapons.MaxExtras) return;
                         int levels = owned ? points : 1; // a new weapon starts at level 1; upgrades add the rarity's levels
                         master.inventory.GiveItemPermanent(Weapons.Items[m.upgrade], levels);
-                        what = owned ? $"{Sheets.Weapons[m.upgrade].DisplayName} +{levels} levels" : $"new weapon {Sheets.Weapons[m.upgrade].DisplayName}";
+                        what = owned ? $"{Sheets.Weapons[m.upgrade].DisplayName} +{levels} levels ({Weapons.Describe(Sheets.Weapons[m.upgrade], Weapons.Level(body, m.upgrade) - levels, levels)})" : $"new weapon {Sheets.Weapons[m.upgrade].DisplayName}";
                     }
                     else
                     {

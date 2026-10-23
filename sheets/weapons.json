@@ -1,6 +1,6 @@
 {
  "sheet": "weapons",
- "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used.",
+ "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used. mbUpgrades = the weapon's Megabonk UpgradeData that this mod applies (damage = flat Megabonk damage, projectiles = more shots, size = radius/area x(1+v), crit = crit chance); each weapon level beyond the first applies the next one in order, cycling (Megabonk rolls a random few per level; the fixed order needs no network message).",
  "rows": [
   {
    "id": "revolver",
@@ -33,7 +33,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.05,
    "mbProc": 0.9,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:2.5",
+    "projectiles:1",
+    "crit:0.1"
+   ]
   },
   {
    "id": "shotgun",
@@ -66,7 +71,13 @@
    "mbRange": 20.0,
    "mbCritChance": 0.05,
    "mbProc": 1.0,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "damage:3",
+    "projectiles:1",
+    "size:0.15",
+    "crit:0.1"
+   ]
   },
   {
    "id": "sniper",
@@ -99,7 +110,12 @@
    "mbRange": 999.0,
    "mbCritChance": 0.05,
    "mbProc": 1.5,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "damage:4",
+    "projectiles:1",
+    "size:0.13"
+   ]
   },
   {
    "id": "bow",
@@ -132,7 +148,13 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:1.75",
+    "projectiles:1",
+    "size:0.15",
+    "crit:0.08"
+   ]
   },
   {
    "id": "space_noodle",
@@ -165,7 +187,11 @@
    "mbRange": 60.0,
    "mbCritChance": 0.0,
    "mbProc": 0.75,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2"
+   ]
   },
   {
    "id": "firestaff",
@@ -198,7 +224,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "damage:2.5",
+    "projectiles:1",
+    "size:0.16"
+   ]
   },
   {
    "id": "dragons_breath",
@@ -231,7 +262,11 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.7,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.15",
+    "damage:4"
+   ]
   },
   {
    "id": "bone",
@@ -264,7 +299,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.1,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:2.5",
+    "projectiles:1",
+    "crit:0.12"
+   ]
   },
   {
    "id": "bananarang",
@@ -297,7 +337,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "size:0.14",
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "axe",
@@ -330,7 +375,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.7,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.1",
+    "damage:1.5",
+    "projectiles:1"
+   ]
   },
   {
    "id": "dice",
@@ -363,7 +413,13 @@
    "mbRange": 40.0,
    "mbCritChance": 0.1,
    "mbProc": 1.0,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "damage:2",
+    "projectiles:1",
+    "size:0.15",
+    "crit:0.1"
+   ]
   },
   {
    "id": "slutty_rocket",
@@ -396,7 +452,12 @@
    "mbRange": 60.0,
    "mbCritChance": 0.05,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:2",
+    "projectiles:1",
+    "crit:0.08"
+   ]
   },
   {
    "id": "chunkers",
@@ -429,7 +490,12 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.8,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:3",
+    "projectiles:1"
+   ]
   },
   {
    "id": "poison_flask",
@@ -462,7 +528,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.9,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:0.5",
+    "projectiles:1",
+    "size:0.15"
+   ]
   },
   {
    "id": "mine",
@@ -495,7 +566,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.8,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.15",
+    "damage:3",
+    "projectiles:1"
+   ]
   },
   {
    "id": "tornado",
@@ -528,7 +604,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:2",
+    "projectiles:1",
+    "size:0.14"
+   ]
   },
   {
    "id": "sword",
@@ -561,7 +642,12 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.8,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "katana",
@@ -594,7 +680,13 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.95,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2.2",
+    "projectiles:1",
+    "crit:0.08"
+   ]
   },
   {
    "id": "hero_sword",
@@ -627,7 +719,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.8,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.15",
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "corrupted_sword",
@@ -660,7 +757,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.8,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "dexecutioner",
@@ -693,7 +795,13 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2",
+    "projectiles:1",
+    "crit:0.05"
+   ]
   },
   {
    "id": "aura",
@@ -726,7 +834,11 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.7,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.14",
+    "damage:1.4"
+   ]
   },
   {
    "id": "frostwalker",
@@ -759,7 +871,11 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 0.9,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.1",
+    "damage:2"
+   ]
   },
   {
    "id": "blood_magic",
@@ -792,7 +908,12 @@
    "mbRange": 50.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "size:0.15",
+    "damage:1.5",
+    "projectiles:1"
+   ]
   },
   {
    "id": "lightning_staff",
@@ -825,7 +946,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "size:0.2",
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "wireless_dagger",
@@ -858,7 +984,11 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.9,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:2",
+    "projectiles:1"
+   ]
   },
   {
    "id": "black_hole",
@@ -891,7 +1021,12 @@
    "mbRange": 40.0,
    "mbCritChance": 0.0,
    "mbProc": 0.7,
-   "mbOnlyClose": true
+   "mbOnlyClose": true,
+   "mbUpgrades": [
+    "damage:1.25",
+    "projectiles:1",
+    "size:0.13"
+   ]
   },
   {
    "id": "aegis",
@@ -924,7 +1059,12 @@
    "mbRange": 0.0,
    "mbCritChance": 0.0,
    "mbProc": 1.0,
-   "mbOnlyClose": false
+   "mbOnlyClose": false,
+   "mbUpgrades": [
+    "size:0.15",
+    "damage:2",
+    "projectiles:1"
+   ]
   }
  ]
 }

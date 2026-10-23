@@ -244,6 +244,54 @@ namespace RiskOfBonk
 
         public const int MaxExtras = 3;
 
+        /// <summary>A weapon's stats after its level-ups: Megabonk's upgrades (weapons.json mbUpgrades) in order, one per level above 1.</summary>
+        public struct Leveled
+        {
+            public float damage, size, crit;
+            public int shots, damageSteps;
+        }
+
+        public static Leveled Stats(WeaponRow w, int level)
+        {
+            var s = new Leveled { damage = w.MbDamage, size = 1f, crit = w.MbCritChance, shots = Mathf.Max(1, w.MbProjectiles) };
+            for (int i = 0; i < level - 1 && w.MbUpgrades.Length > 0; i++)
+                Step(ref s, w.MbUpgrades[i % w.MbUpgrades.Length]);
+            return s;
+        }
+
+        static void Step(ref Leveled s, string up)
+        {
+            int c = up.IndexOf(':');
+            if (c < 0 || !float.TryParse(up.Substring(c + 1), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v)) return;
+            switch (up.Substring(0, c))
+            {
+                case "damage": s.damage += v; s.damageSteps++; break;
+                case "projectiles": s.shots += Mathf.RoundToInt(v); break;
+                case "size": s.size += v; break;
+                case "crit": s.crit += v; break;
+            }
+        }
+
+        /// <summary>What levels from+1 .. from+count add, for the level-up card ("+2.5 damage, +1 projectile").</summary>
+        public static string Describe(WeaponRow w, int from, int count)
+        {
+            if (w.MbUpgrades.Length == 0) return $"+{count} levels";
+            float dmg = 0f, size = 0f, crit = 0f; int shots = 0;
+            for (int i = from - 1; i < from - 1 + count; i++)
+            {
+                string up = w.MbUpgrades[i % w.MbUpgrades.Length];
+                int c = up.IndexOf(':');
+                float.TryParse(up.Substring(c + 1), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v);
+                switch (up.Substring(0, c)) { case "damage": dmg += v; break; case "projectiles": shots += Mathf.RoundToInt(v); break; case "size": size += v; break; case "crit": crit += v; break; }
+            }
+            var parts = new List<string>();
+            if (dmg > 0f) parts.Add(w.MbDamage > 0f ? $"+{Mathf.RoundToInt(100f * dmg / Mathf.Max(0.01f, w.MbDamage))}% damage" : "+damage");
+            if (shots > 0) parts.Add($"+{shots} projectile{(shots > 1 ? "s" : "")}");
+            if (size > 0f) parts.Add($"+{Mathf.RoundToInt(size * 100f)}% size");
+            if (crit > 0f) parts.Add($"+{Mathf.RoundToInt(crit * 100f)}% crit chance");
+            return string.Join(", ", parts);
+        }
+
         /// <summary>Puts the picked weapons on secondary, utility and special (in pick order) on every machine.</summary>
         public sealed class WeaponLoadout : MonoBehaviour
         {

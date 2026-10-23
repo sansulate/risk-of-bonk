@@ -87,7 +87,7 @@ namespace RiskOfBonk
             if (interactor) interactor.AttemptInteraction(tp.gameObject);
         }
 
-        /// <summary>F11: give the next weapon listed (comma separated ids) in BepInEx/RiskOfBonk/testweapons.</summary>
+        /// <summary>F11: give the next weapon listed (comma separated ids) in BepInEx/RiskOfBonk/testweapons; once all are owned, level up the first.</summary>
         static void GiveWeapon()
         {
             var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
@@ -101,6 +101,12 @@ namespace RiskOfBonk
                 Log.Info("testweapons: gave " + id.Trim());
                 return;
             }
+            // All owned: level up the first listed one (the start weapon counts as owned).
+            int first = Weapons.Index(File.ReadAllText(file).Split(',')[0].Trim());
+            if (first < 0) return;
+            body.inventory.GiveItemPermanent(Weapons.Items[first], 1);
+            var row = RiskOfBonk.Generated.Sheets.Weapons[first];
+            Log.Info($"testweapons: {row.Id} now level {Weapons.Level(body, first)} ({Weapons.Describe(row, Weapons.Level(body, first) - 1, 1)})");
         }
 
         static void Spawn()

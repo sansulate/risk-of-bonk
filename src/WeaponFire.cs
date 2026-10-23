@@ -18,12 +18,12 @@ namespace RiskOfBonk
     /// when it ends. Shot n goes to the n-th closest enemy in range (Megabonk's EnemyTargeting); with none in range the shot
     /// goes where you aim, or is held back for weapons that only fire at close enemies. Each shot is one of Risk of Rain
     /// 2's own attacks: bullets, projectiles, a melee blast with a sword swing, an aura nova, or chain lightning.
-    /// Damage is Megabonk's (mbDamage x weapon_damage_scale) and grows 25% per weapon level.
+    /// Damage is Megabonk's (mbDamage x weapon_damage_scale); levels add Megabonk's own upgrades (Weapons.Stats).
     /// </summary>
     public class WeaponFire : BaseSkillState
     {
         WeaponRow weapon;
-        float duration, shotInterval, damage, lastSoundAge = -1f;
+        float duration, shotInterval, damage, size = 1f, critBonus, lastSoundAge = -1f;
         int shots, shot;
         static int swingCount;
         static readonly Dictionary<GameObject, float> lastAuraFx = new Dictionary<GameObject, float>();
@@ -92,12 +92,15 @@ namespace RiskOfBonk
                 return;
             }
             float speed = Mathf.Max(0.1f, attackSpeedStat);
-            shots = Mathf.Max(1, weapon.MbProjectiles);
+            int level = Mathf.Max(1, Weapons.Level(characterBody, Weapons.Index(weapon.Id)));
+            var stats = Weapons.Stats(weapon, level);
+            shots = stats.shots;
+            size = stats.size;
+            critBonus = stats.crit;
             shotInterval = weapon.MbBurstTime > 0f ? Mathf.Max(weapon.MbBurstTime / shots, weapon.MbMinBurstInterval) / speed : 0f;
             duration = Mathf.Max(0.1f, weapon.MbEndCooldown / speed + shots * shotInterval);
-            int level = Mathf.Max(1, Weapons.Level(characterBody, Weapons.Index(weapon.Id)));
-            float coefficient = weapon.MbDamage > 0f ? weapon.MbDamage * Tune.WeaponDamageScale : weapon.Damage;
-            damage = damageStat * coefficient * (1f + 0.25f * (level - 1));
+            float coefficient = weapon.MbDamage > 0f ? stats.damage * Tune.WeaponDamageScale : weapon.Damage * (1f + 0.25f * stats.damageSteps);
+            damage = damageStat * coefficient;
             if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage x {shots} over {shots * shotInterval:0.##} s, cycle {duration:0.##} s, authority {isAuthority}");
             FireDue();
         }
@@ -156,7 +159,10 @@ namespace RiskOfBonk
             }
         }
 
-        bool Crit() => Util.CheckRoll(critStat + weapon.MbCritChance * 100f, characterBody.master);
+        bool Crit() => Util.CheckRoll(critStat + critBonus * 100f, characterBody.master);
+
+        /// <summary>Melee and aura reach, grown by the weapon's size upgrades.</summary>
+        float Reach => weapon.Range * size;
 
         void Bullet(Ray aim, float damage)
         {
@@ -211,7 +217,7 @@ namespace RiskOfBonk
         void Melee(Ray aim, float damage)
         {
             var dir = aim.direction;
-            var centre = characterBody.corePosition + dir * (weapon.Range * 0.6f);
+            var centre = characterBody.corePosition + dir * (Reach * 0.6f);
             // The swing is shown on every machine; the hit is dealt once, by the player who owns the body.
             var fx = Prefab(weapon.Effect);
             // Mercenary's slash animation where the body has it (alternating swings), with the slash on the blade's muzzle.
@@ -237,7 +243,7 @@ namespace RiskOfBonk
                 {
                     origin = characterBody.corePosition + dir * 0.8f,
                     rotation = Util.QuaternionSafeLookRotation(dir),
-                    scale = Mathf.Max(1f, weapon.Range / 3f),
+                    scale = Mathf.Max(1f, Reach / 3f),
                 }, false);
             if (!isAuthority) return;
             new BlastAttack
@@ -246,7 +252,7 @@ namespace RiskOfBonk
                 inflictor = gameObject,
                 teamIndex = GetTeam(),
                 position = centre,
-                radius = weapon.Range,
+                radius = Reach,
                 baseDamage = damage,
                 procCoefficient = weapon.MbProc,
                 crit = Crit(),
@@ -264,7 +270,7 @@ namespace RiskOfBonk
             if (fx && (!lastAuraFx.TryGetValue(gameObject, out float last) || Time.time - last > 0.9f))
             {
                 lastAuraFx[gameObject] = Time.time;
-                EffectManager.SpawnEffect(fx, new EffectData { origin = characterBody.corePosition, scale = weapon.Range }, false);
+                EffectManager.SpawnEffect(fx, new EffectData { origin = characterBody.corePosition, scale = Reach }, false);
             }
             if (!isAuthority) return;
             new BlastAttack
@@ -273,7 +279,7 @@ namespace RiskOfBonk
                 inflictor = gameObject,
                 teamIndex = GetTeam(),
                 position = characterBody.corePosition,
-                radius = weapon.Range,
+                radius = Reach,
                 baseDamage = damage,
                 procCoefficient = weapon.MbProc,
                 crit = Crit(),
