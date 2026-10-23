@@ -26,7 +26,7 @@ namespace RiskOfBonk
 
         sealed class State
         {
-            public bool sliding, climbing, slideReady = true;
+            public bool sliding, crouching, climbing, slideReady = true;
             public float boostReady, landedAt = -1f, climbReadyAt;
         }
 
@@ -74,8 +74,8 @@ namespace RiskOfBonk
 
         static bool SlideHeld(InputBankTest bank) => bank && rawSprint != null && rawSprint(bank).down;
 
-        /// <summary>True while this body is sliding (for effects and animation).</summary>
-        public static bool IsSliding(CharacterMotor m) => m && states.TryGetValue(m, out var s) && s.sliding;
+        /// <summary>True while this body is sliding or crouching (for effects and animation).</summary>
+        public static bool IsSliding(CharacterMotor m) => m && states.TryGetValue(m, out var s) && (s.sliding || s.crouching);
 
         /// <summary>A wall right in front of the body, in the direction it is pushing, or none.</summary>
         static bool FindWall(CharacterMotor m, Vector3 dir, out Vector3 normal)
@@ -167,7 +167,11 @@ namespace RiskOfBonk
 
                 if (m.isGrounded)
                 {
-                    if (slideHeld && speed > 0.5f)
+                    // Megabonk's CheckInput: the Slide key slides only from slide_boost_min_speed (slideThresholdSpeed 8) up;
+                    // slower, it crouches, and a slide that slows down to crouching speed becomes a crouch.
+                    if (slideHeld && !st.sliding && speed < Tune.SlideBoostMinSpeed) st.crouching = true;
+                    if (!slideHeld) st.crouching = false;
+                    if (slideHeld && !st.crouching && speed > 0.5f)
                     {
                         if (!st.sliding)
                         {
@@ -192,11 +196,12 @@ namespace RiskOfBonk
                         }
                         float mag = Mathf.Max(0f, h.magnitude - Tune.SlideFriction * deltaTime);
                         h = h.sqrMagnitude > 1e-6f ? h.normalized * mag : Vector3.zero;
-                        if (mag < 1f) st.sliding = false;
+                        if (mag < run * Tune.CrouchSpeed) { st.sliding = false; st.crouching = true; }
                     }
                     else
                     {
                         st.sliding = false;
+                        if (st.crouching) run *= Tune.CrouchSpeed; // crouch walking: Megabonk halves the max speed
                         h = Push(h, dir, run, Tune.RunAccel, deltaTime);
                         if (!landing)
                         {
@@ -214,6 +219,7 @@ namespace RiskOfBonk
                 else
                 {
                     st.sliding = false;
+                    st.crouching = false;
                     // Air steering: pushes like on the ground but weaker, and never slows you (no air drag).
                     h = Push(h, dir, run, Tune.AirAccel, deltaTime);
                 }
@@ -223,7 +229,7 @@ namespace RiskOfBonk
                 if (LogSpeed && Time.time >= nextLog)
                 {
                     nextLog = Time.time + 0.1f;
-                    Log.Info($"move: {h.magnitude:F2} m/s vy {m.velocity.y:F2} (run {run:F1}) {(m.isGrounded ? "ground" : "air")}{(st.sliding ? " sliding" : "")}" +
+                    Log.Info($"move: {h.magnitude:F2} m/s vy {m.velocity.y:F2} (run {run:F1}) {(m.isGrounded ? "ground" : "air")}{(st.sliding ? " sliding" : st.crouching ? " crouching" : "")}" +
                              $" y {m.transform.position.y:F2} input {dir.magnitude:F1} slideKey {slideHeld} t {System.DateTime.Now:HH:mm:ss.ff}");
                 }
             }

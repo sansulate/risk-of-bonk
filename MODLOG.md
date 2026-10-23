@@ -287,3 +287,7 @@
   The old hold-Jump wallrun (and its four guessed tuning rows) is gone. extraGravity (11) is a plain AddForce on a
   60 kg rigidbody (0.18 m/s^2), so it is left out. Checked: Monke climbs the F4 test wall at 15 m/s; Monke's jump
   launches at 9 m/s. Offline Megabonk readers are in tools/mbdata (README).
+- Update 19 (2026-10-23): crouch, from Megabonk's CheckInput/StartCrouch: the Slide key slides only from
+  slideThresholdSpeed (8 m/s) up; slower it crouches, capping speed at GetMaxSpeed x 0.5 (tuning crouch_speed), and a
+  slide that slows to that becomes a crouch (both show the slide pose). Checked with movetest (now holds W straight
+  into the slide; hold.ps1 -AddVk/-AddAfterMs): Megachad 9.5 -> 13.45 m/s on the slide, fading to a 4.75 m/s crouch.

@@ -149,6 +149,8 @@ namespace RiskOfBonk.Generated
         public static float SlideSlopeGain = 1.0f;
         /// <summary>Sideways steering while sliding (forward input does nothing in a slide; sideways input pushes at run_accel). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
         public static float SlideSteer = 54.0f;
+        /// <summary>Holding Slide below slide_boost_min_speed crouches instead of sliding, and a slide that slows down to this becomes a crouch; crouching caps your speed at this x run speed (Megabonk's CheckInput: GetMaxSpeed x 0.5 while crouched). (x run speed)</summary>
+        public static float CrouchSpeed = 0.5f;
         /// <summary>Climbing speed up a wall: max(this, 1.5 x run speed) (minWallClimbSpeed 10). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (m/s)</summary>
         public static float WallclimbMinSpeed = 10.0f;
         /// <summary>Speed pressing you into the wall while climbing. Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (m/s)</summary>

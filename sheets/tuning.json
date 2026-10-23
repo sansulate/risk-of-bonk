@@ -131,6 +131,14 @@
    "verified": true
   },
   {
+   "id": "crouch_speed",
+   "value": 0.5,
+   "unit": "x run speed",
+   "system": "movement",
+   "note": "Holding Slide below slide_boost_min_speed crouches instead of sliding, and a slide that slows down to this becomes a crouch; crouching caps your speed at this x run speed (Megabonk's CheckInput: GetMaxSpeed x 0.5 while crouched).",
+   "verified": true
+  },
+  {
    "id": "wallclimb_min_speed",
    "value": 10.0,
    "unit": "m/s",

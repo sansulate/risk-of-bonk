@@ -16,8 +16,8 @@ step() { echo "STEP $1 $(date +%T.%N | cut -c1-12)" >> "$2_steps.txt"; }
 : > "$2_steps.txt"
 step run "$2"; ps hold.ps1 -Vks 0x57 -Ms 2500
 step release "$2"; sleep 1.2
-step run2 "$2"; ps hold.ps1 -Vks 0x57 -Ms 1500
-step slide "$2"; ps hold.ps1 -Vks 0x57,0xA2 -Ms 1500
+step run2 "$2"; ps hold.ps1 -Vks 0x57 -Ms 3000 -AddVk 0xA2 -AddAfterMs 1500 &
+sleep 1.5; step slide "$2"; wait
 step bhop "$2"; ps hold.ps1 -Vks 0x57 -Ms 3500 -TapVk 0x20 -TapEveryMs 750
 step stand "$2"; sleep 1.5
 step jump "$2"; ps hold.ps1 -Vks 0x20 -Ms 100; sleep 1.5
