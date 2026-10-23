@@ -131,8 +131,10 @@ namespace RiskOfBonk.Generated
         public static float OverspeedDecayRelease = 5.4f;
         /// <summary>After landing, no counter-movement or speed fade for this long (justLandedCounter 15 ticks), so a quick jump keeps all your speed (bunny hop). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (s)</summary>
         public static float LandGrace = 0.3f;
-        /// <summary>Steering in the air (0.45 x run_accel). Like on the ground it cannot push you past run_speed, but never slows you either: no air drag. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
+        /// <summary>Steering in the air (0.45 x run_accel). Like on the ground it cannot push you past run_speed, and never slows you (air_drag does that, slowly). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
         public static float AirAccel = 24.3f;
+        /// <summary>In the air, speed you are not steering along (all of it with no input) fades at this rate: Megabonk's MovementTick pushes against the look-relative velocity on each axis without input by airDeceleration 0.003 x moveSpeed 2700 x 0.02 (about 16% per second). (per s)</summary>
+        public static float AirDrag = 0.162f;
         /// <summary>Jump launch speed (JumpHeight stat 7 x mass as an impulse). Jumping while still rising halves the old upward speed first. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
         public static float JumpSpeed = 7.0f;
         /// <summary>Megabonk's gravity (Physics gravity -19.62); Risk of Rain 2 uses 30, so players fall slower and jumps hang longer. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>

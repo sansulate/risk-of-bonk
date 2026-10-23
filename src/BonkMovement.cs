@@ -11,7 +11,7 @@ namespace RiskOfBonk
     /// Megabonk movement for player bodies, with the numbers measured from Megabonk's own PlayerMovement (sheets/tuning.json,
     /// system "movement"): always running (the Sprint key becomes Slide), quick acceleration to 10 m/s, counter-movement
     /// that stops you fast, speed above that which fades slowly while you keep moving (momentum), air steering that never
-    /// slows you, a lower jump in lower gravity, and slides that boost and speed up downhill. Megabonk characters add their
+    /// slows you only slightly, a lower jump in lower gravity, and slides that boost and speed up downhill. Megabonk characters add their
     /// own move speed and jump height (characters.json), and Monke's WallClimb passive runs up walls while Jump is held
     /// (Megabonk's PlayerMovement.WallClimbing).
     /// RoR2 moves a body on the client that has authority over it, so all of this runs there; nothing new is networked.
@@ -225,8 +225,11 @@ namespace RiskOfBonk
                 {
                     st.sliding = false;
                     st.crouching = false;
-                    // Air steering: pushes like on the ground but weaker, and never slows you (no air drag).
+                    // Air steering: pushes like on the ground but weaker, never past run speed.
                     h = Push(h, dir, run, Tune.AirAccel, deltaTime);
+                    // Megabonk's air deceleration: speed you are not steering along fades slowly (all of it with no input).
+                    Vector3 kept = hasInput && Vector3.Dot(h, dir) > 0f ? dir.normalized * Vector3.Dot(h, dir.normalized) : Vector3.zero;
+                    h = kept + (h - kept) * Mathf.Exp(-Tune.AirDrag * deltaTime);
                 }
 
                 if (h.magnitude > Tune.MaxSpeed) h = h.normalized * Tune.MaxSpeed;

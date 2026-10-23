@@ -63,7 +63,15 @@
    "value": 24.3,
    "unit": "m/s per s",
    "system": "movement",
-   "note": "Steering in the air (0.45 x run_accel). Like on the ground it cannot push you past run_speed, but never slows you either: no air drag. Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics).",
+   "note": "Steering in the air (0.45 x run_accel). Like on the ground it cannot push you past run_speed, and never slows you (air_drag does that, slowly). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics).",
+   "verified": true
+  },
+  {
+   "id": "air_drag",
+   "value": 0.162,
+   "unit": "per s",
+   "system": "movement",
+   "note": "In the air, speed you are not steering along (all of it with no input) fades at this rate: Megabonk's MovementTick pushes against the look-relative velocity on each axis without input by airDeceleration 0.003 x moveSpeed 2700 x 0.02 (about 16% per second).",
    "verified": true
   },
   {

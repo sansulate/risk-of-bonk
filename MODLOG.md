@@ -304,3 +304,7 @@
   rolls a random few per level; a fixed order needs no network message). Replaces +25% damage per level; level-up
   cards and the chat line say what the levels add. F11 levels the first testweapons entry once all are owned.
   Checked: CL4NK's revolver 28 -> 42 damage (lv 2), 7 shots (lv 3), 56 damage (lv 5).
+- Update 22 (2026-10-23): air deceleration, from MovementTick: in the air, each look-relative axis without input gets
+  a push against its velocity of airDeceleration (0.003) x moveSpeed x 0.02, about 16%/s (tuning air_drag 0.162); the
+  port fades the part of the speed you are not steering along. Checked with movetest as Tony McZoom: run 13 m/s
+  (mbMoveSpeed +30%), bunny hops hold 13 with W held, 12.9 -> 12.3 m/s in 0.4 s of air with no input.
