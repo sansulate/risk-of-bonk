@@ -291,3 +291,9 @@
   slideThresholdSpeed (8 m/s) up; slower it crouches, capping speed at GetMaxSpeed x 0.5 (tuning crouch_speed), and a
   slide that slows to that becomes a crouch (both show the slide pose). Checked with movetest (now holds W straight
   into the slide; hold.ps1 -AddVk/-AddAfterMs): Megachad 9.5 -> 13.45 m/s on the slide, fading to a 4.75 m/s crouch.
+- Update 20 (2026-10-23): Megabonk's model tilt, from PlayerRenderer.Update: a ray down (51 m) finds the ground's
+  normal; smoothingMultiplier = 1 - clamp01((distance - 1) / 3) x 0.95 lets it count fully near the ground and barely
+  in the air; the model's up turns towards it at 14/s; wall climbing leans into the wall (wall normal + up).
+  MegabonkAnimator tilts the Megabonk skeleton root about the feet that way after posing. PlayerRenderer's animator
+  only has moving / grounded / jumping / grinding (no slide or attack state), which the clip roles already cover.
+  Checked: Monke runs and stands on stage 1 slopes, no errors.

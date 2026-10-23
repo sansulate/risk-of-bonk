@@ -108,6 +108,37 @@ namespace RiskOfBonk
         }
 
         CharacterModel model;
+        Vector3 smoothedUp = Vector3.up;
+        bool skeletonRestSet;
+        Vector3 skeletonPos;
+        Quaternion skeletonRot;
+
+        /// <summary>
+        /// Megabonk's PlayerRenderer stands the character on the slope under it: a ray down finds the ground's normal, which
+        /// counts fully within a metre of the ground and fades to 5% by four metres up (smoothingMultiplier), and the model's up
+        /// turns towards it at 14 per second; while wall climbing it leans into the wall (wall normal + up).
+        /// </summary>
+        void Tilt(float dt)
+        {
+            var sk = rig != null ? rig.skeleton : null;
+            if (!sk || !body) return;
+            if (!skeletonRestSet) { skeletonPos = sk.localPosition; skeletonRot = sk.localRotation; skeletonRestSet = true; }
+            Vector3 target = Vector3.up;
+            var motor = body.characterMotor;
+            if (motor && BonkMovement.ClimbNormal(motor) is Vector3 wall) target = (wall + Vector3.up).normalized;
+            else if (Physics.Raycast(body.footPosition + Vector3.up * 0.5f, Vector3.down, out var hit, 51f, LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
+            {
+                float far = Mathf.Clamp01((hit.distance - 0.5f - 1f) / 3f) * 0.95f;
+                target = Vector3.Slerp(hit.normal, Vector3.up, far);
+            }
+            smoothedUp = Vector3.Slerp(smoothedUp, target, Mathf.Clamp01(dt * 14f)).normalized;
+            sk.localPosition = skeletonPos;
+            sk.localRotation = skeletonRot;
+            var q = Quaternion.FromToRotation(Vector3.up, smoothedUp);
+            var pivot = body.footPosition;
+            sk.position = pivot + q * (sk.position - pivot);
+            sk.rotation = q * sk.rotation;
+        }
 
         void Awake()
         {
@@ -171,6 +202,7 @@ namespace RiskOfBonk
             foreach (var kv in rest) { kv.Key.localPosition = kv.Value.p; kv.Key.localRotation = kv.Value.r; kv.Key.localScale = kv.Value.s; }
             if (previous == null || fade >= 1f) { Apply(current, time, 1f); previous = null; }
             else { Apply(previous, prevTime, 1f); Apply(current, time, fade); }
+            Tilt(dt);
         }
 
         static float Wrap(RawClip c, bool loop, float t, out int f0, out int f1, out float w)

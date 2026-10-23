@@ -28,6 +28,7 @@ namespace RiskOfBonk
         {
             public bool sliding, crouching, climbing, slideReady = true;
             public float boostReady, landedAt = -1f, climbReadyAt;
+            public Vector3 wallNormal;
         }
 
         static readonly ConditionalWeakTable<CharacterMotor, State> states = new ConditionalWeakTable<CharacterMotor, State>();
@@ -91,6 +92,9 @@ namespace RiskOfBonk
             return false;
         }
 
+        /// <summary>The wall's normal while this body climbs a wall, else null (for the model's lean).</summary>
+        public static Vector3? ClimbNormal(CharacterMotor m) => m && states.TryGetValue(m, out var s) && s.climbing ? s.wallNormal : (Vector3?)null;
+
         static bool ClimbsWalls(CharacterBody body) => Weapons.Character(body)?.MbPassive == "WallClimb";
 
         [HarmonyPatch]
@@ -151,6 +155,7 @@ namespace RiskOfBonk
                 {
                     if (!st.climbing && LogSpeed) Log.Info("move: wall climb start");
                     st.climbing = true;
+                    st.wallNormal = Flat(wallNormal).normalized;
                     st.sliding = false;
                     float up = Mathf.Max(Tune.WallclimbMinSpeed, run * 1.5f);
                     h = Vector3.ProjectOnPlane(h, Flat(wallNormal).normalized) - Flat(wallNormal).normalized * Tune.WallclimbPush;
