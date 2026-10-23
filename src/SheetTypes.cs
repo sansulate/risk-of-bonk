@@ -15,12 +15,17 @@ namespace RiskOfBonk.Generated
         public readonly string MbPassive;
         public readonly float MbMoveSpeed, MbJumpHeight;
         public readonly int MbExtraJumps;
+        /// <summary>The character's other Megabonk stat modifiers, "Stat:value" (Passives.cs), and its passive's name and text.</summary>
+        public readonly string[] MbStats;
+        public readonly string MbPassiveName, MbPassiveText;
 
         public CharacterRow(string id, string displayName, string[] mbNameHints, string mbPortrait, string movesetBody, string primaryColor,
             float sortPosition, float heightMeters, float yawOffsetDeg, string description, string mbTexture, string startWeapon = "",
-            string mbPassive = "", float mbMoveSpeed = 0f, float mbJumpHeight = 0f, int mbExtraJumps = 0)
+            string mbPassive = "", float mbMoveSpeed = 0f, float mbJumpHeight = 0f, int mbExtraJumps = 0,
+            string[] mbStats = null, string mbPassiveName = "", string mbPassiveText = "")
         {
             MbPassive = mbPassive; MbMoveSpeed = mbMoveSpeed; MbJumpHeight = mbJumpHeight; MbExtraJumps = mbExtraJumps;
+            MbStats = mbStats ?? new string[0]; MbPassiveName = mbPassiveName; MbPassiveText = mbPassiveText;
             Id = id; DisplayName = displayName; MbNameHints = mbNameHints; MbPortrait = mbPortrait; MovesetBody = movesetBody; PrimaryColor = primaryColor;
             SortPosition = sortPosition; HeightMeters = heightMeters; YawOffsetDeg = yawOffsetDeg; Description = description; MbTexture = mbTexture; StartWeapon = startWeapon;
         }

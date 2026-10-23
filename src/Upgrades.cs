@@ -88,10 +88,11 @@ namespace RiskOfBonk
         public static int Bonus(CharacterMaster master) =>
             master && master.inventory && BonusPicksItem != null && BonusPicksItem.itemIndex != ItemIndex.None ? master.inventory.GetItemCount(BonusPicksItem.itemIndex) : 0;
 
-        /// <summary>Luck shifts rarity weights toward the rarer rows.</summary>
+        /// <summary>Luck (tomes, and the Megabonk character's own: Fox, RNG Blessing) shifts rarity weights toward the rarer rows.</summary>
         public static int RollRarity(System.Random rng, Inventory inv)
         {
-            float luck = StatPoints(inv, "luck") * PerPoint("luck");
+            var master = inv ? inv.GetComponent<CharacterMaster>() : null;
+            float luck = Mathf.Max(0f, StatPoints(inv, "luck") * PerPoint("luck") + Passives.Luck(master ? master.GetBody() : null));
             var w = Sheets.Rarities.Select((r, i) => r.Weight * (1f + luck * i)).ToArray();
             float roll = (float)rng.NextDouble() * w.Sum();
             for (int i = 0; i < w.Length; i++) { roll -= w[i]; if (roll <= 0f) return i; }
@@ -214,15 +215,15 @@ namespace RiskOfBonk
                 if ((n = StatPoints(inv, "shield")) > 0) Set(b, "maxShield", b.maxShield + b.maxHealth * n * PerPoint("shield"));
             }
 
-            // Evasion: the host rolls a dodge for each hit on a body with Evasion Tome points.
+            // Evasion: the host rolls a dodge for each hit on a body with Evasion Tome points or a Megabonk character's evasion.
             [HarmonyPrefix, HarmonyPatch(typeof(HealthComponent), nameof(HealthComponent.TakeDamage))]
             static void Evade(HealthComponent __instance, DamageInfo damageInfo)
             {
-                if (damageInfo == null || damageInfo.rejected || !__instance.body) return;
-                int n = StatPoints(__instance.body.inventory, "evasion");
-                if (n <= 0) return;
-                float chance = Mathf.Min(0.6f, n * PerPoint("evasion"));
-                if (UnityEngine.Random.value < chance) damageInfo.rejected = true;
+                if (damageInfo == null || damageInfo.rejected || !__instance.body || (damageInfo.damageType & DamageType.DoT) != 0) return;
+                float chance = Mathf.Min(0.6f, StatPoints(__instance.body.inventory, "evasion") * PerPoint("evasion") + Passives.Evasion(__instance.body));
+                if (chance <= 0f || UnityEngine.Random.value >= chance) return;
+                damageInfo.rejected = true;
+                Passives.Evaded(__instance.body, damageInfo);
             }
         }
     }

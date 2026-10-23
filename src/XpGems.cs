@@ -48,7 +48,7 @@ namespace RiskOfBonk
 
         // ---------------- host ----------------
 
-        sealed class Gem { public uint id; public Vector3 pos; public ulong amount; public float flyStart = -1f; }
+        sealed class Gem { public uint id; public Vector3 pos; public ulong amount; public float flyStart = -1f; public CharacterBody collector; }
         static readonly List<Gem> gems = new List<Gem>();
         static uint nextId = 1;
 
@@ -104,7 +104,9 @@ namespace RiskOfBonk
                     if (g.flyStart >= 0f && now - g.flyStart >= FlyTime)
                     {
                         gems.RemoveAt(i);
-                        if (TeamManager.instance) TeamManager.instance.GiveTeamExperience(TeamIndex.Player, g.amount);
+                        // Megabonk's XP gain stat (Spaceman, Quantum XP Theory) counts for the gems that player collects.
+                        ulong amount = (ulong)Mathf.Max(1f, Mathf.Round(g.amount * Passives.XpMultiplier(g.collector)));
+                        if (TeamManager.instance) TeamManager.instance.GiveTeamExperience(TeamIndex.Player, amount);
                     }
                 }
                 if (now < nextScan) return;
@@ -119,6 +121,7 @@ namespace RiskOfBonk
                     {
                         if (g.flyStart >= 0f || (g.pos - p).sqrMagnitude > r2) continue;
                         g.flyStart = now;
+                        g.collector = body;
                         Send(new GemMessage { op = OpCollect, id = g.id, target = body.netId });
                     }
                 }

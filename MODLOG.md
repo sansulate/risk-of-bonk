@@ -308,3 +308,22 @@
   a push against its velocity of airDeceleration (0.003) x moveSpeed x 0.02, about 16%/s (tuning air_drag 0.162); the
   port fades the part of the speed you are not steering along. Checked with movetest as Tony McZoom: run 13 m/s
   (mbMoveSpeed +30%), bunny hops hold 13 with W held, 12.9 -> 12.3 m/s in 0.4 s of air with no input.
+- Update 23 (2026-10-24): Megabonk passives and character stats (src/Passives.cs). Numbers come from each
+  PassiveAbility class (constructor constants, OnLevelup's stat and per-level value) and the PassiveAbilities_en string
+  table; "per level" is Risk of Rain 2's level. characters.json gains mbStats (the rest of CharacterData's
+  statModifiers: MaxHealth/Shield on Megabonk's base 100, Armor as a damage fraction -> RoR2 armor 100f/(1-f), Evasion,
+  CritChance, DamageMultiplier, Lifesteal, Luck, Gold/Xp multipliers, SizeMultiplier, FallDamageReduction, Thorns,
+  Difficulty) and mbPassiveName/mbPassiveText (shown on the character select screen). Passives: Flex (blocks a hit,
+  10 m knockback blast, +2.5% damage per flex, cooldown 12 s - 0.2/level, min 4), RNG Blessing (+1.5% luck/level),
+  Speed Demon (+0.85% speed per second up to +150%, a hit removes 1.5/(4 + level/10); damage from speed), Reinforced
+  (+1% armor/level), Monke Grip (+2 HP/level), Shadowstep (+0.5% evasion/level, evading executes a non-boss attacker),
+  Zoombonk (0.6% charge per metre moved; a full charge zaps enemies within 6 m of the next hit for 3x damage),
+  Stonks (+1% gold/level, damage from gold in Megabonk's tiers), Flowstate (+1% attack speed/level), Float (hold Jump
+  while falling: sink at 2 m/s; +1% airborne damage/level), Enduring (+0.75% size/level, +1.5% damage per slowed
+  enemy), Quantum (+1% XP/level on gems you collect), Vampire (+1% lifesteal/level), Lock In (damage up to +100% at
+  low HP, +2 thorns/level), Warrior (+1.5% damage/level), Crit Happens (+1% crit/level), Gamba (a random tome point
+  per level-up), Plague (poisoned enemies burst, poisoning enemies within 4 m + 0.05/level; +1% poison damage/level;
+  the Poison Flask now poisons), Bullseye (marks a random enemy every 5 s; hitting it makes it explode; +1% crit
+  damage/level), Curse (+1% difficulty/level: monster directors earn that much more credit). Checked with
+  tools/ingame/passivetest.sh: Megachad flexes on cooldown, Bush marks/explosions, Dicehead 5 rolls in 5 levels,
+  Calcium speed +0.6 falling on hits, Tony zaps after running, Amog plague bursts, Ninja executed a Blind Pest.

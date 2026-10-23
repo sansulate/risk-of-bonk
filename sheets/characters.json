@@ -1,6 +1,6 @@
 {
  "sheet": "characters",
- "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's). startWeapon: the Megabonk weapon (weapons.json) on left mouse at the start of a run; the RoR2 moveset body still gives stats and animations, its skills are replaced by weapons. startWeapon, mbPassive, mbMoveSpeed (added to Megabonk's move speed multiplier), mbJumpHeight (added to the jump speed) and mbExtraJumps come from each character's Megabonk CharacterData (weapon, passive, statModifiers). Of the passives only WallClimb (Monke: hold Jump against a wall to run up it) changes movement and is in the mod.",
+ "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's). startWeapon: the Megabonk weapon (weapons.json) on left mouse at the start of a run; the RoR2 moveset body still gives stats and animations, its skills are replaced by weapons. startWeapon, mbPassive, mbMoveSpeed (added to Megabonk's move speed multiplier), mbJumpHeight (added to the jump speed) and mbExtraJumps come from each character's Megabonk CharacterData (weapon, passive, statModifiers). mbStats = the character's other Megabonk stat modifiers as \"Stat:value\" (MaxHealth is added to Megabonk's base 100 health, Shield likewise; Armor, Evasion, CritChance, DamageMultiplier, Lifesteal, Luck, GoldIncreaseMultiplier, XpIncreaseMultiplier, SizeMultiplier, FallDamageReduction and Difficulty are fractions; Thorns is flat Megabonk damage). mbPassiveName / mbPassiveText = Megabonk's passive name and description; each passive is implemented in src/Passives.cs with the numbers from its Megabonk PassiveAbility class.",
  "rows": [
   {
    "id": "megachad",
@@ -29,7 +29,12 @@
    "mbPassive": "Flex",
    "mbMoveSpeed": -0.05,
    "mbJumpHeight": 1.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:20"
+   ],
+   "mbPassiveName": "Flex",
+   "mbPassiveText": "Flex to stop damage (blocks a hit and knocks enemies back). Cooldown 12s, -0.2s per level (min 4s). Gain 2.5% damage each time you flex."
   },
   {
    "id": "fox",
@@ -57,7 +62,14 @@
    "mbPassive": "RngBlessing",
    "mbMoveSpeed": 0.04,
    "mbJumpHeight": 1.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.05",
+    "Luck:0.15",
+    "PickupRange:4"
+   ],
+   "mbPassiveName": "RNG Blessing",
+   "mbPassiveText": "Gain 1.5% luck per level."
   },
   {
    "id": "calcium",
@@ -86,7 +98,12 @@
    "mbPassive": "SpeedDemon",
    "mbMoveSpeed": 0.15,
    "mbJumpHeight": 1.5,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "PickupRange:3"
+   ],
+   "mbPassiveName": "Speed Demon",
+   "mbPassiveText": "Speed builds up over time, but is lost when you take damage. Also gain damage based on speed."
   },
   {
    "id": "sir_oofie",
@@ -115,7 +132,13 @@
    "mbPassive": "Reinforced",
    "mbMoveSpeed": -0.02,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:50",
+    "Armor:0.15"
+   ],
+   "mbPassiveName": "Reinforced",
+   "mbPassiveText": "Gain 1% armor per level."
   },
   {
    "id": "monke",
@@ -143,7 +166,14 @@
    "mbPassive": "WallClimb",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 2.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:35",
+    "FallDamageReduction:0.25",
+    "DamageMultiplier:0.15"
+   ],
+   "mbPassiveName": "Monke Grip",
+   "mbPassiveText": "Climb up walls (hold Jump against a wall). Also gain 2 max health per level."
   },
   {
    "id": "ninja",
@@ -171,7 +201,14 @@
    "mbPassive": "Shadowstep",
    "mbMoveSpeed": 0.15,
    "mbJumpHeight": 2.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "FallDamageReduction:0.5",
+    "PickupRange:3",
+    "Evasion:0.05"
+   ],
+   "mbPassiveName": "Shadowstep",
+   "mbPassiveText": "Execute an enemy upon evading it. Also gain 0.5% evasion per level."
   },
   {
    "id": "tony_mczoom",
@@ -200,7 +237,15 @@
    "mbPassive": "Zoombonk",
    "mbMoveSpeed": 0.3,
    "mbJumpHeight": 3.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:-30",
+    "Shield:10",
+    "FallDamageReduction:1",
+    "PickupRange:3"
+   ],
+   "mbPassiveName": "Zoombonk",
+   "mbPassiveText": "Charge an electric attack by moving around: your next hit zaps every enemy near the target."
   },
   {
    "id": "robinette",
@@ -228,7 +273,14 @@
    "mbPassive": "Stonks",
    "mbMoveSpeed": 0.075,
    "mbJumpHeight": 3.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "FallDamageReduction:0.25",
+    "PickupRange:3",
+    "GoldIncreaseMultiplier:0.05"
+   ],
+   "mbPassiveName": "Stonks",
+   "mbPassiveText": "Gain 1% gold per level. Also increase damage slightly by total gold in inventory."
   },
   {
    "id": "bandit",
@@ -257,7 +309,13 @@
    "mbPassive": "Flowstate",
    "mbMoveSpeed": 0.05,
    "mbJumpHeight": 1.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.1",
+    "PickupRange:4"
+   ],
+   "mbPassiveName": "Flowstate",
+   "mbPassiveText": "Gain 1% attack speed per level."
   },
   {
    "id": "birdo",
@@ -285,7 +343,12 @@
    "mbPassive": "Float",
    "mbMoveSpeed": 0.05,
    "mbJumpHeight": 2.0,
-   "mbExtraJumps": 1
+   "mbExtraJumps": 1,
+   "mbStats": [
+    "PickupRange:5"
+   ],
+   "mbPassiveName": "Float",
+   "mbPassiveText": "Hold Jump to float in the air. Also gain 1% airborne damage per level."
   },
   {
    "id": "noelle",
@@ -314,7 +377,13 @@
    "mbPassive": "Enduring",
    "mbMoveSpeed": 0.075,
    "mbJumpHeight": 3.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.05",
+    "PickupRange:5"
+   ],
+   "mbPassiveName": "Enduring",
+   "mbPassiveText": "Gain 0.75% size per level. Also increase damage per currently frozen (slowed) enemy."
   },
   {
    "id": "spaceman",
@@ -342,7 +411,14 @@
    "mbPassive": "Quantum",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "PickupRange:5",
+    "MaxHealth:10",
+    "XpIncreaseMultiplier:0.05"
+   ],
+   "mbPassiveName": "Quantum XP Theory",
+   "mbPassiveText": "Gain 1% XP per level."
   },
   {
    "id": "vlad",
@@ -370,7 +446,14 @@
    "mbPassive": "Vampire",
    "mbMoveSpeed": 0.04,
    "mbJumpHeight": 2.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.05",
+    "PickupRange:5",
+    "Lifesteal:0.05"
+   ],
+   "mbPassiveName": "Vampire",
+   "mbPassiveText": "Gain 1% lifesteal per level."
   },
   {
    "id": "athena",
@@ -398,7 +481,14 @@
    "mbPassive": "LockIn",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:25",
+    "Armor:0.15",
+    "Thorns:5"
+   ],
+   "mbPassiveName": "Lock In",
+   "mbPassiveText": "Deal more damage on lower HP. Gain 2 thorns per level."
   },
   {
    "id": "ogre",
@@ -427,7 +517,15 @@
    "mbPassive": "Warrior",
    "mbMoveSpeed": -0.06,
    "mbJumpHeight": 0.35,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "DamageMultiplier:0.1",
+    "MaxHealth:40",
+    "Luck:-0.01",
+    "Armor:0.05"
+   ],
+   "mbPassiveName": "Warrior",
+   "mbPassiveText": "Gain 1.5% damage per level."
   },
   {
    "id": "cl4nk",
@@ -455,7 +553,15 @@
    "mbPassive": "CritHappens",
    "mbMoveSpeed": 0.07,
    "mbJumpHeight": 2.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Shield:50",
+    "FallDamageReduction:0.5",
+    "PickupRange:3",
+    "MaxHealth:-60"
+   ],
+   "mbPassiveName": "Crit Happens",
+   "mbPassiveText": "Gain 1% crit chance per level."
   },
   {
    "id": "dicehead",
@@ -483,7 +589,15 @@
    "mbPassive": "Gamba",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.05",
+    "PickupRange:5",
+    "CritChance:0.05",
+    "GoldIncreaseMultiplier:0.05"
+   ],
+   "mbPassiveName": "Gamba",
+   "mbPassiveText": "Roll the dice and upgrade a random stat when you level up!"
   },
   {
    "id": "amog",
@@ -511,7 +625,16 @@
    "mbPassive": "Plague",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "PickupRange:5",
+    "DurationMultiplier:0.2",
+    "SizeMultiplier:0.2",
+    "MaxHealth:30",
+    "Armor:0.1"
+   ],
+   "mbPassiveName": "Plague",
+   "mbPassiveText": "Poisoned enemies explode on death, poisoning nearby enemies. Also gain 1% poison damage per level."
   },
   {
    "id": "bush",
@@ -539,7 +662,13 @@
    "mbPassive": "Bullseye",
    "mbMoveSpeed": 0.0,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "Evasion:0.1",
+    "PickupRange:6"
+   ],
+   "mbPassiveName": "Bullseye",
+   "mbPassiveText": "Random enemies are marked; hitting a marked enemy makes it explode. Also gain 1% crit damage per level."
   },
   {
    "id": "sir_chadwell",
@@ -567,7 +696,14 @@
    "mbPassive": "Curse",
    "mbMoveSpeed": -0.03,
    "mbJumpHeight": 0.0,
-   "mbExtraJumps": 0
+   "mbExtraJumps": 0,
+   "mbStats": [
+    "MaxHealth:50",
+    "Armor:0.2",
+    "Difficulty:0.1"
+   ],
+   "mbPassiveName": "Curse",
+   "mbPassiveText": "Gain 1% difficulty per level: more enemies, more rewards."
   }
  ]
 }

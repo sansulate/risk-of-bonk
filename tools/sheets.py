@@ -106,7 +106,8 @@ def generate(s):
     for r in s["characters"]:
         L.append(f"            new CharacterRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbNameHints'])}, {cs(r['mbPortrait'])}, {cs(r['movesetBody'])}, "
                  f"{cs(r['primaryColor'])}, {cs(r['sortPosition'])}, {cs(r['heightMeters'])}, {cs(r['yawOffsetDeg'])}, {cs(r['description'])}, {cs(r.get('mbTexture', ''))}, {cs(r.get('startWeapon', ''))}, "
-                 f"{cs(r.get('mbPassive', ''))}, {cs(float(r.get('mbMoveSpeed', 0)))}, {cs(float(r.get('mbJumpHeight', 0)))}, {int(r.get('mbExtraJumps', 0))}),")
+                 f"{cs(r.get('mbPassive', ''))}, {cs(float(r.get('mbMoveSpeed', 0)))}, {cs(float(r.get('mbJumpHeight', 0)))}, {int(r.get('mbExtraJumps', 0))}, "
+                 f"{cs(r.get('mbStats', []))}, {cs(r.get('mbPassiveName', ''))}, {cs(r.get('mbPassiveText', ''))}),")
     L.append("        };")
     L.append("        public static readonly StyleRow[] MenuStyle =\n        {")
     for r in s["menu_style"]:

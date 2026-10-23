@@ -78,6 +78,7 @@ namespace RiskOfBonk
             "ignite" => RoR2.DamageType.IgniteOnHit,
             "bleed" => RoR2.DamageType.BleedOnHit,
             "slow" => RoR2.DamageType.SlowOnHit,
+            "poison" => RoR2.DamageType.PoisonOnHit,
             _ => RoR2.DamageType.Generic,
         };
 
@@ -95,7 +96,7 @@ namespace RiskOfBonk
             int level = Mathf.Max(1, Weapons.Level(characterBody, Weapons.Index(weapon.Id)));
             var stats = Weapons.Stats(weapon, level);
             shots = stats.shots;
-            size = stats.size;
+            size = stats.size + Passives.SizeBonus(characterBody);
             critBonus = stats.crit;
             shotInterval = weapon.MbBurstTime > 0f ? Mathf.Max(weapon.MbBurstTime / shots, weapon.MbMinBurstInterval) / speed : 0f;
             duration = Mathf.Max(0.1f, weapon.MbEndCooldown / speed + shots * shotInterval);

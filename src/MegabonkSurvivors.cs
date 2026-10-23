@@ -31,6 +31,8 @@ namespace RiskOfBonk
             pack.identifier = identifier;
             pack.itemDefs.Add(Upgrades.CreateItems()); // the upgrade system works even without Megabonk's icons
             pack.itemDefs.Add(Weapons.CreateItems());
+            pack.itemDefs.Add(Passives.CreateItems());
+            pack.buffDefs.Add(Passives.CreateBuffs());
             pack.entityStateTypes.Add(new[] { typeof(WeaponFire) });
             while (!MegabonkLoader.Done) yield return null;
             if (MegabonkLoader.Library == null)
@@ -128,6 +130,7 @@ namespace RiskOfBonk
             int start = Weapons.Index(row.StartWeapon);
             string weapon = start >= 0 ? Sheets.Weapons[start].DisplayName : row.StartWeapon;
             Plugin.Tokens[tok + "_DESC"] = row.Description + " Starts with the <style=cIsDamage>" + weapon + "</style> on the primary skill. Weapons attack by themselves, aimed at the closest enemies, like in Megabonk."
+                + (string.IsNullOrEmpty(row.MbPassiveName) ? "" : $"\n\n<style=cIsUtility>{row.MbPassiveName}</style>: {row.MbPassiveText}")
                 + "\n\n<style=cSub>Every new weapon from a level-up pick takes the next skill slot (secondary, utility, special), up to four weapons. "
                 + "Megabonk character with its own Megabonk animations, read from your own Megabonk install; skeleton and hitbox from " + MovesetLabel(row.MovesetBody) + ".</style>";
             Plugin.Tokens[tok + "_OUTRO"] = "...and so " + row.DisplayName + " left, still bonking.";

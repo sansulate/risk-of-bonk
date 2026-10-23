@@ -233,7 +233,10 @@ namespace RiskOfBonk
                 }
 
                 if (h.magnitude > Tune.MaxSpeed) h = h.normalized * Tune.MaxSpeed;
-                m.velocity = new Vector3(h.x, m.velocity.y, h.z);
+                float vy = m.velocity.y;
+                // Birdo's Float (Megabonk's PassiveAbilityFloating): holding Jump while falling sinks at only 2 m/s.
+                if (!m.isGrounded && jumpHeld && vy < -0.5f && Weapons.Character(m.body)?.MbPassive == "Float") vy = -2f;
+                m.velocity = new Vector3(h.x, vy, h.z);
                 if (LogSpeed && Time.time >= nextLog)
                 {
                     nextLog = Time.time + 0.1f;
