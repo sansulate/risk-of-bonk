@@ -262,3 +262,18 @@
   tools/ingame/bepinex.sh (BONK_BEPINEX, else the game folder's BepInEx, else r2modman's Default profile);
   redeploy.sh copies the whole plugin folder and clears the old log first. This PC's character grid has 11 cells
   before Megachad: GRID_START=11 for pick.sh / runtest.sh / movetest.sh.
+- Update 17 (2026-10-23): 0.2.6, Megabonk's own weapon numbers and automatic attacks. Il2CppDumper 6.7.46 works on
+  Megabonk's GameAssembly (metadata v29); a scratch AssetsTools reader dumped the 30 WeaponData assets in
+  sharedassets1 (raw layout: UnlockableBase fields, two LocalizedStrings, then WeaponData's fields in declaration
+  order, bools padded to 4). weapons.json now carries mbDamage, mbProjectiles, mbBurstTime, mbMinBurstInterval,
+  mbEndCooldown, mbRange, mbCritChance, mbProc, mbOnlyClose. WeaponUtility.GetWeaponCooldown (disassembled):
+  cycle = endCooldown / attackSpeed + shots x max(burstTime / shots, minBurstInterval) / attackSpeed; shots follow
+  each other at that interval. EnemyTargeting.GetEnemy: shot n goes to the n-th closest enemy in spawnProjectileRange.
+  WeaponFire now times the whole cycle (burst + wait) and fires its shots at targets (none in range: where you aim;
+  the Revolver, onlySpawnWhenCloseEnemies, holds fire); damage = mbDamage x tuning weapon_damage_scale (0.4);
+  shotgun pellets share one cone's damage. Weapons fire by themselves (Weapons.AutoFire, authority, not in a vehicle),
+  each slot on its own networked EntityStateMachine MBWeapon0..3, so all four run at once; weapon skills are not
+  combat skills. The aura's nova effect shows at most once a second. Checked as CL4NK with Revolver, Sword,
+  Firestaff and Aura: 2.5 s revolver cycles with 6 shots 0.2 s apart, all four firing together, kills and XP.
+  Test tools: weapontest.sh (F11 weapons, no attack keys), key.ps1 takes F1..F12/escape/enter. The character grid
+  differs per Steam profile (11 or 18 cells before Megachad; GRID_START).

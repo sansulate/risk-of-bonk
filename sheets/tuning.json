@@ -473,6 +473,14 @@
    "system": "sound",
    "note": "Volume of Megabonk's sounds, on top of Risk of Rain 2's master and sound effect volume.",
    "verified": true
+  },
+  {
+   "id": "weapon_damage_scale",
+   "value": 0.4,
+   "unit": "x base damage per Megabonk damage point",
+   "system": "weapons",
+   "note": "Megabonk weapon damage (mbDamage in weapons.json, e.g. Revolver 5 per bullet, Sniper 22) times this is the hit's damage coefficient in Risk of Rain 2 (x the body's base damage). Keeps Megabonk's balance between weapons; this value sets the overall strength.",
+   "verified": true
   }
  ]
 }

@@ -128,7 +128,10 @@ def generate(s):
         L.append(f"            new WeaponRow({cs(r['id'])}, {cs(r['displayName'])}, {cs(r['mbIcon'])}, {cs(r['kind'])}, {cs(r['damage'])}, {cs(r['interval'])}, "
                  f"{cs(r['cooldown'])}, {int(r['count'])}, {cs(r.get('spread', 0))}, {cs(r['range'])}, {cs(r.get('prefab', ''))}, {cs(r.get('effect', ''))}, "
                  f"{cs(r.get('damageType', 'none'))}, {cs(r.get('pierce', False))}, {cs(r.get('sound', ''))}, {cs(r['description'])}, "
-                 f"{cs(r.get('mbSound', ''))}, {cs(r.get('mbProjectile', ''))}, {cs(r.get('projScale', 1))}, {cs(r.get('projSpin', 0))}),")
+                 f"{cs(r.get('mbSound', ''))}, {cs(r.get('mbProjectile', ''))}, {cs(r.get('projScale', 1))}, {cs(r.get('projSpin', 0))}, "
+                 f"{cs(float(r.get('mbDamage', 0)))}, {int(r.get('mbProjectiles', 1))}, {cs(float(r.get('mbBurstTime', 0)))}, {cs(float(r.get('mbMinBurstInterval', 0)))}, "
+                 f"{cs(float(r.get('mbEndCooldown', r['interval'])))}, {cs(float(r.get('mbRange', 0)))}, {cs(float(r.get('mbCritChance', 0)))}, {cs(float(r.get('mbProc', 1)))}, "
+                 f"{cs(r.get('mbOnlyClose', False))}),")
     L.append("        };")
     L.append("        public static readonly BossRow[] Bosses =\n        {")
     for r in s["bosses"]:

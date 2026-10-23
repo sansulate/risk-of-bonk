@@ -16,13 +16,18 @@ namespace RiskOfBonk
     /// A Megabonk survivor starts with its own weapon (characters.json startWeapon) on primary and nothing on the other
     /// three slots. Weapons picked on level up fill secondary, utility and special in pick order, so a run has four
     /// weapons; picking an owned weapon again levels it. Equipment (Q) is untouched.
+    /// As in Megabonk, weapons attack by themselves (AutoFire), each on its own state machine ("MBWeapon0".."MBWeapon3",
+    /// one per slot), so all four run at once and none waits for another.
     /// Weapon levels are hidden items: the game's inventory sync carries them to every player, and the slot order comes
     /// from the inventory's acquisition order, so every machine computes the same loadout.
     /// </summary>
     public static class Weapons
     {
         public static ItemDef[] Items = new ItemDef[0];
-        static SkillDef[] primaryDefs = new SkillDef[0], slotDefs = new SkillDef[0];
+        /// <summary>Skill definitions per slot (0 = primary .. 3 = special), per weapon.</summary>
+        static SkillDef[][] defs = new SkillDef[0][];
+        public const int Slots = 4;
+        public static string MachineName(int slot) => "MBWeapon" + slot;
         static SkillDef emptyDef;
         static readonly Dictionary<SkillDef, int> defToWeapon = new Dictionary<SkillDef, int>();
         public static readonly List<SkillFamily> Families = new List<SkillFamily>();
@@ -62,7 +67,7 @@ namespace RiskOfBonk
             return tex == null ? null : Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
         }
 
-        static SkillDef MakeDef(string name, string nameToken, string descToken, Sprite icon, Type state, float cooldown, int stock)
+        static SkillDef MakeDef(string name, string nameToken, string descToken, Sprite icon, Type state, float cooldown, int stock, string machine = "Weapon")
         {
             var d = ScriptableObject.CreateInstance<SkillDef>();
             d.skillName = name;
@@ -70,7 +75,7 @@ namespace RiskOfBonk
             d.skillNameToken = nameToken;
             d.skillDescriptionToken = descToken;
             d.icon = icon;
-            d.activationStateMachineName = "Weapon";
+            d.activationStateMachineName = machine;
             d.activationState = new SerializableEntityStateType(state);
             d.interruptPriority = InterruptPriority.Skill;
             d.baseRechargeInterval = cooldown;
@@ -82,7 +87,7 @@ namespace RiskOfBonk
             d.canceledFromSprinting = false;
             d.cancelSprintingOnActivation = false; // Megabonk: you keep running while attacking
             d.fullRestockOnAssign = true;
-            d.isCombatSkill = true;
+            d.isCombatSkill = false; // it fires all the time, so it must not keep the body in combat
             d.mustKeyPress = false;
             d.resetCooldownTimerOnUse = false;
             SkillDefs.Add(d);
@@ -92,19 +97,22 @@ namespace RiskOfBonk
         /// <summary>Skill definitions for every weapon (primary and slot versions) and the empty slot. Needs Megabonk icons.</summary>
         public static void CreateSkills()
         {
-            primaryDefs = new SkillDef[Sheets.Weapons.Length];
-            slotDefs = new SkillDef[Sheets.Weapons.Length];
+            defs = new SkillDef[Slots][];
+            for (int k = 0; k < Slots; k++) defs[k] = new SkillDef[Sheets.Weapons.Length];
             for (int i = 0; i < Sheets.Weapons.Length; i++)
             {
                 var w = Sheets.Weapons[i];
                 string tok = "RISKOFBONK_WEAPON_" + w.Id.ToUpperInvariant();
                 Plugin.Tokens[tok + "_NAME"] = w.DisplayName;
-                Plugin.Tokens[tok + "_DESC"] = w.Description + " <style=cSub>Megabonk weapon.</style>";
+                Plugin.Tokens[tok + "_DESC"] = w.Description + " <style=cSub>Megabonk weapon: attacks by itself.</style>";
                 var icon = IconSprite(w.MbIcon);
-                primaryDefs[i] = MakeDef("RiskOfBonkWeapon_" + w.Id, tok + "_NAME", tok + "_DESC", icon, typeof(WeaponFire), 0f, 1);
-                slotDefs[i] = MakeDef("RiskOfBonkWeaponSlot_" + w.Id, tok + "_NAME", tok + "_DESC", icon, typeof(WeaponFire), w.Cooldown, 1);
-                defToWeapon[primaryDefs[i]] = i;
-                defToWeapon[slotDefs[i]] = i;
+                // The weapon state times the whole attack (burst and wait), so the skill itself has no cooldown.
+                for (int k = 0; k < Slots; k++)
+                {
+                    defs[k][i] = MakeDef("RiskOfBonkWeapon" + (k == 0 ? "" : k.ToString()) + "_" + w.Id, tok + "_NAME", tok + "_DESC", icon,
+                        typeof(WeaponFire), 0f, 1, MachineName(k));
+                    defToWeapon[defs[k][i]] = i;
+                }
             }
             Plugin.Tokens["RISKOFBONK_WEAPON_EMPTY_NAME"] = "Empty weapon slot";
             Plugin.Tokens["RISKOFBONK_WEAPON_EMPTY_DESC"] = "Pick a Megabonk weapon when you level up to fill this slot.";
@@ -132,11 +140,10 @@ namespace RiskOfBonk
         {
             int start = Index(row.StartWeapon);
             var locator = body.GetComponent<SkillLocator>();
-            if (start < 0 || locator == null || primaryDefs.Length == 0) return;
-            if (!body.GetComponents<EntityStateMachine>().Any(m => m.customName == "Weapon"))
-                Log.Warn($"{row.DisplayName}: body has no 'Weapon' state machine; weapons will not fire");
+            if (start < 0 || locator == null || defs.Length == 0) return;
+            AddWeaponMachines(body);
             string id = "RiskOfBonk" + MegabonkSurvivors.Pascal(row.Id);
-            if (locator.primary) familyField(locator.primary) = Family(id + "Primary", primaryDefs[start]);
+            if (locator.primary) familyField(locator.primary) = Family(id + "Primary", defs[0][start]);
             if (locator.secondary) familyField(locator.secondary) = Family(id + "Secondary", emptyDef);
             if (locator.utility) familyField(locator.utility) = Family(id + "Utility", emptyDef);
             if (locator.special) familyField(locator.special) = Family(id + "Special", emptyDef);
@@ -152,6 +159,53 @@ namespace RiskOfBonk
             var lo = body.AddComponent<WeaponLoadout>();
             lo.startWeapon = start;
             lo.primary = locator.primary;
+            body.AddComponent<AutoFire>();
+        }
+
+        static readonly AccessTools.FieldRef<NetworkStateMachine, EntityStateMachine[]> networkedMachines =
+            AccessTools.FieldRefAccess<NetworkStateMachine, EntityStateMachine[]>("stateMachines");
+
+        /// <summary>One state machine per weapon slot, synced like the body's own (NetworkStateMachine) and idled on death.</summary>
+        static void AddWeaponMachines(GameObject body)
+        {
+            var added = new List<EntityStateMachine>();
+            for (int k = 0; k < Slots; k++)
+            {
+                var m = body.AddComponent<EntityStateMachine>();
+                m.customName = MachineName(k);
+                m.initialStateType = new SerializableEntityStateType(typeof(Idle));
+                m.mainStateType = new SerializableEntityStateType(typeof(Idle));
+                added.Add(m);
+            }
+            var net = body.GetComponent<NetworkStateMachine>();
+            if (net) networkedMachines(net) = (networkedMachines(net) ?? new EntityStateMachine[0]).Concat(added).ToArray();
+            else Log.Warn($"{body.name}: no NetworkStateMachine; weapon attacks will not show for other players");
+            var death = body.GetComponent<CharacterDeathBehavior>();
+            if (death) death.idleStateMachine = (death.idleStateMachine ?? new EntityStateMachine[0]).Concat(added).ToArray();
+        }
+
+        /// <summary>
+        /// Megabonk weapons need no button: on the machine that controls the body, every weapon slot starts its next attack
+        /// as soon as its state machine is free again (the weapon state itself waits out Megabonk's cooldown).
+        /// </summary>
+        public sealed class AutoFire : MonoBehaviour
+        {
+            CharacterBody body;
+
+            void Awake() => body = GetComponent<CharacterBody>();
+
+            void FixedUpdate()
+            {
+                if (!body || !body.hasEffectiveAuthority || !body.skillLocator || !body.healthComponent || !body.healthComponent.alive) return;
+                if (body.currentVehicle) return; // still in the drop pod (or another seat): Megabonk has none, so nothing fires there
+                var l = body.skillLocator;
+                Fire(l.primary); Fire(l.secondary); Fire(l.utility); Fire(l.special);
+            }
+
+            static void Fire(GenericSkill slot)
+            {
+                if (slot && slot.skillDef && defToWeapon.ContainsKey(slot.skillDef)) slot.ExecuteIfReady();
+            }
         }
 
         public static bool IsMegabonk(CharacterBody body) => body && body.GetComponent<WeaponLoadout>();
@@ -212,7 +266,7 @@ namespace RiskOfBonk
                 var slots = new[] { body.skillLocator.secondary, body.skillLocator.utility, body.skillLocator.special };
                 for (int i = 0; i < 3; i++)
                 {
-                    var want = i < extras.Count ? slotDefs[extras[i]] : null;
+                    var want = i < extras.Count ? defs[i + 1][extras[i]] : null;
                     if (applied[i] == want || !slots[i]) continue;
                     if (applied[i] != null) slots[i].UnsetSkillOverride(this, applied[i], GenericSkill.SkillOverridePriority.Replacement);
                     if (want != null) slots[i].SetSkillOverride(this, want, GenericSkill.SkillOverridePriority.Replacement);

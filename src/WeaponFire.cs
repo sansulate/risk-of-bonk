@@ -12,15 +12,21 @@ using UnityEngine.Networking;
 namespace RiskOfBonk
 {
     /// <summary>
-    /// One attack of a Megabonk weapon (the weapon comes from the skill that started this state). Built from Risk of
-    /// Rain 2's own attacks: bullets, projectiles, a melee blast with a sword swing, an aura nova, or chain lightning.
-    /// Damage grows 25% per weapon level; attack speed shortens the time between attacks.
+    /// One attack of a Megabonk weapon (the weapon comes from the skill that started this state), timed like Megabonk's
+    /// WeaponAttack: mbProjectiles shots one after another over mbBurstTime (at least mbMinBurstInterval apart), then
+    /// mbEndCooldown of waiting, all divided by attack speed; the state lasts the whole cycle, so the next attack starts
+    /// when it ends. Shot n goes to the n-th closest enemy in range (Megabonk's EnemyTargeting); with none in range the shot
+    /// goes where you aim, or is held back for weapons that only fire at close enemies. Each shot is one of Risk of Rain
+    /// 2's own attacks: bullets, projectiles, a melee blast with a sword swing, an aura nova, or chain lightning.
+    /// Damage is Megabonk's (mbDamage x weapon_damage_scale) and grows 25% per weapon level.
     /// </summary>
     public class WeaponFire : BaseSkillState
     {
         WeaponRow weapon;
-        float duration;
+        float duration, shotInterval, damage, lastSoundAge = -1f;
+        int shots, shot;
         static int swingCount;
+        static readonly Dictionary<GameObject, float> lastAuraFx = new Dictionary<GameObject, float>();
 
         static readonly Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
 
@@ -85,24 +91,72 @@ namespace RiskOfBonk
                 duration = 0.1f;
                 return;
             }
-            duration = Mathf.Max(0.08f, weapon.Interval / Mathf.Max(0.1f, attackSpeedStat));
+            float speed = Mathf.Max(0.1f, attackSpeedStat);
+            shots = Mathf.Max(1, weapon.MbProjectiles);
+            shotInterval = weapon.MbBurstTime > 0f ? Mathf.Max(weapon.MbBurstTime / shots, weapon.MbMinBurstInterval) / speed : 0f;
+            duration = Mathf.Max(0.1f, weapon.MbEndCooldown / speed + shots * shotInterval);
             int level = Mathf.Max(1, Weapons.Level(characterBody, Weapons.Index(weapon.Id)));
-            float damage = damageStat * weapon.Damage * (1f + 0.25f * (level - 1));
-            if (weapon.Id == "dice") damage *= Random.Range(1, 7) / 3.5f;
-            var aim = GetAimRay();
-            if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage, authority {isAuthority}, prefab {(Prefab(weapon.Prefab) ? "ok" : "-")}");
-            Fired++;
-            StartAimMode(aim, 2f);
-            WeaponVisuals.Fired(gameObject, weapon, characterBody.corePosition); // Megabonk's sound, and its projectile look
-            switch (weapon.Kind)
+            float coefficient = weapon.MbDamage > 0f ? weapon.MbDamage * Tune.WeaponDamageScale : weapon.Damage;
+            damage = damageStat * coefficient * (1f + 0.25f * (level - 1));
+            if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage x {shots} over {shots * shotInterval:0.##} s, cycle {duration:0.##} s, authority {isAuthority}");
+            FireDue();
+        }
+
+        /// <summary>Fires every shot of the burst that is due by now.</summary>
+        void FireDue()
+        {
+            while (shot < shots && fixedAge >= shot * shotInterval - 0.0001f)
             {
-                case "bullet": Bullet(aim, damage); break;
-                case "projectile": Projectile(aim, damage); break;
-                case "melee": Melee(aim, damage); break;
-                case "aura": Aura(damage); break;
-                case "lightning": Lightning(aim, damage); break;
+                Shoot(shot);
+                shot++;
             }
         }
+
+        float Range => weapon.MbRange > 0f ? Mathf.Min(weapon.MbRange, Mathf.Max(weapon.Range, 40f)) : Mathf.Max(weapon.Range * 1.5f, 6f);
+
+        /// <summary>The n-th closest enemy in range that can be seen (n wraps around), or none.</summary>
+        HurtBox Target(int n)
+        {
+            var search = new BullseyeSearch
+            {
+                searchOrigin = characterBody.corePosition,
+                teamMaskFilter = TeamMask.GetEnemyTeams(GetTeam()),
+                filterByLoS = true,
+                maxDistanceFilter = Range,
+                maxAngleFilter = 180f,
+                sortMode = BullseyeSearch.SortMode.Distance,
+            };
+            search.RefreshCandidates();
+            search.FilterOutGameObject(gameObject);
+            var found = search.GetResults().ToList();
+            return found.Count == 0 ? null : found[n % found.Count];
+        }
+
+        void Shoot(int n)
+        {
+            var aim = GetAimRay();
+            var target = weapon.Kind == "aura" ? null : Target(n);
+            if (target) aim.direction = (target.transform.position - aim.origin).normalized;
+            else if (weapon.MbOnlyClose) return; // Megabonk's revolver waits for an enemy in range
+            float hit = damage;
+            if (weapon.Id == "dice") hit *= Random.Range(1, 7) / 3.5f;
+            Fired++;
+            if (fixedAge - lastSoundAge > 0.05f || lastSoundAge < 0f)
+            {
+                lastSoundAge = fixedAge;
+                WeaponVisuals.Fired(gameObject, weapon, characterBody.corePosition); // Megabonk's sound, and its projectile look
+            }
+            switch (weapon.Kind)
+            {
+                case "bullet": Bullet(aim, hit); break;
+                case "projectile": Projectile(aim, hit); break;
+                case "melee": Melee(aim, hit); break;
+                case "aura": Aura(hit); break;
+                case "lightning": Lightning(aim, hit, target); break;
+            }
+        }
+
+        bool Crit() => Util.CheckRoll(critStat + weapon.MbCritChance * 100f, characterBody.master);
 
         void Bullet(Ray aim, float damage)
         {
@@ -116,12 +170,12 @@ namespace RiskOfBonk
                 minSpread = 0f,
                 maxSpread = weapon.Spread,
                 bulletCount = (uint)Mathf.Max(1, weapon.Count),
-                damage = damage,
-                procCoefficient = 1f,
+                damage = weapon.Count > 1 ? damage * 2f / weapon.Count : damage, // Megabonk's shotgun cone hits each enemy once
+                procCoefficient = weapon.MbProc,
                 force = 200f,
                 tracerEffectPrefab = Prefab(weapon.Effect),
                 hitEffectPrefab = Prefab("RoR2/Base/Commando/HitsparkCommando.prefab"),
-                isCrit = RollCrit(),
+                isCrit = Crit(),
                 radius = 0.4f,
                 smartCollision = true,
                 maxDistance = weapon.Range,
@@ -136,7 +190,7 @@ namespace RiskOfBonk
             if (!isAuthority) return;
             var prefab = Prefab(weapon.Prefab);
             if (!prefab) return;
-            bool crit = RollCrit();
+            bool crit = Crit();
             for (int i = 0; i < Mathf.Max(1, weapon.Count); i++)
             {
                 var dir = weapon.Spread > 0f ? Util.ApplySpread(aim.direction, 0f, weapon.Spread, 1f, 1f) : aim.direction;
@@ -194,8 +248,8 @@ namespace RiskOfBonk
                 position = centre,
                 radius = weapon.Range,
                 baseDamage = damage,
-                procCoefficient = 1f,
-                crit = RollCrit(),
+                procCoefficient = weapon.MbProc,
+                crit = Crit(),
                 falloffModel = BlastAttack.FalloffModel.None,
                 baseForce = 400f,
                 attackerFiltering = AttackerFiltering.NeverHitSelf,
@@ -205,8 +259,13 @@ namespace RiskOfBonk
 
         void Aura(float damage)
         {
+            // Megabonk's aura is a steady ring that hurts every tick; the nova shows about once a second, not on every tick.
             var fx = Prefab(weapon.Effect);
-            if (fx) EffectManager.SpawnEffect(fx, new EffectData { origin = characterBody.corePosition, scale = weapon.Range }, false);
+            if (fx && (!lastAuraFx.TryGetValue(gameObject, out float last) || Time.time - last > 0.9f))
+            {
+                lastAuraFx[gameObject] = Time.time;
+                EffectManager.SpawnEffect(fx, new EffectData { origin = characterBody.corePosition, scale = weapon.Range }, false);
+            }
             if (!isAuthority) return;
             new BlastAttack
             {
@@ -216,8 +275,8 @@ namespace RiskOfBonk
                 position = characterBody.corePosition,
                 radius = weapon.Range,
                 baseDamage = damage,
-                procCoefficient = 0.7f,
-                crit = RollCrit(),
+                procCoefficient = weapon.MbProc,
+                crit = Crit(),
                 falloffModel = BlastAttack.FalloffModel.None,
                 baseForce = 200f,
                 attackerFiltering = AttackerFiltering.NeverHitSelf,
@@ -225,10 +284,31 @@ namespace RiskOfBonk
             }.Fire();
         }
 
-        void Lightning(Ray aim, float damage)
+        void Lightning(Ray aim, float damage, HurtBox target)
         {
             // Orbs are the host's job; the host runs this state too.
             if (!NetworkServer.active) return;
+            if (!target) target = FindLightningTarget(aim);
+            if (!target) return;
+            OrbManager.instance.AddOrb(new LightningOrb
+            {
+                origin = aim.origin,
+                damageValue = damage,
+                isCrit = Crit(),
+                bouncesRemaining = 3,
+                teamIndex = GetTeam(),
+                attacker = gameObject,
+                procCoefficient = weapon.MbProc,
+                lightningType = LightningOrb.LightningType.Ukulele,
+                damageColorIndex = DamageColorIndex.Default,
+                range = 20f,
+                target = target,
+                bouncedObjects = new List<HealthComponent>(),
+            });
+        }
+
+        HurtBox FindLightningTarget(Ray aim)
+        {
             var search = new BullseyeSearch
             {
                 searchOrigin = aim.origin,
@@ -248,31 +328,17 @@ namespace RiskOfBonk
                 search.RefreshCandidates();
                 target = search.GetResults().FirstOrDefault();
             }
-            if (!target) return;
-            OrbManager.instance.AddOrb(new LightningOrb
-            {
-                origin = aim.origin,
-                damageValue = damage,
-                isCrit = RollCrit(),
-                bouncesRemaining = 3,
-                teamIndex = GetTeam(),
-                attacker = gameObject,
-                procCoefficient = 0.8f,
-                lightningType = LightningOrb.LightningType.Ukulele,
-                damageColorIndex = DamageColorIndex.Default,
-                range = 20f,
-                target = target,
-                bouncedObjects = new List<HealthComponent>(),
-            });
+            return target;
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+            if (weapon != null) FireDue();
             if (isAuthority && fixedAge >= duration) outer.SetNextStateToMain();
         }
 
-        // Until the attack is over nothing (not even the same weapon, still held) may restart it; then anything may.
+        // Until the attack and its wait are over nothing (not even the same weapon) may restart it; then anything may.
         public override InterruptPriority GetMinimumInterruptPriority() => fixedAge < duration ? InterruptPriority.PrioritySkill : InterruptPriority.Any;
     }
 }

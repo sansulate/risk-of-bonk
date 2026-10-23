@@ -1,6 +1,6 @@
 {
  "sheet": "weapons",
- "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's.",
+ "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used.",
  "rows": [
   {
    "id": "revolver",
@@ -23,7 +23,17 @@
    "mbSound": "Revolver",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponRevolver",
+   "mbDamage": 5.0,
+   "mbProjectiles": 6,
+   "mbBurstTime": 1.1,
+   "mbMinBurstInterval": 0.02,
+   "mbEndCooldown": 1.4,
+   "mbRange": 40.0,
+   "mbCritChance": 0.05,
+   "mbProc": 0.9,
+   "mbOnlyClose": true
   },
   {
    "id": "shotgun",
@@ -46,7 +56,17 @@
    "mbSound": "Shotgun",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponShotgun",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.25,
+   "mbEndCooldown": 1.0,
+   "mbRange": 20.0,
+   "mbCritChance": 0.05,
+   "mbProc": 1.0,
+   "mbOnlyClose": false
   },
   {
    "id": "sniper",
@@ -69,7 +89,17 @@
    "mbSound": "Sniper",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponSniper",
+   "mbDamage": 22.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.3,
+   "mbEndCooldown": 1.0,
+   "mbRange": 999.0,
+   "mbCritChance": 0.05,
+   "mbProc": 1.5,
+   "mbOnlyClose": false
   },
   {
    "id": "bow",
@@ -92,7 +122,17 @@
    "mbSound": "Bow",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponBow",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 0.92,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "space_noodle",
@@ -115,7 +155,17 @@
    "mbSound": "NoodleWhipStart",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponSpaceNoodle",
+   "mbDamage": 10.0,
+   "mbProjectiles": 0,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 1.0,
+   "mbRange": 60.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.75,
+   "mbOnlyClose": false
   },
   {
    "id": "firestaff",
@@ -138,7 +188,17 @@
    "mbSound": "retro_shoot_fireball3",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponFireStaff",
+   "mbDamage": 10.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.15,
+   "mbEndCooldown": 0.5,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": false
   },
   {
    "id": "dragons_breath",
@@ -148,7 +208,7 @@
    "damage": 0.8,
    "interval": 0.3,
    "cooldown": 2,
-   "count": 3,
+   "count": 1,
    "spread": 10,
    "range": 100,
    "prefab": "RoR2/Base/Lemurian/Fireball.prefab",
@@ -161,7 +221,17 @@
    "mbSound": "retro_shoot_fireball3",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponDragonsBreath",
+   "mbDamage": 16.0,
+   "mbProjectiles": 0,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 2.0,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.7,
+   "mbOnlyClose": false
   },
   {
    "id": "bone",
@@ -184,7 +254,17 @@
    "mbSound": "BoneThrow",
    "mbProjectile": "Bone0",
    "projScale": 0.8,
-   "projSpin": 900
+   "projSpin": 900,
+   "mbWeapon": "WeaponBone",
+   "mbDamage": 11.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.1,
+   "mbEndCooldown": 0.4,
+   "mbRange": 40.0,
+   "mbCritChance": 0.1,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "bananarang",
@@ -207,7 +287,17 @@
    "mbSound": "AxeThrow",
    "mbProjectile": "BananaProjectile",
    "projScale": 0.5,
-   "projSpin": 900
+   "projSpin": 900,
+   "mbWeapon": "WeaponBananarang",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.9,
+   "mbMinBurstInterval": 0.1,
+   "mbEndCooldown": 0.8,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "axe",
@@ -230,7 +320,17 @@
    "mbSound": "AxeThrow",
    "mbProjectile": "AxeProjectile",
    "projScale": 0.45,
-   "projSpin": 900
+   "projSpin": 900,
+   "mbWeapon": "WeaponAxe",
+   "mbDamage": 6.0,
+   "mbProjectiles": 2,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 1.4,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.7,
+   "mbOnlyClose": false
   },
   {
    "id": "dice",
@@ -240,7 +340,7 @@
    "damage": 1.0,
    "interval": 0.5,
    "cooldown": 2,
-   "count": 2,
+   "count": 1,
    "spread": 6,
    "range": 100,
    "prefab": "RoR2/Base/Engi/EngiGrenadeProjectile.prefab",
@@ -253,7 +353,17 @@
    "mbSound": "DiceThrow",
    "mbProjectile": "DiceProjectile",
    "projScale": 0.7,
-   "projSpin": 500
+   "projSpin": 500,
+   "mbWeapon": "WeaponDice",
+   "mbDamage": 0.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.15,
+   "mbEndCooldown": 0.5,
+   "mbRange": 40.0,
+   "mbCritChance": 0.1,
+   "mbProc": 1.0,
+   "mbOnlyClose": false
   },
   {
    "id": "slutty_rocket",
@@ -263,7 +373,7 @@
    "damage": 2.5,
    "interval": 0.9,
    "cooldown": 3,
-   "count": 2,
+   "count": 1,
    "spread": 12,
    "range": 100,
    "prefab": "RoR2/Base/Common/MissileProjectile.prefab",
@@ -276,7 +386,17 @@
    "mbSound": "",
    "mbProjectile": "RocketProjectile",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponSluttyRocket",
+   "mbDamage": 11.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.1,
+   "mbEndCooldown": 0.3,
+   "mbRange": 60.0,
+   "mbCritChance": 0.05,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "chunkers",
@@ -299,7 +419,17 @@
    "mbSound": "",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponChunkers",
+   "mbDamage": 12.0,
+   "mbProjectiles": 3,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 1.5,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.8,
+   "mbOnlyClose": false
   },
   {
    "id": "poison_flask",
@@ -322,7 +452,17 @@
    "mbSound": "",
    "mbProjectile": "PoisonFlaskProjectile",
    "projScale": 0.6,
-   "projSpin": 400
+   "projSpin": 400,
+   "mbWeapon": "WeaponPoisonFlask",
+   "mbDamage": 1.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.2,
+   "mbEndCooldown": 0.8,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.9,
+   "mbOnlyClose": true
   },
   {
    "id": "mine",
@@ -345,7 +485,17 @@
    "mbSound": "MineSpawn",
    "mbProjectile": "MinesProjectile",
    "projScale": 0.6,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponMines",
+   "mbDamage": 10.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.25,
+   "mbEndCooldown": 1.0,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.8,
+   "mbOnlyClose": false
   },
   {
    "id": "tornado",
@@ -368,7 +518,17 @@
    "mbSound": "Tornado",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponTornado",
+   "mbDamage": 8.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.0,
+   "mbMinBurstInterval": 0.1,
+   "mbEndCooldown": 0.8,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "sword",
@@ -391,7 +551,17 @@
    "mbSound": "SwordSwing",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponSword",
+   "mbDamage": 11.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.5,
+   "mbMinBurstInterval": 0.1,
+   "mbEndCooldown": 0.75,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.8,
+   "mbOnlyClose": false
   },
   {
    "id": "katana",
@@ -414,7 +584,17 @@
    "mbSound": "Katana",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponKatana",
+   "mbDamage": 11.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.5,
+   "mbMinBurstInterval": 0.02,
+   "mbEndCooldown": 0.4,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.95,
+   "mbOnlyClose": false
   },
   {
    "id": "hero_sword",
@@ -437,7 +617,17 @@
    "mbSound": "HeroSwordAttack",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponHeroSword",
+   "mbDamage": 11.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.75,
+   "mbMinBurstInterval": 0.15,
+   "mbEndCooldown": 0.75,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.8,
+   "mbOnlyClose": false
   },
   {
    "id": "corrupted_sword",
@@ -460,7 +650,17 @@
    "mbSound": "CorruptedSword",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponCorruptedSword",
+   "mbDamage": 12.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.8,
+   "mbMinBurstInterval": 0.14,
+   "mbEndCooldown": 0.8,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.8,
+   "mbOnlyClose": false
   },
   {
    "id": "dexecutioner",
@@ -483,7 +683,17 @@
    "mbSound": "Dexecutioner",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponDexecutioner",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.8,
+   "mbMinBurstInterval": 0.04,
+   "mbEndCooldown": 0.8,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": false
   },
   {
    "id": "aura",
@@ -506,7 +716,17 @@
    "mbSound": "",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponAura",
+   "mbDamage": 6.0,
+   "mbProjectiles": 0,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 0.3,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.7,
+   "mbOnlyClose": false
   },
   {
    "id": "frostwalker",
@@ -529,7 +749,17 @@
    "mbSound": "IceRing",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponFrostWalker",
+   "mbDamage": 9.0,
+   "mbProjectiles": 0,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 1.25,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.9,
+   "mbOnlyClose": false
   },
   {
    "id": "blood_magic",
@@ -552,7 +782,17 @@
    "mbSound": "BloodMagic",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponBloodMagic",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.02,
+   "mbMinBurstInterval": 0.02,
+   "mbEndCooldown": 1.5,
+   "mbRange": 50.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "lightning_staff",
@@ -575,7 +815,17 @@
    "mbSound": "retro_lightningstrike",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponLightningBolt",
+   "mbDamage": 7.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 0.3,
+   "mbMinBurstInterval": 0.04,
+   "mbEndCooldown": 1.1,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": true
   },
   {
    "id": "wireless_dagger",
@@ -585,7 +835,7 @@
    "damage": 1.3,
    "interval": 0.5,
    "cooldown": 2,
-   "count": 2,
+   "count": 1,
    "spread": 20,
    "range": 100,
    "prefab": "RoR2/Base/Dagger/DaggerProjectile.prefab",
@@ -598,7 +848,17 @@
    "mbSound": "BluetoothDagger",
    "mbProjectile": "BluetoothProjectile",
    "projScale": 0.8,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponWirelessDagger",
+   "mbDamage": 9.0,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.1,
+   "mbMinBurstInterval": 0.02,
+   "mbEndCooldown": 0.5,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.9,
+   "mbOnlyClose": true
   },
   {
    "id": "black_hole",
@@ -621,7 +881,17 @@
    "mbSound": "BlackHole",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponBlackHole",
+   "mbDamage": 4.5,
+   "mbProjectiles": 1,
+   "mbBurstTime": 1.5,
+   "mbMinBurstInterval": 0.5,
+   "mbEndCooldown": 1.0,
+   "mbRange": 40.0,
+   "mbCritChance": 0.0,
+   "mbProc": 0.7,
+   "mbOnlyClose": true
   },
   {
    "id": "aegis",
@@ -644,7 +914,17 @@
    "mbSound": "AegisUse",
    "mbProjectile": "",
    "projScale": 1.0,
-   "projSpin": 0
+   "projSpin": 0,
+   "mbWeapon": "WeaponAegis",
+   "mbDamage": 10.0,
+   "mbProjectiles": 2,
+   "mbBurstTime": 0.0,
+   "mbMinBurstInterval": 0.0,
+   "mbEndCooldown": 1.5,
+   "mbRange": 0.0,
+   "mbCritChance": 0.0,
+   "mbProc": 1.0,
+   "mbOnlyClose": false
   }
  ]
 }

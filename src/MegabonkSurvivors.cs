@@ -127,7 +127,7 @@ namespace RiskOfBonk
             Plugin.Tokens[tok + "_SUBTITLE"] = "From Megabonk";
             int start = Weapons.Index(row.StartWeapon);
             string weapon = start >= 0 ? Sheets.Weapons[start].DisplayName : row.StartWeapon;
-            Plugin.Tokens[tok + "_DESC"] = row.Description + " Starts with the <style=cIsDamage>" + weapon + "</style> on the primary skill."
+            Plugin.Tokens[tok + "_DESC"] = row.Description + " Starts with the <style=cIsDamage>" + weapon + "</style> on the primary skill. Weapons attack by themselves, aimed at the closest enemies, like in Megabonk."
                 + "\n\n<style=cSub>Every new weapon from a level-up pick takes the next skill slot (secondary, utility, special), up to four weapons. "
                 + "Megabonk character with its own Megabonk animations, read from your own Megabonk install; skeleton and hitbox from " + MovesetLabel(row.MovesetBody) + ".</style>";
             Plugin.Tokens[tok + "_OUTRO"] = "...and so " + row.DisplayName + " left, still bonking.";
