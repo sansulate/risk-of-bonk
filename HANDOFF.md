@@ -1,19 +1,17 @@
-# Handoff: continue on the PC that has both games
+# Handoff
 
-The design and v1 scope are settled (see MODLOG.md); do not re-ask the user about them.
+State (2026-10-23, 0.2.6 + later commits): see MODLOG.md updates 16-22. The design and v1 scope are settled; do not
+re-ask the user about them.
 
-1. Build: install the .NET SDK if it's missing. Set `BEPINEX_CORE` to a BepInEx 5 core folder (BepInEx 5.4.23.x from its
-   GitHub releases), then run `build.sh`, or the same steps by hand on Windows, to get `dist/RiskOfBonk-0.1.0.zip`.
-2. Copy the zip's `RiskOfBonk/` folder into Risk of Rain 2's `BepInEx/plugins/` and launch the game. Read
-   `BepInEx/LogOutput.log` for "Megabonk folder:", "Megabonk survivors ready: ..." and any warnings.
-3. Open `BepInEx/RiskOfBonk/megabonk_inventory.txt`. Fix `mbNameHints` and `yawOffsetDeg` in `sheets/characters.json`,
-   and the logo hints in `sheets/menu_style.json`, to Megabonk's real asset names. Set `mbAssetsVerified: true` per row
-   once it looks right in game. Repeat until `python tools/sheets.py preflight` shows 0 unverified cells.
-4. Drive the game with universal-modder (`um win`): check the menus, play a stage as a Megabonk character, and capture a
-   real screenshot of the game window only.
-5. Test co-op with two Risk of Rain 2 copies (host plus join) and check that the Bonk/Rain choice syncs.
-6. Melty: ask the user to paste a fresh Melty "Publish" prompt (it carries their token; never save it anywhere), then
-   follow it: game_info, search_mashups, inspect_package, validate_recipe, one_click_check (Megabonk as companion, its
-   folder passed in the env var `RISKOFBONK_MEGABONK`), create_mod, upload, screenshot, test_release. Ask for credits,
-   license and remix permission, and ask before publishing.
-7. Commit and push to `claude/ecstatic-shannon-g82oak`.
+- Install on the PC with both games: one copy only, in the game folder's own BepInEx (plain Steam launch plays the mod).
+  `bash tools/ingame/redeploy.sh` builds, copies the plugin folder there and relaunches (needs the .NET 8 SDK and
+  Python). Test switches are files in `BepInEx/RiskOfBonk/` (testgod, testmove, testweapons, ...): create them for a
+  test session and delete them afterwards (testgod makes the player unkillable).
+- Character grid: GRID_START (cells before Megachad) is 18 with every DLC survivor showing, 11 without.
+- Megabonk ground truth: tools/mbdata (README): Il2CppDumper output + raw asset readers + dis.py. Weapons, characters,
+  weapon upgrades, movement, crouch, wall climb, model tilt and air deceleration now come from it.
+- Still open toward "play like Megabonk": weapon visuals are Risk of Rain 2 effects (Megabonk's are particles);
+  projectile speed/size/bounce/duration upgrades and character passives other than WallClimb are not applied;
+  Megabonk's per-character health/armor/etc. stat modifiers (tools/mbdata/characters.py) are not applied; co-op of
+  the per-slot weapon state machines not tested with two players.
+- Melty publishing: only with the user's go-ahead (they paste a fresh Publish prompt; never save its token).
