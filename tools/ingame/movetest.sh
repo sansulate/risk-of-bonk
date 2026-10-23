@@ -11,7 +11,7 @@ bash pick.sh "$1" "$2_select.png" 4 >/dev/null
 [ "$STYLE" = bonk ] && { ps click.ps1 -X 1030 -Y 939; sleep 2; }
 ps click.ps1 -X 1030 -Y 868; sleep 32
 ps key.ps1 -Key e; sleep 6
-LOG="$APPDATA/r2modmanPlus-local/RiskOfRain2/profiles/Default/BepInEx/LogOutput.log"
+LOG="$(bash bepinex.sh)/LogOutput.log"
 step() { echo "STEP $1 $(date +%T.%N | cut -c1-12)" >> "$2_steps.txt"; }
 : > "$2_steps.txt"
 step run "$2"; ps hold.ps1 -Vks 0x57 -Ms 2500

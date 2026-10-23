@@ -92,8 +92,26 @@ namespace RiskOfBonk
             var user = LocalUserManager.GetFirstLocalUser()?.currentNetworkUser;
             if (!pregame || !user) { Report("run-started", false, "character select did not open"); yield break; }
             yield return new WaitForSecondsRealtime(2f);
+            // Characters built on an expansion survivor (Void Fiend, Railgunner) become Commando on a PC without that
+            // expansion, so the test picks from the ones every copy of the game can play.
+            var playable = survivors.Where(s => !s.bodyPrefab.GetComponent<RoR2.ExpansionManagement.ExpansionRequirementComponent>()).ToList();
+            if (playable.Count > 0) survivors = playable;
             var survivor = survivors[seed % survivors.Count];
-            user.SetSurvivorPreferenceClient(survivor);
+            // The character select screen can put the profile's last survivor back after this pick, so the profile gets
+            // the pick too and it is sent again until the lobby has it.
+            var bodyIndex = BodyCatalog.FindBodyIndex(survivor.bodyPrefab);
+            try { LocalUserManager.GetFirstLocalUser()?.userProfile?.SetSurvivorPreference(survivor); } catch (Exception e) { Log.Warn("Melty test: " + e.Message); }
+            for (float pickUntil = Time.unscaledTime + 15f; Time.unscaledTime < pickUntil; )
+            {
+                user = LocalUserManager.GetFirstLocalUser()?.currentNetworkUser;
+                if (!user) break;
+                if (user.bodyIndexPreference == bodyIndex) break;
+                user.SetSurvivorPreferenceClient(survivor);
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
+            yield return new WaitForSecondsRealtime(1f);
+            user = LocalUserManager.GetFirstLocalUser()?.currentNetworkUser;
+            if (user && user.bodyIndexPreference != bodyIndex) user.SetSurvivorPreferenceClient(survivor);
             if (run % 2 == 0 && !StageMode.IsBonk) StageMode.Toggle();
             yield return new WaitForSecondsRealtime(1f);
             Log.Info($"Melty test: {survivor.cachedName}, {StageMode.Row.Label}");

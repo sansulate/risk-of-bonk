@@ -18,7 +18,9 @@ namespace RiskOfBonk
 
         public static void Start(string configuredDir, string ror2Dir, string tpkPath, string inventoryPath)
         {
-            GameDir = Locate(configuredDir, ror2Dir);
+            // Megabonk's characters wait for Done while the game loads, so it is set whatever happens here.
+            try { GameDir = Locate(configuredDir, ror2Dir); }
+            catch (Exception e) { Log.Warn("Megabonk folder: " + e.Message); GameDir = null; }
             if (GameDir == null)
             {
                 Error = $"Set {EnvVar} or the MegabonkFolder config to your Megabonk folder.";
@@ -26,7 +28,7 @@ namespace RiskOfBonk
                 return;
             }
             Log.Info("Megabonk folder: " + GameDir);
-            new Thread(() =>
+            var reader = new Thread(() =>
             {
                 try
                 {
@@ -37,7 +39,9 @@ namespace RiskOfBonk
                 }
                 catch (Exception e) { Error = e.ToString(); }
                 finally { Done = true; }
-            }) { IsBackground = true, Name = "RiskOfBonk Megabonk reader" }.Start();
+            }) { IsBackground = true, Name = "RiskOfBonk Megabonk reader" };
+            try { reader.Start(); }
+            catch (Exception e) { Error = e.ToString(); Done = true; }
         }
 
         static bool IsMegabonk(string dir) =>

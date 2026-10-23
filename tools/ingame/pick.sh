@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Select Megabonk survivor number N (0-based, characters.json order) on the character select grid, wait, screenshot.
-# Usage: pick.sh N out.png [waitSeconds]
+# Usage: pick.sh N out.png [waitSeconds]   (GRID_START: grid cells before Megachad, 18 with every DLC unlocked)
 I=$(cygpath -w "$(dirname "$0")")
-k=$((18 + $1)); col=$((k % 11)); row=$((k / 11))
+k=$((${GRID_START:-18} + $1)); col=$((k % 11)); row=$((k / 11))
 ys=(92 152 207 255)
 x=$(awk "BEGIN{print int(133 + 54.6 * $col)}")
 powershell -ExecutionPolicy Bypass -File "$I\click.ps1" -X $x -Y ${ys[$row]}

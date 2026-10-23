@@ -142,9 +142,14 @@ namespace RiskOfBonk
 
         void Update() => Voice.Tick();
 
+        // Every audio device is closed while the game is still whole (OnApplicationQuit comes before teardown): a
+        // waveOut device left open into the game's exit crashed it in ntdll (c0000005) or left its process hanging.
+        void OnApplicationQuit() => Voice.CloseAll();
+
         void OnDestroy() => Voice.CloseAll();
 
-        /// <summary>A waveOut device playing one buffer; a few stay open per format and are reused.</summary>
+        /// <summary>A waveOut device playing one buffer; a few stay open per format and are reused, and each is closed
+        /// again after a few silent seconds, so no device stays open while nothing plays.</summary>
         sealed class Voice
         {
             [StructLayout(LayoutKind.Sequential)]
@@ -160,20 +165,22 @@ namespace RiskOfBonk
             [DllImport("winmm.dll")] static extern int waveOutReset(IntPtr h);
             [DllImport("winmm.dll")] static extern int waveOutClose(IntPtr h);
 
-            const uint Done = 1;
+            const uint Done = 1, Prepared = 2;
             const int MaxVoices = 12;
+            const float IdleClose = 3f;
             static readonly List<Voice> voices = new List<Voice>();
-            static bool broken;
+            static bool broken, closed;
 
             IntPtr handle, hdr, data;
             int rate, channels, capacity;
             bool busy;
+            float idleSince;
 
             static int HdrSize => Marshal.SizeOf(typeof(WaveHdr));
 
             public static void Start(Pcm pcm, float volume)
             {
-                if (broken) return;
+                if (broken || closed) return;
                 try
                 {
                     var v = voices.FirstOrDefault(x => !x.busy && x.rate == pcm.rate && x.channels == pcm.channels);
@@ -197,31 +204,55 @@ namespace RiskOfBonk
                     for (int i = 0; i < scaled.Length; i++) scaled[i] = (short)(pcm.data[i] * volume);
                     Marshal.Copy(scaled, 0, v.data, scaled.Length);
                     Marshal.StructureToPtr(new WaveHdr { data = v.data, length = (uint)bytes }, v.hdr, false);
-                    waveOutPrepareHeader(v.handle, v.hdr, HdrSize);
-                    waveOutWrite(v.handle, v.hdr, HdrSize);
+                    if (waveOutPrepareHeader(v.handle, v.hdr, HdrSize) != 0) { v.Close(); return; }
                     v.busy = true;
+                    if (waveOutWrite(v.handle, v.hdr, HdrSize) != 0) v.Close();
                 }
                 catch (Exception e) { broken = true; Log.Warn("Megabonk sounds: " + e.Message); }
             }
 
             public static void Tick()
             {
-                foreach (var v in voices)
+                for (int i = voices.Count - 1; i >= 0; i--)
                 {
-                    if (!v.busy) continue;
-                    var h = (WaveHdr)Marshal.PtrToStructure(v.hdr, typeof(WaveHdr));
-                    if ((h.flags & Done) == 0) continue;
-                    waveOutUnprepareHeader(v.handle, v.hdr, HdrSize);
-                    v.busy = false;
+                    var v = voices[i];
+                    if (v.busy)
+                    {
+                        var h = (WaveHdr)Marshal.PtrToStructure(v.hdr, typeof(WaveHdr));
+                        if ((h.flags & Done) == 0) continue;
+                        waveOutUnprepareHeader(v.handle, v.hdr, HdrSize);
+                        v.busy = false;
+                        v.idleSince = Time.unscaledTime;
+                    }
+                    else if (Time.unscaledTime - v.idleSince > IdleClose) v.Close();
                 }
+            }
+
+            /// <summary>Stops and closes this device, then frees its buffers (only once the device has let go of them).</summary>
+            void Close()
+            {
+                voices.Remove(this);
+                busy = false;
+                try
+                {
+                    if (handle != IntPtr.Zero)
+                    {
+                        waveOutReset(handle);
+                        var h = (WaveHdr)Marshal.PtrToStructure(hdr, typeof(WaveHdr));
+                        if ((h.flags & Prepared) != 0) waveOutUnprepareHeader(handle, hdr, HdrSize);
+                        if (waveOutClose(handle) != 0) return; // the device still holds the buffers: leave them allocated
+                        handle = IntPtr.Zero;
+                    }
+                    if (hdr != IntPtr.Zero) { Marshal.FreeHGlobal(hdr); hdr = IntPtr.Zero; }
+                    if (data != IntPtr.Zero) { Marshal.FreeHGlobal(data); data = IntPtr.Zero; capacity = 0; }
+                }
+                catch { }
             }
 
             public static void CloseAll()
             {
-                foreach (var v in voices)
-                {
-                    try { waveOutReset(v.handle); if (v.busy) waveOutUnprepareHeader(v.handle, v.hdr, HdrSize); waveOutClose(v.handle); } catch { }
-                }
+                closed = true;
+                foreach (var v in voices.ToArray()) v.Close();
                 voices.Clear();
             }
         }

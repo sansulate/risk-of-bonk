@@ -18,7 +18,7 @@ namespace RiskOfBonk
     {
         public const string Guid = "com.sansulate.riskofbonk";
         public const string Name = "Risk of Bonk";
-        public const string Version = "0.2.4";
+        public const string Version = "0.2.5";
 
         public static readonly Dictionary<string, string> Tokens = new Dictionary<string, string>();
         public static string DataDir;
@@ -30,51 +30,72 @@ namespace RiskOfBonk
             string pluginDir = Path.GetDirectoryName(Info.Location);
             DataDir = Path.Combine(Paths.BepInExRootPath, "RiskOfBonk");
             Directory.CreateDirectory(DataDir);
+            Log.Info($"{Name} {Version} starting");
+            UnityEngine.Application.quitting += ExitWatchdog;
+
+            // Each part starts on its own: one that fails on a player's PC (another game build, a missing method)
+            // is logged and switched off, and the rest of the mod still loads.
+            int failed = 0;
+            void Part(string what, Action start)
+            {
+                try { start(); }
+                catch (Exception e) { failed++; Log.Error($"{what} could not start and is off this session: {e}"); }
+            }
 
             ConfigEntry<string> folder = Config.Bind("Megabonk", "MegabonkFolder", "",
                 "Your Megabonk install folder. Leave empty: Melty passes it, or it is found in your Steam libraries.");
-
-            MegabonkLoader.Start(folder.Value, Paths.GameRootPath, Path.Combine(pluginDir, "classdata.tpk"),
-                Path.Combine(DataDir, "megabonk_inventory.txt"));
-
-            ContentManager.collectContentPackProviders += add => add(new MegabonkSurvivors());
-            StageMode.Init();
             ConfigEntry<bool> movement = Config.Bind("Gameplay", "MegabonkMovement", true,
                 "Megabonk movement: always sprinting, the Sprint key slides, momentum, bunny hops and air strafing (your own character).");
             ConfigEntry<bool> hordes = Config.Bind("Gameplay", "MegabonkHordes", true,
                 "Megabonk horde pacing: more, weaker monsters. Applies when you host; every player should use the same setting.");
-            var harmony = new Harmony(Guid);
-            harmony.PatchAll(typeof(Patches));
-            BonkMovement.Enabled = movement.Value;
-            BonkMovement.Init(harmony);
-            if (hordes.Value) Horde.Init(harmony);
-            Upgrades.Init(harmony);
             ConfigEntry<bool> bosses = Config.Bind("Gameplay", "MegabonkBossEvent", true,
                 "Teleporter boss event: a Megabonk boss and swarm instead of the vanilla boss; a Megabonk swarm in the final boss fights too. Applies when you host.");
-            if (bosses.Value) { MegabonkBosses.Init(harmony); gameObject.AddComponent<FinalSwarm>(); }
-            TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod"));
-            gameObject.AddComponent<TestKeys>();
-            gameObject.AddComponent<UpgradePanel>();
             ConfigEntry<bool> xp = Config.Bind("Gameplay", "MegabonkXp", true,
                 "Megabonk XP: kills drop XP gems you collect by walking near them, shown in a Megabonk XP bar. Applies when you host.");
-            XpGems.Init(harmony, gameObject, xp.Value);
-            gameObject.AddComponent<XpBar>();
             ConfigEntry<bool> shrines = Config.Bind("Gameplay", "MegabonkShrines", true,
                 "Megabonk Charge Shrines (stand inside to charge, everyone gets an upgrade) and Magnet Shrines (pull every XP gem) on each stage, next to Risk of Rain 2's shrines. Applies when you host.");
-            Shrines.Init(gameObject, shrines.Value);
-            gameObject.AddComponent<StageMode.LobbyBeacon>();
-            gameObject.AddComponent<MeltyLink>();
-            gameObject.AddComponent<MegabonkSounds>();
-            MegabonkSounds.LoadAll(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Weapons, w => w.MbSound),
-                System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Sounds, s => s.MbSound)));
-            WeaponVisuals.Init(harmony);
-            MeltyTest.Start();
-            gameObject.AddComponent<MeltyTestRun>();
-            BonkTerrain.Init(harmony, gameObject);
             ConfigEntry<bool> look = Config.Bind("Gameplay", "MegabonkLook", true,
                 "Megabonk's look on stages: brighter, more saturated colours and lighter fog. Only changes your own screen.");
-            if (look.Value) StageLook.Init();
-            Log.Info($"{Name} {Version} loaded");
+
+            Part("Melty test mode", MeltyTest.Start);
+            Part("Megabonk reader", () => MegabonkLoader.Start(folder.Value, Paths.GameRootPath, Path.Combine(pluginDir, "classdata.tpk"),
+                Path.Combine(DataDir, "megabonk_inventory.txt")));
+            Part("Megabonk characters", () => ContentManager.collectContentPackProviders += add => add(new MegabonkSurvivors()));
+            Part("Bonk/Rain style", StageMode.Init);
+            var harmony = new Harmony(Guid);
+            Part("Menus", () => harmony.PatchAll(typeof(Patches)));
+            Part("Megabonk movement", () => { BonkMovement.Enabled = movement.Value; BonkMovement.Init(harmony); });
+            if (hordes.Value) Part("Megabonk hordes", () => Horde.Init(harmony));
+            Part("Upgrades", () => Upgrades.Init(harmony));
+            if (bosses.Value) Part("Megabonk bosses", () => { MegabonkBosses.Init(harmony); gameObject.AddComponent<FinalSwarm>(); });
+            Part("Test keys", () => { TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod")); gameObject.AddComponent<TestKeys>(); });
+            Part("Level-up menu", () => gameObject.AddComponent<UpgradePanel>());
+            Part("Megabonk XP", () => { XpGems.Init(harmony, gameObject, xp.Value); gameObject.AddComponent<XpBar>(); });
+            Part("Megabonk shrines", () => Shrines.Init(gameObject, shrines.Value));
+            Part("Lobby style sync", () => gameObject.AddComponent<StageMode.LobbyBeacon>());
+            Part("Melty join links", () => gameObject.AddComponent<MeltyLink>());
+            Part("Megabonk sounds", () =>
+            {
+                gameObject.AddComponent<MegabonkSounds>();
+                MegabonkSounds.LoadAll(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Weapons, w => w.MbSound),
+                    System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Sounds, s => s.MbSound)));
+            });
+            Part("Megabonk projectiles", () => WeaponVisuals.Init(harmony));
+            Part("Melty test run", () => gameObject.AddComponent<MeltyTestRun>());
+            Part("Bonk style terrain", () => BonkTerrain.Init(harmony, gameObject));
+            if (look.Value) Part("Megabonk look", StageLook.Init);
+            Log.Info($"{Name} {Version} loaded" + (failed > 0 ? $" ({failed} part(s) off, see the errors above)" : ""));
+        }
+
+        // A game whose exit hangs (its window gone, the process left behind) keeps the next Play from starting, so
+        // once the game is closing it gets 30 seconds to finish before the process ends itself.
+        static void ExitWatchdog()
+        {
+            new System.Threading.Thread(() =>
+            {
+                System.Threading.Thread.Sleep(30000);
+                try { System.Diagnostics.Process.GetCurrentProcess().Kill(); } catch { }
+            }) { IsBackground = true, Name = "RiskOfBonk exit watchdog" }.Start();
         }
 
         static class Patches

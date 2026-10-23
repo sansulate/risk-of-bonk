@@ -248,3 +248,17 @@
   Megabonk bones, Monke bananas, with BoneThrow / AxeThrow logged. Megabonk's slashes, fire, lightning, aura and
   tornado are particle effects with no mesh, so those weapons keep Risk of Rain 2's effects.
 
+- Update 16 (2026-10-23): 0.2.5, fixes for players' reports on 0.2.4. (1) 7 players crashed in ntdll.dll (c0000005)
+  while the game was closing (their logs end with Wwise's shutdown and the run report save): MegabonkSounds' waveOut
+  devices stayed open into the process exit. Devices now close after 3 s of silence (buffers freed once closed), and
+  all of them in OnApplicationQuit, before Unity's teardown. (2) "Game never appears after Play": the logs were the
+  previous session's, consistent with that session's exit hanging and its process blocking the next start; besides
+  (1), Plugin starts a 30 s exit watchdog on Application.quitting. (3) "Loader runs but never loads its code": Plugin
+  Awake now starts each part on its own (a failing part is logged and switched off, the rest loads), and
+  MegabonkLoader always sets Done, so the content pack can't wait forever on a failed Megabonk search.
+- Third PC setup (2026-10-23, the first PC again): one install only, the game folder's own BepInEx 5.4.23.5 (set up by
+  Melty: winhttp.dll + doorstop enabled, plugins/RiskOfBonk only), so a plain Steam launch plays the mod. The old 0.1
+  copy in the r2modman "Default" profile (with the user's other mods) was removed. Test tools find the install with
+  tools/ingame/bepinex.sh (BONK_BEPINEX, else the game folder's BepInEx, else r2modman's Default profile);
+  redeploy.sh copies the whole plugin folder and clears the old log first. This PC's character grid has 11 cells
+  before Megachad: GRID_START=11 for pick.sh / runtest.sh / movetest.sh.
