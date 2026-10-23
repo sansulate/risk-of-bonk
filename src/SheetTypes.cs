@@ -10,10 +10,17 @@ namespace RiskOfBonk.Generated
         public readonly string StartWeapon;
         public readonly string[] MbNameHints;
         public readonly float SortPosition, HeightMeters, YawOffsetDeg;
+        /// <summary>From the character's Megabonk CharacterData: its passive, move speed bonus (fraction), jump height bonus
+        /// (m/s on the jump) and extra air jumps.</summary>
+        public readonly string MbPassive;
+        public readonly float MbMoveSpeed, MbJumpHeight;
+        public readonly int MbExtraJumps;
 
         public CharacterRow(string id, string displayName, string[] mbNameHints, string mbPortrait, string movesetBody, string primaryColor,
-            float sortPosition, float heightMeters, float yawOffsetDeg, string description, string mbTexture, string startWeapon = "")
+            float sortPosition, float heightMeters, float yawOffsetDeg, string description, string mbTexture, string startWeapon = "",
+            string mbPassive = "", float mbMoveSpeed = 0f, float mbJumpHeight = 0f, int mbExtraJumps = 0)
         {
+            MbPassive = mbPassive; MbMoveSpeed = mbMoveSpeed; MbJumpHeight = mbJumpHeight; MbExtraJumps = mbExtraJumps;
             Id = id; DisplayName = displayName; MbNameHints = mbNameHints; MbPortrait = mbPortrait; MovesetBody = movesetBody; PrimaryColor = primaryColor;
             SortPosition = sortPosition; HeightMeters = heightMeters; YawOffsetDeg = yawOffsetDeg; Description = description; MbTexture = mbTexture; StartWeapon = startWeapon;
         }

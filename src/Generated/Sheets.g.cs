@@ -5,26 +5,26 @@ namespace RiskOfBonk.Generated
     {
         public static readonly CharacterRow[] Characters =
         {
-            new CharacterRow("megachad", "Megachad", new[] { "Chad", "Megachad" }, "Megachad", "LoaderBody", "#F2C14E", 200.0f, 1.6f, 0.0f, "Pure gains. Megachad flexes through the horde.", "", "aura"),
-            new CharacterRow("fox", "Fox", new[] { "FoxWizard" }, "Fox", "HuntressBody", "#F28C28", 201.0f, 1.6f, 0.0f, "Quick and sly, with a staff of fire.", "", "firestaff"),
-            new CharacterRow("calcium", "Calcium", new[] { "Calcium" }, "Calcium", "RailgunnerBody", "#E8E6D9", 202.0f, 1.6f, 0.0f, "A skeleton with a grudge and a bone to throw.", "", "bone"),
-            new CharacterRow("sir_oofie", "Sir Oofie", new[] { "Knight" }, "Knight", "MercBody", "#9AA7B8", 203.0f, 1.6f, 0.0f, "A knight who goes oof.", "Knight_Default", "sword"),
-            new CharacterRow("monke", "Monke", new[] { "Monke" }, "Monke", "CrocoBody", "#8B5A2B", 204.0f, 1.6f, 0.0f, "Return to monke.", "", "bananarang"),
-            new CharacterRow("ninja", "Ninja", new[] { "Ninja" }, "Ninja", "Bandit2Body", "#3B3B58", 205.0f, 1.6f, 0.0f, "Stealthy, fast and sharp.", "", "katana"),
-            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast.", "", "wireless_dagger"),
-            new CharacterRow("robinette", "Robinette", new[] { "Robinette" }, "Robinette", "HuntressBody", "#4E9A51", 207.0f, 1.6f, 0.0f, "An archer of the woods.", "", "bow"),
-            new CharacterRow("bandit", "Bandit", new[] { "Bandit" }, "Bandit", "Bandit2Body", "#7A4E2D", 208.0f, 1.6f, 0.0f, "Steal the show.", "", "shotgun"),
-            new CharacterRow("birdo", "Birdo", new[] { "Birdo" }, "Birdo", "MageBody", "#5DADE2", 209.0f, 1.6f, 0.0f, "Flies high and calls the storm.", "", "lightning_staff"),
-            new CharacterRow("noelle", "Noelle", new[] { "Noelle", "NoelleMesh" }, "Noelle", "MageBody", "#A9DFF5", 210.0f, 1.6f, 0.0f, "Cold as ice.", "", "frostwalker"),
-            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "One small step for bonk.", "", "black_hole"),
-            new CharacterRow("vlad", "Vlad", new[] { "BloodMage" }, "BloodMage", "VoidSurvivorBody", "#8E1B2B", 212.0f, 1.6f, 0.0f, "A vampire with a thirst.", "", "blood_magic"),
-            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes.", "", "aegis"),
-            new CharacterRow("ogre", "Ogre", new[] { "Ogre", "Orc" }, "Ogre", "ToolbotBody", "#6E8B3D", 214.0f, 1.6f, 0.0f, "Big, heavy and loud.", "", "axe"),
-            new CharacterRow("cl4nk", "CL4NK", new[] { "RobotCowboy", "CowboyLow" }, "RobotCowboy", "EngiBody", "#B0B7BF", 215.0f, 1.6f, 0.0f, "A robot who shoots first.", "", "revolver"),
-            new CharacterRow("dicehead", "Dicehead", new[] { "Dicehead" }, "Dicehead", "CommandoBody", "#FFFFFF", 216.0f, 1.6f, 0.0f, "Rolls the dice.", "", "dice"),
-            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus.", "", "poison_flask"),
-            new CharacterRow("bush", "Bush", new[] { "Sniperman" }, "Bush", "TreebotBody", "#2E7D32", 218.0f, 1.6f, 0.0f, "A bush with a plan.", "", "sniper"),
-            new CharacterRow("sir_chadwell", "Sir Chadwell", new[] { "CorruptedKnight" }, "CorruptedKnight", "LoaderBody", "#B8860B", 219.0f, 1.6f, 0.0f, "A noble chad with a cursed blade.", "", "corrupted_sword"),
+            new CharacterRow("megachad", "Megachad", new[] { "Chad", "Megachad" }, "Megachad", "LoaderBody", "#F2C14E", 200.0f, 1.6f, 0.0f, "Pure gains. Megachad flexes through the horde.", "", "aura", "Flex", -0.05f, 1.0f, 0),
+            new CharacterRow("fox", "Fox", new[] { "FoxWizard" }, "Fox", "HuntressBody", "#F28C28", 201.0f, 1.6f, 0.0f, "Quick and sly, with a staff of fire.", "", "firestaff", "RngBlessing", 0.04f, 1.0f, 0),
+            new CharacterRow("calcium", "Calcium", new[] { "Calcium" }, "Calcium", "RailgunnerBody", "#E8E6D9", 202.0f, 1.6f, 0.0f, "A skeleton with a grudge and a bone to throw.", "", "bone", "SpeedDemon", 0.15f, 1.5f, 0),
+            new CharacterRow("sir_oofie", "Sir Oofie", new[] { "Knight" }, "Knight", "MercBody", "#9AA7B8", 203.0f, 1.6f, 0.0f, "A knight who goes oof.", "Knight_Default", "sword", "Reinforced", -0.02f, 0.0f, 0),
+            new CharacterRow("monke", "Monke", new[] { "Monke" }, "Monke", "CrocoBody", "#8B5A2B", 204.0f, 1.6f, 0.0f, "Return to monke.", "", "bananarang", "WallClimb", 0.0f, 2.0f, 0),
+            new CharacterRow("ninja", "Ninja", new[] { "Ninja" }, "Ninja", "Bandit2Body", "#3B3B58", 205.0f, 1.6f, 0.0f, "Stealthy, fast and sharp.", "", "katana", "Shadowstep", 0.15f, 2.0f, 0),
+            new CharacterRow("tony_mczoom", "Tony McZoom", new[] { "HoverGuy", "ModelHoverman" }, "Hoverguy", "CommandoBody", "#D94A3D", 206.0f, 1.6f, 0.0f, "Gotta go fast.", "", "wireless_dagger", "Zoombonk", 0.3f, 3.0f, 0),
+            new CharacterRow("robinette", "Robinette", new[] { "Robinette" }, "Robinette", "HuntressBody", "#4E9A51", 207.0f, 1.6f, 0.0f, "An archer of the woods.", "", "bow", "Stonks", 0.075f, 3.0f, 0),
+            new CharacterRow("bandit", "Bandit", new[] { "Bandit" }, "Bandit", "Bandit2Body", "#7A4E2D", 208.0f, 1.6f, 0.0f, "Steal the show.", "", "dexecutioner", "Flowstate", 0.05f, 1.0f, 0),
+            new CharacterRow("birdo", "Birdo", new[] { "Birdo" }, "Birdo", "MageBody", "#5DADE2", 209.0f, 1.6f, 0.0f, "Flies high and calls the storm.", "", "tornado", "Float", 0.05f, 2.0f, 1),
+            new CharacterRow("noelle", "Noelle", new[] { "Noelle", "NoelleMesh" }, "Noelle", "MageBody", "#A9DFF5", 210.0f, 1.6f, 0.0f, "Cold as ice.", "", "frostwalker", "Enduring", 0.075f, 3.0f, 0),
+            new CharacterRow("spaceman", "Spaceman", new[] { "Astronaut" }, "Astronat", "CaptainBody", "#CFD8DC", 211.0f, 1.6f, 0.0f, "One small step for bonk.", "", "black_hole", "Quantum", 0.0f, 0.0f, 0),
+            new CharacterRow("vlad", "Vlad", new[] { "BloodMage" }, "BloodMage", "VoidSurvivorBody", "#8E1B2B", 212.0f, 1.6f, 0.0f, "A vampire with a thirst.", "", "blood_magic", "Vampire", 0.04f, 2.0f, 0),
+            new CharacterRow("athena", "Athena", new[] { "Athena" }, "Athena", "MercBody", "#E6C36A", 213.0f, 1.6f, 0.0f, "Divine strikes.", "", "aegis", "LockIn", 0.0f, 0.0f, 0),
+            new CharacterRow("ogre", "Ogre", new[] { "Ogre", "Orc" }, "Ogre", "ToolbotBody", "#6E8B3D", 214.0f, 1.6f, 0.0f, "Big, heavy and loud.", "", "axe", "Warrior", -0.06f, 0.35f, 0),
+            new CharacterRow("cl4nk", "CL4NK", new[] { "RobotCowboy", "CowboyLow" }, "RobotCowboy", "EngiBody", "#B0B7BF", 215.0f, 1.6f, 0.0f, "A robot who shoots first.", "", "revolver", "CritHappens", 0.07f, 2.0f, 0),
+            new CharacterRow("dicehead", "Dicehead", new[] { "Dicehead" }, "Dicehead", "CommandoBody", "#FFFFFF", 216.0f, 1.6f, 0.0f, "Rolls the dice.", "", "dice", "Gamba", 0.0f, 0.0f, 0),
+            new CharacterRow("amog", "Amog", new[] { "Amog" }, "Amog", "EngiBody", "#C0392B", 217.0f, 1.6f, 0.0f, "Sus.", "", "poison_flask", "Plague", 0.0f, 0.0f, 0),
+            new CharacterRow("bush", "Bush", new[] { "Sniperman" }, "Bush", "TreebotBody", "#2E7D32", 218.0f, 1.6f, 0.0f, "A bush with a plan.", "", "sniper", "Bullseye", 0.0f, 0.0f, 0),
+            new CharacterRow("sir_chadwell", "Sir Chadwell", new[] { "CorruptedKnight" }, "CorruptedKnight", "LoaderBody", "#B8860B", 219.0f, 1.6f, 0.0f, "A noble chad with a cursed blade.", "", "corrupted_sword", "Curse", -0.03f, 0.0f, 0),
         };
         public static readonly StyleRow[] MenuStyle =
         {
@@ -149,16 +149,16 @@ namespace RiskOfBonk.Generated
         public static float SlideSlopeGain = 1.0f;
         /// <summary>Sideways steering while sliding (forward input does nothing in a slide; sideways input pushes at run_accel). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s per s)</summary>
         public static float SlideSteer = 54.0f;
-        /// <summary>Wallrunning needs at least this speed along the wall (minWallClimbSpeed 10). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
-        public static float WallrunMinSpeed = 10.0f;
+        /// <summary>Climbing speed up a wall: max(this, 1.5 x run speed) (minWallClimbSpeed 10). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (m/s)</summary>
+        public static float WallclimbMinSpeed = 10.0f;
+        /// <summary>Speed pressing you into the wall while climbing. Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (m/s)</summary>
+        public static float WallclimbPush = 4.0f;
+        /// <summary>After a climb ends, the next one waits this long (wallClimbCooldown). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (s)</summary>
+        public static float WallclimbCooldown = 0.4f;
+        /// <summary>You climb when your movement points at the wall within this angle (wallrunAttachAngle). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only. (degrees)</summary>
+        public static float WallclimbAngle = 60.0f;
         /// <summary>Safety cap on horizontal speed (Megabonk has none; this only stops runaway physics). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics). (m/s)</summary>
         public static float MaxSpeed = 40.0f;
-        /// <summary>Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing). (s)</summary>
-        public static float WallrunTime = 1.4f;
-        /// <summary>Fastest you sink while wallrunning. (m/s)</summary>
-        public static float WallrunFall = 1.5f;
-        /// <summary>Letting go of Jump during a wallrun pushes you off the wall (and up) by this much. (m/s)</summary>
-        public static float WallrunKick = 7.0f;
         /// <summary>Monster spawn budget over time (stage and Teleporter directors without a boss squad). (x director credit)</summary>
         public static float HordeCredit = 1.8f;
         /// <summary>Most monsters one director wave may spawn (RoR2 default 6). Cheap monsters are no longer skipped. (monsters)</summary>

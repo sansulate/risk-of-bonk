@@ -1,6 +1,6 @@
 {
  "sheet": "characters",
- "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's). startWeapon: the Megabonk weapon (weapons.json) on left mouse at the start of a run; the RoR2 moveset body still gives stats and animations, its skills are replaced by weapons.",
+ "note": "Each row = one Megabonk character playable as a Risk of Rain 2 survivor. Model, textures and portrait are read at runtime from the player's own Megabonk folder by mbNameHints (model) and mbPortrait (exact Texture2D name of the character-select icon); mbAssetsVerified becomes true only after the hints were checked against a real Megabonk install (BepInEx/RiskOfBonk/megabonk_inventory.txt). Optional mbTexture: exact Texture2D name for the body when the matched model carries another skin's material (Knight shares the corrupted knight's). startWeapon: the Megabonk weapon (weapons.json) on left mouse at the start of a run; the RoR2 moveset body still gives stats and animations, its skills are replaced by weapons. startWeapon, mbPassive, mbMoveSpeed (added to Megabonk's move speed multiplier), mbJumpHeight (added to the jump speed) and mbExtraJumps come from each character's Megabonk CharacterData (weapon, passive, statModifiers). Of the passives only WallClimb (Monke: hold Jump against a wall to run up it) changes movement and is in the mod.",
  "rows": [
   {
    "id": "megachad",
@@ -25,7 +25,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Flex",
+   "mbMoveSpeed": -0.05,
+   "mbJumpHeight": 1.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "fox",
@@ -49,7 +53,11 @@
     "FoxJump4",
     "FoxFalling",
     "FoxGrind2"
-   ]
+   ],
+   "mbPassive": "RngBlessing",
+   "mbMoveSpeed": 0.04,
+   "mbJumpHeight": 1.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "calcium",
@@ -74,7 +82,11 @@
     "A_Falling",
     "A_Idle",
     "A_Grinding"
-   ]
+   ],
+   "mbPassive": "SpeedDemon",
+   "mbMoveSpeed": 0.15,
+   "mbJumpHeight": 1.5,
+   "mbExtraJumps": 0
   },
   {
    "id": "sir_oofie",
@@ -99,7 +111,11 @@
     "KnightJump",
     "KnightFalling",
     "KnightGrind"
-   ]
+   ],
+   "mbPassive": "Reinforced",
+   "mbMoveSpeed": -0.02,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "monke",
@@ -123,7 +139,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "WallClimb",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 2.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "ninja",
@@ -147,7 +167,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Shadowstep",
+   "mbMoveSpeed": 0.15,
+   "mbJumpHeight": 2.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "tony_mczoom",
@@ -172,7 +196,11 @@
     "HoverJump",
     "HoverFalling",
     "HoverGrind"
-   ]
+   ],
+   "mbPassive": "Zoombonk",
+   "mbMoveSpeed": 0.3,
+   "mbJumpHeight": 3.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "robinette",
@@ -196,7 +224,11 @@
     "Jump",
     "Falling",
     "Grinding"
-   ]
+   ],
+   "mbPassive": "Stonks",
+   "mbMoveSpeed": 0.075,
+   "mbJumpHeight": 3.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "bandit",
@@ -212,7 +244,7 @@
    "yawOffsetDeg": 0,
    "description": "Steal the show.",
    "mbAssetsVerified": true,
-   "startWeapon": "shotgun",
+   "startWeapon": "dexecutioner",
    "startWeaponVerified": true,
    "mbClips": [
     "Idle",
@@ -221,7 +253,11 @@
     "Falling",
     "Grind",
     "RunForEnemyAnimation"
-   ]
+   ],
+   "mbPassive": "Flowstate",
+   "mbMoveSpeed": 0.05,
+   "mbJumpHeight": 1.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "birdo",
@@ -237,7 +273,7 @@
    "yawOffsetDeg": 0,
    "description": "Flies high and calls the storm.",
    "mbAssetsVerified": true,
-   "startWeapon": "lightning_staff",
+   "startWeapon": "tornado",
    "startWeaponVerified": true,
    "mbClips": [
     "BirdoIdle",
@@ -245,7 +281,11 @@
     "BirdoJump",
     "BirdoFall",
     "BirdoGrind"
-   ]
+   ],
+   "mbPassive": "Float",
+   "mbMoveSpeed": 0.05,
+   "mbJumpHeight": 2.0,
+   "mbExtraJumps": 1
   },
   {
    "id": "noelle",
@@ -270,7 +310,11 @@
     "NoelleJump",
     "NoelleFalling",
     "NoelleGrind"
-   ]
+   ],
+   "mbPassive": "Enduring",
+   "mbMoveSpeed": 0.075,
+   "mbJumpHeight": 3.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "spaceman",
@@ -294,7 +338,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Quantum",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "vlad",
@@ -318,7 +366,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Vampire",
+   "mbMoveSpeed": 0.04,
+   "mbJumpHeight": 2.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "athena",
@@ -342,7 +394,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "LockIn",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "ogre",
@@ -367,7 +423,11 @@
     "Orc_Jump",
     "Orc_Falling",
     "Orc_Grind"
-   ]
+   ],
+   "mbPassive": "Warrior",
+   "mbMoveSpeed": -0.06,
+   "mbJumpHeight": 0.35,
+   "mbExtraJumps": 0
   },
   {
    "id": "cl4nk",
@@ -391,7 +451,11 @@
     "CowboyRun",
     "CowboyJump",
     "CowboyFalling"
-   ]
+   ],
+   "mbPassive": "CritHappens",
+   "mbMoveSpeed": 0.07,
+   "mbJumpHeight": 2.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "dicehead",
@@ -415,7 +479,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Gamba",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "amog",
@@ -439,7 +507,11 @@
     "Jump",
     "Falling",
     "Grind"
-   ]
+   ],
+   "mbPassive": "Plague",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "bush",
@@ -463,7 +535,11 @@
     "Jumping",
     "Falling",
     "Sliding"
-   ]
+   ],
+   "mbPassive": "Bullseye",
+   "mbMoveSpeed": 0.0,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   },
   {
    "id": "sir_chadwell",
@@ -487,7 +563,11 @@
     "KnightJump",
     "KnightFalling",
     "KnightGrind"
-   ]
+   ],
+   "mbPassive": "Curse",
+   "mbMoveSpeed": -0.03,
+   "mbJumpHeight": 0.0,
+   "mbExtraJumps": 0
   }
  ]
 }

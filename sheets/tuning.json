@@ -131,11 +131,35 @@
    "verified": true
   },
   {
-   "id": "wallrun_min_speed",
+   "id": "wallclimb_min_speed",
    "value": 10.0,
    "unit": "m/s",
    "system": "movement",
-   "note": "Wallrunning needs at least this speed along the wall (minWallClimbSpeed 10). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics).",
+   "note": "Climbing speed up a wall: max(this, 1.5 x run speed) (minWallClimbSpeed 10). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only.",
+   "verified": true
+  },
+  {
+   "id": "wallclimb_push",
+   "value": 4.0,
+   "unit": "m/s",
+   "system": "movement",
+   "note": "Speed pressing you into the wall while climbing. Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only.",
+   "verified": true
+  },
+  {
+   "id": "wallclimb_cooldown",
+   "value": 0.4,
+   "unit": "s",
+   "system": "movement",
+   "note": "After a climb ends, the next one waits this long (wallClimbCooldown). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only.",
+   "verified": true
+  },
+  {
+   "id": "wallclimb_angle",
+   "value": 60.0,
+   "unit": "degrees",
+   "system": "movement",
+   "note": "You climb when your movement points at the wall within this angle (wallrunAttachAngle). Megabonk's PlayerMovement.WallClimbing / CanWallClimb (GameAssembly), Monke's WallClimb passive only.",
    "verified": true
   },
   {
@@ -144,30 +168,6 @@
    "unit": "m/s",
    "system": "movement",
    "note": "Safety cap on horizontal speed (Megabonk has none; this only stops runaway physics). Measured from Megabonk (GameAssembly: PlayerMovement / PlayerMovementValues, 50 Hz physics).",
-   "verified": true
-  },
-  {
-   "id": "wallrun_time",
-   "value": 1.4,
-   "unit": "s",
-   "system": "movement",
-   "note": "Megabonk hold-to-wallrun: in the air, hold Jump next to a wall to run along it for up to this long (resets on landing).",
-   "verified": true
-  },
-  {
-   "id": "wallrun_fall",
-   "value": 1.5,
-   "unit": "m/s",
-   "system": "movement",
-   "note": "Fastest you sink while wallrunning.",
-   "verified": true
-  },
-  {
-   "id": "wallrun_kick",
-   "value": 7.0,
-   "unit": "m/s",
-   "system": "movement",
-   "note": "Letting go of Jump during a wallrun pushes you off the wall (and up) by this much.",
    "verified": true
   },
   {

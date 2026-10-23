@@ -11,7 +11,9 @@ namespace RiskOfBonk
     /// Megabonk movement for player bodies, with the numbers measured from Megabonk's own PlayerMovement (sheets/tuning.json,
     /// system "movement"): always running (the Sprint key becomes Slide), quick acceleration to 10 m/s, counter-movement
     /// that stops you fast, speed above that which fades slowly while you keep moving (momentum), air steering that never
-    /// slows you, a lower jump in lower gravity, slides that boost and speed up downhill, and hold-Jump wallrunning.
+    /// slows you, a lower jump in lower gravity, and slides that boost and speed up downhill. Megabonk characters add their
+    /// own move speed and jump height (characters.json), and Monke's WallClimb passive runs up walls while Jump is held
+    /// (Megabonk's PlayerMovement.WallClimbing).
     /// RoR2 moves a body on the client that has authority over it, so all of this runs there; nothing new is networked.
     /// RoR2 still computes vertical speed (with Megabonk's gravity); the horizontal velocity is replaced.
     /// </summary>
@@ -24,9 +26,8 @@ namespace RiskOfBonk
 
         sealed class State
         {
-            public bool sliding, wallrunning, slideReady = true;
-            public float boostReady, landedAt = -1f, wallTime;
-            public Vector3 wallNormal;
+            public bool sliding, climbing, slideReady = true;
+            public float boostReady, landedAt = -1f, climbReadyAt;
         }
 
         static readonly ConditionalWeakTable<CharacterMotor, State> states = new ConditionalWeakTable<CharacterMotor, State>();
@@ -49,7 +50,8 @@ namespace RiskOfBonk
         {
             var b = m.body;
             float baseSpeed = b.baseMoveSpeed * (b.isSprinting ? b.sprintingSpeedMultiplier : 1f);
-            return Tune.RunSpeed * (baseSpeed > 0.01f ? m.walkSpeed / baseSpeed : 1f);
+            var row = Weapons.Character(b);
+            return Tune.RunSpeed * (1f + (row != null ? row.MbMoveSpeed : 0f)) * (baseSpeed > 0.01f ? m.walkSpeed / baseSpeed : 1f);
         }
 
         /// <summary>
@@ -75,22 +77,21 @@ namespace RiskOfBonk
         /// <summary>True while this body is sliding (for effects and animation).</summary>
         public static bool IsSliding(CharacterMotor m) => m && states.TryGetValue(m, out var s) && s.sliding;
 
-        /// <summary>A wall beside the body (left or right of where it is going), or none.</summary>
-        static bool FindWall(CharacterMotor m, Vector3 along, out Vector3 normal)
+        /// <summary>A wall right in front of the body, in the direction it is pushing, or none.</summary>
+        static bool FindWall(CharacterMotor m, Vector3 dir, out Vector3 normal)
         {
             normal = Vector3.zero;
-            if (along.sqrMagnitude < 0.01f) return false;
-            var side = Vector3.Cross(Vector3.up, along.normalized);
-            float reach = (m.capsuleCollider ? m.capsuleCollider.radius : 0.5f) + 0.7f;
-            var origin = m.body.corePosition;
-            foreach (var dir in new[] { side, -side })
-                if (Physics.Raycast(origin, dir, out var hit, reach, LayerIndex.world.mask, QueryTriggerInteraction.Ignore) && Mathf.Abs(hit.normal.y) < 0.35f)
-                {
-                    normal = hit.normal;
-                    return true;
-                }
+            if (dir.sqrMagnitude < 0.01f) return false;
+            float reach = (m.capsuleCollider ? m.capsuleCollider.radius : 0.5f) + 0.4f;
+            if (Physics.Raycast(m.body.corePosition, dir.normalized, out var hit, reach, LayerIndex.world.mask, QueryTriggerInteraction.Ignore) && Mathf.Abs(hit.normal.y) < 0.35f)
+            {
+                normal = hit.normal;
+                return true;
+            }
             return false;
         }
+
+        static bool ClimbsWalls(CharacterBody body) => Weapons.Character(body)?.MbPassive == "WallClimb";
 
         [HarmonyPatch]
         static class Patches
@@ -138,6 +139,31 @@ namespace RiskOfBonk
                 if (speed >= Tune.SlideBoostMinSpeed) st.slideReady = true;
                 bool landing = Time.fixedTime - st.landedAt <= Tune.LandGrace;
                 Vector3 h = before;
+
+                // Monke's WallClimb: holding Jump while pushing into a wall (within 60 degrees of straight at it) runs up it at
+                // max(10, 1.5 x run speed), pressed against it at 4 m/s; letting go or losing the wall waits 0.4 s before the next climb.
+                var bank = m.body.inputBank;
+                bool jumpHeld = bank && bank.jump.down;
+                Vector3 wallNormal = Vector3.zero;
+                bool climb = ClimbsWalls(m.body) && jumpHeld && Time.fixedTime >= st.climbReadyAt && hasInput
+                    && FindWall(m, dir, out wallNormal) && Vector3.Dot(dir.normalized, -Flat(wallNormal).normalized) > Mathf.Cos(Tune.WallclimbAngle * Mathf.Deg2Rad);
+                if (climb)
+                {
+                    if (!st.climbing && LogSpeed) Log.Info("move: wall climb start");
+                    st.climbing = true;
+                    st.sliding = false;
+                    float up = Mathf.Max(Tune.WallclimbMinSpeed, run * 1.5f);
+                    h = Vector3.ProjectOnPlane(h, Flat(wallNormal).normalized) - Flat(wallNormal).normalized * Tune.WallclimbPush;
+                    m.velocity = new Vector3(h.x, Mathf.Max(m.velocity.y, up), h.z);
+                    if (LogSpeed && Time.time >= nextLog) { nextLog = Time.time + 0.1f; Log.Info($"move: climbing vy {m.velocity.y:F2} y {m.transform.position.y:F2}"); }
+                    return;
+                }
+                if (st.climbing)
+                {
+                    st.climbing = false;
+                    st.climbReadyAt = Time.fixedTime + Tune.WallclimbCooldown;
+                    if (LogSpeed) Log.Info("move: wall climb end");
+                }
 
                 if (m.isGrounded)
                 {
@@ -190,33 +216,6 @@ namespace RiskOfBonk
                     st.sliding = false;
                     // Air steering: pushes like on the ground but weaker, and never slows you (no air drag).
                     h = Push(h, dir, run, Tune.AirAccel, deltaTime);
-
-                    // Hold Jump next to a wall: run along it, barely sinking, for a while.
-                    var bank = m.body.inputBank;
-                    bool jumpHeld = bank && bank.jump.down;
-                    Vector3 wallNormal = Vector3.zero;
-                    bool wall = jumpHeld && st.wallTime < Tune.WallrunTime && FindWall(m, h, out wallNormal);
-                    Vector3 alongWall = wall ? Vector3.ProjectOnPlane(h, wallNormal) : Vector3.zero;
-                    if (wall && alongWall.magnitude >= Tune.WallrunMinSpeed * run / Tune.RunSpeed - 0.5f)
-                    {
-                        if (!st.wallrunning && LogSpeed) Log.Info("move: wallrun start");
-                        st.wallrunning = true;
-                        st.wallNormal = wallNormal;
-                        st.wallTime += deltaTime;
-                        h = alongWall.normalized * Mathf.Max(alongWall.magnitude, speed) - wallNormal * 0.5f; // keep the speed, stick to the wall
-                        m.velocity = new Vector3(m.velocity.x, Mathf.Max(m.velocity.y, -Tune.WallrunFall), m.velocity.z);
-                    }
-                    else if (st.wallrunning)
-                    {
-                        st.wallrunning = false;
-                        if (LogSpeed) Log.Info($"move: wallrun end after {st.wallTime:F2} s at {h.magnitude:F1} m/s ({(jumpHeld ? "wall or time ran out" : "let go: kick")})");
-                        if (!jumpHeld)
-                        {
-                            // Let go: kicked off the wall and up a little.
-                            h += st.wallNormal * Tune.WallrunKick;
-                            m.velocity = new Vector3(m.velocity.x, Mathf.Max(m.velocity.y, Tune.WallrunKick), m.velocity.z);
-                        }
-                    }
                 }
 
                 if (h.magnitude > Tune.MaxSpeed) h = h.normalized * Tune.MaxSpeed;
@@ -236,8 +235,6 @@ namespace RiskOfBonk
                 var st = states.GetOrCreateValue(__instance);
                 if (Time.fixedTime - st.landedAt > 0.3f) MovementSound(__instance, "land");
                 st.landedAt = Time.fixedTime;
-                st.wallTime = 0f;
-                st.wallrunning = false;
             }
 
             // Megabonk jumps: launch at jump_speed (scaled by jump items), keeping all horizontal speed (bunny hop, slide jump).
@@ -251,7 +248,8 @@ namespace RiskOfBonk
                 var m = characterMotor;
                 float items = characterBody.baseJumpPower > 0.01f ? characterBody.jumpPower / characterBody.baseJumpPower : 1f;
                 // Jumping while still rising keeps half of the old upward speed, like Megabonk.
-                float up = Tune.JumpSpeed * items * verticalBonus + (__state.y > 0.5f ? __state.y * 0.5f : 0f);
+                var row = Weapons.Character(characterBody);
+                float up = (Tune.JumpSpeed + (row != null ? row.MbJumpHeight : 0f)) * items * verticalBonus + (__state.y > 0.5f ? __state.y * 0.5f : 0f);
                 Vector3 h = Flat(__state), pushed = Flat(m.velocity);
                 if (horizontalBonus > 1.001f && pushed.magnitude > h.magnitude) h = pushed; // a jump with its own push keeps it
                 m.velocity = new Vector3(h.x, up, h.z);

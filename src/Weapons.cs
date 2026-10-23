@@ -158,6 +158,10 @@ namespace RiskOfBonk
                 }
             var lo = body.AddComponent<WeaponLoadout>();
             lo.startWeapon = start;
+            lo.character = Array.IndexOf(Sheets.Characters, row);
+            // Megabonk: one jump, plus the character's extra jumps (Birdo).
+            var cb = body.GetComponent<CharacterBody>();
+            if (cb) cb.baseJumpCount = 1 + row.MbExtraJumps;
             lo.primary = locator.primary;
             body.AddComponent<AutoFire>();
         }
@@ -210,6 +214,10 @@ namespace RiskOfBonk
 
         public static bool IsMegabonk(CharacterBody body) => body && body.GetComponent<WeaponLoadout>();
 
+        /// <summary>The Megabonk character row of this body, or null for any other body.</summary>
+        public static CharacterRow Character(CharacterBody body) =>
+            body && body.GetComponent<WeaponLoadout>() is WeaponLoadout lo && lo.character >= 0 && lo.character < Sheets.Characters.Length ? Sheets.Characters[lo.character] : null;
+
         public static int StartWeapon(CharacterBody body) => body && body.GetComponent<WeaponLoadout>() is WeaponLoadout lo ? lo.startWeapon : -1;
 
         /// <summary>Level of a weapon on this body (0 = not owned). The start weapon is level 1 plus its picks.</summary>
@@ -240,6 +248,8 @@ namespace RiskOfBonk
         public sealed class WeaponLoadout : MonoBehaviour
         {
             public int startWeapon = -1;
+            /// <summary>Index of the character's row in characters.json.</summary>
+            public int character = -1;
             /// <summary>The GenericSkill holding the start weapon; put back if the moveset survivor's own code moves primary.</summary>
             public GenericSkill primary;
             CharacterBody body;
