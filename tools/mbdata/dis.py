@@ -2,7 +2,7 @@
 import json,sys,struct,pickle,os,re
 from capstone import *
 S=os.environ.get("MBDUMP_CACHE", os.path.dirname(os.path.abspath(__file__)))
-GA=os.environ.get("MEGABONK_GA", r"C:Program Files (x86)SteamsteamappsmmonMegabonkGameAssembly.dll")
+GA=os.environ.get("MEGABONK_GA", r"C:\Program Files (x86)\Steam\steamapps\common\Megabonk\GameAssembly.dll")
 cache=os.path.join(S,'syms.pkl')
 if os.path.exists(cache): syms,byname,meta=pickle.load(open(cache,'rb'))
 else:

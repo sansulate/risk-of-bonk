@@ -277,3 +277,13 @@
   Firestaff and Aura: 2.5 s revolver cycles with 6 shots 0.2 s apart, all four firing together, kills and XP.
   Test tools: weapontest.sh (F11 weapons, no attack keys), key.ps1 takes F1..F12/escape/enter. The character grid
   differs per Steam profile (11 or 18 cells before Megachad; GRID_START).
+- Update 18 (2026-10-23): Megabonk characters' own movement, from their CharacterData (tools/mbdata/characters.py):
+  start weapons corrected (Bandit: Dexecutioner, Birdo: Tornado); mbMoveSpeed (added to the move speed multiplier,
+  e.g. Tony McZoom +30%), mbJumpHeight (added to the 7 m/s jump: PlayerMovement.GetJumpForce = JumpHeight stat x mass),
+  mbExtraJumps (Birdo +1; every Megabonk survivor gets baseJumpCount 1 + that). Megabonk has no wallrun for everyone:
+  wall climbing is the WallClimb passive (Monke only). CanWallClimb: passive, not tagged Ignore, input towards the
+  wall within wallrunAttachAngle 60, holding Wallrun (Jump unless a Wallrun key is bound); WallClimbing sets the
+  upward speed to max(minWallClimbSpeed 10, maxSpeed x 1.5) and pushes 4 m/s into the wall; wallClimbCooldown 0.4 s.
+  The old hold-Jump wallrun (and its four guessed tuning rows) is gone. extraGravity (11) is a plain AddForce on a
+  60 kg rigidbody (0.18 m/s^2), so it is left out. Checked: Monke climbs the F4 test wall at 15 m/s; Monke's jump
+  launches at 9 m/s. Offline Megabonk readers are in tools/mbdata (README).
