@@ -68,6 +68,7 @@ namespace RiskOfBonk
             if (hordes.Value) Part("Megabonk hordes", () => Horde.Init(harmony));
             Part("Upgrades", () => Upgrades.Init(harmony));
             Part("Megabonk passives", () => Passives.Init(harmony));
+            Part("Megabonk chest upgrades", () => Chests.Init(harmony));
             if (bosses.Value) Part("Megabonk bosses", () => { MegabonkBosses.Init(harmony); gameObject.AddComponent<FinalSwarm>(); });
             Part("Test keys", () => { TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod")); gameObject.AddComponent<TestKeys>(); });
             Part("Level-up menu", () => gameObject.AddComponent<UpgradePanel>());

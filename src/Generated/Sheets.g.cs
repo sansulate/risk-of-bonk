@@ -179,6 +179,8 @@ namespace RiskOfBonk.Generated
         public static float UpgradeInvincibility = 10.0f;
         /// <summary>Chance that a level-up card is a Megabonk weapon (Megabonk survivors only), otherwise a tome. (0-1 per card)</summary>
         public static float WeaponOfferChance = 0.45f;
+        /// <summary>A chest opened by a Megabonk survivor holds a Megabonk upgrade (a bonus pick: the level-up menu with weapons and tomes) instead of its item this often (src/Chests.cs). Item chests only. (chance per chest)</summary>
+        public static float ChestUpgradeChance = 0.5f;
         /// <summary>XP in each gem compared with Risk of Rain 2's own kill XP (Megabonk levels up more often). (x RoR2 kill XP)</summary>
         public static float XpMultiplier = 1.5f;
         /// <summary>XP gems within this distance of a player fly to them and are collected. (m)</summary>

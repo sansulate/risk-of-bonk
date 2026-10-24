@@ -337,3 +337,7 @@
   _ExtraGlow >= 2 adds light (SrcAlpha/One), the rest blends. Risk of Rain 2 tracers, hit sparks, swings and novas are
   left out where Megabonk's effect exists. Checked: 36 prefabs read, Megachad's aura ring, revolver/sword/shotgun
   effects in game. First pass: per-weapon scales (mbFxScale) still want tuning by eye.
+- Update 25 (2026-10-24): Megabonk weapons and tomes from chests (src/Chests.cs): an item chest opened by a Megabonk
+  survivor holds, with tuning chest_upgrade_chance (0.5), a bonus pick instead of its item (the level-up menu, as
+  for Charge Shrines; banner now "Bonus upgrade!"). Equipment barrels, lunar pods and void cradles are unchanged.
+  Test key F2 opens the nearest chest (paid). Checked with tools/ingame/chesttest.sh: 5 of 6 chests gave picks.

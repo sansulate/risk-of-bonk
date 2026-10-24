@@ -8,7 +8,7 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Test keys, only when the file BepInEx/RiskOfBonk/testgod exists, and only for the host:
-    /// F3 kills every monster, F4 puts a long wall 2.5 m to your right (for wall climbing), F5 toggles the Megabonk look, F6 puts you in a Megabonk shrine (rarest kind first), F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
+    /// F2 opens the nearest chest (paid for you), F3 kills every monster, F4 puts a long wall 2.5 m to your right (for wall climbing), F5 toggles the Megabonk look, F6 puts you in a Megabonk shrine (rarest kind first), F7 toggles slow motion (for screenshots of effects), F8 gives the player team a level, F9 puts you at the Teleporter and activates it, F10 spawns the master named in
     /// BepInEx/RiskOfBonk/testspawn (e.g. BrotherMaster) 15 m in front of you as a monster, F11 gives the next weapon from testweapons, F12 goes to the next stage.
     /// </summary>
     public sealed class TestKeys : MonoBehaviour
@@ -27,6 +27,7 @@ namespace RiskOfBonk
                 Log.Info("test: weapon assets checked");
             }
             if (!On || !Run.instance || !NetworkServer.active) return;
+            if (Input.GetKeyDown(KeyCode.F2)) OpenChest();
             if (Input.GetKeyDown(KeyCode.F3)) KillMonsters();
             if (Input.GetKeyDown(KeyCode.F4)) TestWall();
             if (Input.GetKeyDown(KeyCode.F5)) StageLook.Toggle();
@@ -45,6 +46,26 @@ namespace RiskOfBonk
             if (!tm) return;
             ulong need = tm.GetTeamNextLevelExperience(TeamIndex.Player) - tm.GetTeamCurrentLevelExperience(TeamIndex.Player);
             tm.GiveTeamExperience(TeamIndex.Player, need + 1);
+        }
+
+        /// <summary>F2: the nearest closed item chest opens for the local player (its price is paid for them).</summary>
+        static void OpenChest()
+        {
+            var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
+            var interactor = body ? body.GetComponent<Interactor>() : null;
+            if (!interactor || !body.master) return;
+            PurchaseInteraction best = null;
+            float bestD = float.MaxValue;
+            foreach (var pi in Object.FindObjectsOfType<PurchaseInteraction>())
+            {
+                if (!pi.available || !pi.GetComponent<ChestBehavior>() || !pi.name.Contains("Chest")) continue;
+                float d = (pi.transform.position - body.corePosition).sqrMagnitude;
+                if (d < bestD) { bestD = d; best = pi; }
+            }
+            if (!best) { Log.Info("test: no chest"); return; }
+            body.master.GiveMoney((uint)best.cost + 1);
+            interactor.AttemptInteraction(best.gameObject);
+            Log.Info($"test: opened {best.name}");
         }
 
         static void KillMonsters()

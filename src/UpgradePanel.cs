@@ -142,7 +142,7 @@ namespace RiskOfBonk
             Show(true);
             // Level-up picks come first; once they are used up the rest are from Charge Shrines.
             bool fromLevel = (int)TeamManager.instance.GetTeamLevel(master.teamIndex) - 1 > picks;
-            string head = fromLevel ? "Level up!" : "Shrine charged!";
+            string head = fromLevel ? "Level up!" : "Bonus upgrade!"; // Charge Shrines and chests
             title.text = pending > 1 ? $"{head}  <size=70%>x{pending}</size>" : head;
             Animate();
 

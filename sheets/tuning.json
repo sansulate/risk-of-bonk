@@ -251,6 +251,14 @@
    "verified": true
   },
   {
+   "id": "chest_upgrade_chance",
+   "value": 0.5,
+   "unit": "chance per chest",
+   "system": "upgrades",
+   "note": "A chest opened by a Megabonk survivor holds a Megabonk upgrade (a bonus pick: the level-up menu with weapons and tomes) instead of its item this often (src/Chests.cs). Item chests only.",
+   "verified": true
+  },
+  {
    "id": "xp_multiplier",
    "value": 1.5,
    "unit": "x RoR2 kill XP",
