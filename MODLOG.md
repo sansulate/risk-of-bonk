@@ -426,3 +426,8 @@
   Fix: Risk of Rain 2 heals a body by the rise in max health inside RecalculateStats, before this mod's health bonuses
   (Megabonk character health, HP Tomes); Balance now heals the rest of the rise after every bonus (and caps health above
   the maximum). Megachad started at 110/132 and HP Tome owners healed less on level-ups; now 132/132.
+- Update 37 (2026-10-24): the Teleporter on Bonk style stages is Megabonk's boss portal (BossSpawner: a 13 m stone
+  arch with a skull on a 25 m stone platform), at 60%, sunk by its platform height so players stand on top of it (it
+  has no collider). Its 30 m underground skirt (BossPortalNormalBottom) is dropped; the first try stood the model on
+  the skirt's bottom, 30 m in the air. The Teleporter's base, prongs, beacon and crystals are hidden; its charging
+  range, beam and glow stay. tools/probe `prop <name> <dir>` writes a prop's submeshes as OBJs with their extents.

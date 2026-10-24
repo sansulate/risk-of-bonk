@@ -27,6 +27,33 @@ if (args.Length > 0 && args[0] == "find")
     }
     return;
 }
+if (args.Length > 1 && args[0] == "prop")
+{
+    // prop <name> <outDir>: the prop's model as one OBJ per submesh (named by texture), with its extents.
+    var libp = new MegabonkLibrary(s => Console.WriteLine("  " + s));
+    libp.Open(mb, Path.Combine(repo, "lib", "classdata.tpk"));
+    var prop = libp.ReadProp(args[1]);
+    if (prop == null) { Console.WriteLine("none"); return; }
+    var m = prop.Model;
+    string dir = args.Length > 2 ? args[2] : ".";
+    Directory.CreateDirectory(dir);
+    for (int si = 0; si < m.SubMeshes.Count; si++)
+    {
+        var sm = m.SubMeshes[si];
+        var used = sm.Triangles.Distinct().ToList();
+        float[] mn = { 1e9f, 1e9f, 1e9f }, mx = { -1e9f, -1e9f, -1e9f };
+        var sb = new StringBuilder();
+        foreach (int v in used)
+        {
+            for (int k = 0; k < 3; k++) { mn[k] = Math.Min(mn[k], m.Positions[v * 3 + k]); mx[k] = Math.Max(mx[k], m.Positions[v * 3 + k]); }
+            sb.AppendLine($"v {m.Positions[v * 3]} {m.Positions[v * 3 + 1]} {m.Positions[v * 3 + 2]}");
+        }
+        string tex = sm.Texture?.Name ?? "none";
+        File.WriteAllText(Path.Combine(dir, $"{args[1]}_{si}_{tex}.obj"), sb.ToString());
+        Console.WriteLine($"{si} {tex,-28} verts {used.Count,5} x {mn[0]:0.0}..{mx[0]:0.0} y {mn[1]:0.0}..{mx[1]:0.0} z {mn[2]:0.0}..{mx[2]:0.0}");
+    }
+    return;
+}
 if (args.Length > 0 && args[0] == "anim")
 {
     var lib2 = new MegabonkLibrary(s => Console.WriteLine("  " + s));

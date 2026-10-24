@@ -9,7 +9,7 @@ namespace RiskOfBonk
     /// <summary>
     /// Megabonk's chests, pots and shrines on Bonk style stages: Risk of Rain 2's chests wear Megabonk's Chest (and its
     /// open chest once bought), money barrels become Megabonk's pots, equipment barrels its barrel, printers its
-    /// microwave, and the shrines its shrine statues (Chance: Balance, Blood: Greed, Combat: Challenge, Mountain: Cursed,
+    /// microwave, the Teleporter its boss portal arch, and the shrines its shrine statues (Chance: Balance, Blood: Greed, Combat: Challenge, Mountain: Cursed,
     /// Woods and Cleansing: Moai, Order: Balance). The Risk of Rain 2 object (its collider, price and interaction) stays;
     /// only its renderers are switched off, and its highlight outlines the Megabonk model. The Megabonk shrines
     /// (Shrines.cs) use the statues everywhere. Purely visual and local, so nothing is networked.
@@ -17,13 +17,14 @@ namespace RiskOfBonk
     public static class MegabonkInteractables
     {
         // Megabonk prefab names (with their scale on top of Megabonk's own).
-        public const string Chest = "Chest", OpenChest = "OpenChest", PotSmall = "PotSmall", PotBig = "PotBig", Barrel = "Barrel", Microwave = "Microwave";
+        public const string Chest = "Chest", OpenChest = "OpenChest", PotSmall = "PotSmall", PotBig = "PotBig", Barrel = "Barrel", Microwave = "Microwave",
+            BossSpawner = "BossSpawner";
         static readonly string[] ShrineModels = { "ChargeShrine", "MagnetShrine", "ShrineMaoi", "GreedShrine", "ChallengeShrine", "CursedShrine", "ShrineBalance", "ShrineGreed" };
 
         public static void Prepare(MegabonkLibrary lib)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            var names = new[] { Chest, OpenChest, PotSmall, PotBig, Barrel, Microwave }.Concat(ShrineModels);
+            var names = new[] { Chest, OpenChest, PotSmall, PotBig, Barrel, Microwave, BossSpawner }.Concat(ShrineModels);
             foreach (var n in names)
                 if (!BonkTerrain.rawProps.ContainsKey(n))
                     lock (lib) BonkTerrain.rawProps[n] = lib.ReadProp(n);
@@ -42,8 +43,8 @@ namespace RiskOfBonk
         }
 
         // Parts of the prefabs that are not the object: the encounter ring on the ground, the floating "!" and the chest's
-        // shadow decal (Megabonk draws those separately).
-        static readonly HashSet<string> notTheObject = new HashSet<string> { "psd_Encounter", "icon_exclamation", "psd_Chest", "psd_ChestOpen" };
+        // shadow decal (Megabonk draws those separately), and the boss portal's 30 m skirt under the ground.
+        static readonly HashSet<string> notTheObject = new HashSet<string> { "psd_Encounter", "icon_exclamation", "psd_Chest", "psd_ChestOpen", "BossPortalNormalBottom" };
 
         /// <summary>Drops the decals and markers, then stands what is left on the ground at the origin.</summary>
         static void Clean(RawModel m)
@@ -80,6 +81,8 @@ namespace RiskOfBonk
         {
             string n = go.name;
             scale = 1f;
+            // The Teleporter: Megabonk's boss portal (a 13 m stone arch on a 25 m base), at 60%.
+            if (go.GetComponent<TeleporterInteraction>()) { scale = 0.6f; return BossSpawner; }
             if (n.Contains("Lunar") || n.Contains("Void") || n.Contains("Scrapper")) return null;
             if (n.StartsWith("Barrel1") || go.GetComponent<BarrelInteraction>())
             {
@@ -107,6 +110,7 @@ namespace RiskOfBonk
             GameObject mb;
             PurchaseInteraction purchase;
             BarrelInteraction barrel;
+            bool teleporter;
             List<Renderer> hidden = new List<Renderer>();
             bool opened;
             float nextHide;
@@ -115,10 +119,13 @@ namespace RiskOfBonk
             {
                 purchase = GetComponent<PurchaseInteraction>();
                 barrel = GetComponent<BarrelInteraction>();
+                teleporter = GetComponent<TeleporterInteraction>();
                 mb = Model(model, transform, scale);
                 if (!mb) { Destroy(this); return; }
                 // Megabonk models stand upright on the ground, whatever the stage tilted the interactable to.
                 mb.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+                // The portal's stone platform has no collider: sink it so players stand on its top, not in it.
+                if (teleporter) mb.transform.position -= Vector3.up * 1.4f * scale;
                 Hide();
                 var highlight = GetComponent<Highlight>();
                 if (highlight) highlight.targetRenderer = mb.GetComponent<MeshRenderer>();
@@ -132,8 +139,16 @@ namespace RiskOfBonk
                     if (mb && r.transform.IsChildOf(mb.transform)) continue;
                     if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer)) continue;
                     if (r.GetComponent<TMPro.TMP_Text>() || r.GetComponentInParent<CostHologramContent>()) continue; // keep the price
+                    if (teleporter && !TeleporterBody(r)) continue; // its charging range, beam and glow stay
                     if (!r.forceRenderingOff) { r.forceRenderingOff = true; hidden.Add(r); }
                 }
+            }
+
+            // The Teleporter's own model parts (logged in a test run): base, prongs, beacon, crystals and its decal.
+            static bool TeleporterBody(Renderer r)
+            {
+                string n = r.name;
+                return n.StartsWith("Teleporter") || n.Contains("Prong") || n.Contains("Crystal") || n == "Decal" || n.Contains("BeaconBlocker");
             }
 
             void Update()
@@ -143,6 +158,7 @@ namespace RiskOfBonk
                 bool nowOpen = barrel ? barrel.Networkopened : purchase && !purchase.available && model == Chest;
                 if (nowOpen == opened) return;
                 opened = nowOpen;
+                if (teleporter) return;
                 if (barrel)
                 {
                     // A pot breaks: Megabonk's pots shatter and are gone.
@@ -178,6 +194,7 @@ namespace RiskOfBonk
                 if (!BonkTerrain.Active || !Run.instance) return;
                 foreach (var pi in Object.FindObjectsOfType<PurchaseInteraction>()) Dress(pi.gameObject);
                 foreach (var bi in Object.FindObjectsOfType<BarrelInteraction>()) Dress(bi.gameObject);
+                if (TeleporterInteraction.instance) Dress(TeleporterInteraction.instance.gameObject);
             }
 
             static void Dress(GameObject go)

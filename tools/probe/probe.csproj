@@ -4,6 +4,7 @@
   <ItemGroup>
     <Compile Include="../../src/MegabonkLibrary.cs" />
     <Compile Include="../../src/MegabonkAnimations.cs" />
+    <Compile Include="../../src/MegabonkProps.cs" />
     <Reference Include="AssetsTools.NET"><HintPath>../../lib/AssetsTools.NET.dll</HintPath></Reference>
   </ItemGroup>
 </Project>
