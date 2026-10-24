@@ -341,3 +341,18 @@
   survivor holds, with tuning chest_upgrade_chance (0.5), a bonus pick instead of its item (the level-up menu, as
   for Charge Shrines; banner now "Bonus upgrade!"). Equipment barrels, lunar pods and void cradles are unchanged.
   Test key F2 opens the nearest chest (paid). Checked with tools/ingame/chesttest.sh: 5 of 6 chests gave picks.
+- Update 26 (2026-10-24): Bonk style terrain rebuilt on Megabonk's own map generation (BonkTerrain.cs, MegabonkProps.cs,
+  tools/mbdata/stages.py). Read from Megabonk: MapParameters (Forest1 15 tiles x 40 m = 600 m, Forest2 15 x 44,
+  Forest3 16 x 48, Graveyard 19 x 40; height step = half a tile; volatility 0.8 / 1), StageData (randomMapObjects:
+  prefab, amount, checkRadius, scale range; flatTilePrefabs dressing a quarter of the tiles; tile materials; fog,
+  ambience and light colours). Generation like ProceduralTileGeneration + MazeHeightGenerator.GenerateHeightMe: a random
+  depth-first spanning tree over the grid from the middle tile; a tile continuing straight from its parent becomes a
+  ramp with chance volatility (keeping its up/down direction), turns stay level; different heights meet as cliffs; a
+  ring of higher tiles walls the map. Tops use Megabonk's 128 px tile textures (one per tile, point filtered; Forest 2/3
+  use its blue night grass), cliffs FillTop/FillMiddle per step. Megabonk's own trees, logs, bushes, rocks, boulders,
+  ruins and tile dressings are placed by its rules (e.g. Forest 1: 300 Tree0, 40 Log0, 100 Bush0, 150 rocks, 100 Bush1,
+  8 Boulders). Stages go Forest 1, 2, 3, then Graveyard. Props collide like Megabonk's (its capsule/sphere colliders),
+  pebbles and bushes are walk-through, big rocks get a sunk sphere: in a 40 s run into scenery the longest stop was 1 s.
+  Lighting on Bonk maps: Megabonk's exponential fog (density 0.007, the stage's fog colour) instead of the stage's ramp
+  fog, its sun and ambience colours (a shadowless fill light stands in for the flat ambience under deferred shading), a
+  gradient sky in the fog colour, the stage's colour grading and vignette off. Node graphs use a spatial grid (0.5 s).

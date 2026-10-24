@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using HarmonyLib;
 using RoR2;
 using RoR2.Navigation;
@@ -7,219 +8,380 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 
 namespace RiskOfBonk
 {
     /// <summary>
-    /// "Bonk style": Megabonk-like random terrain on Risk of Rain 2's normal stages. When the host picked Bonk style, every
-    /// player builds the same map from the run's synced unique id and the stage number: rolling low-poly hills with
-    /// terraces and walls around the edge, flat-shaded in a palette that fits the stage (grass, snow, sand, dusk), with
-    /// low-poly trees and rocks. The stage's own ground is hidden (its sky, fog and light stay), its fixed interactables
-    /// are set down on the new ground, and the host bakes new ground and air node graphs so the Teleporter, chests,
-    /// shrines and monsters all use the new map.
+    /// "Bonk style": Megabonk's own map generation on Risk of Rain 2's normal stages. Every player builds the same map
+    /// from the run's synced unique id and the stage number, the way Megabonk's ProceduralTileGeneration does: a maze
+    /// (a random spanning tree over an N x N grid of square tiles, MapParameters size/scale) whose heights change along
+    /// straight corridors (MazeHeightGenerator: a straight step changes height with chance "volatility", keeping its
+    /// direction up or down), so the map is flat plateaus joined by ramps with cliffs between different heights; tile
+    /// tops and cliff sides use Megabonk's tile textures, and Megabonk's own trees, logs, bushes, rocks, boulders and
+    /// ruins are scattered by its StageData.randomMapObjects rules (amounts, scales, spacing) plus its pre-made tile
+    /// dressings on a quarter of the tiles. Stages follow Megabonk's maps: Forest 1-3, then the Graveyard.
+    /// The stage's own ground is hidden (its sky stays), its fixed interactables are set down on the new ground, and the
+    /// host bakes ground and air node graphs from the tile heights so the Teleporter, chests and monsters use the map.
+    /// Props only collide where Megabonk's do (tree trunks, logs, boulders, big rocks), with smooth primitive colliders.
     /// </summary>
     public static class BonkTerrain
     {
         public static bool Active { get; private set; }
         public static Vector3 Center { get; private set; }
-
-        const float Size = 380f;          // whole map, walls included
-        const int Cells = 126;            // 3 m cells
-        const float Playable = 0.8f;      // fraction of the half size inside the walls
         static readonly int WorldLayer = LayerIndex.world.intVal;
 
-        static float half => Size / 2f;
-        static float seedX, seedZ;
+        // ---------------- Megabonk's stages (StageData + MapParameters, tools/mbdata/stages.py) ----------------
 
-        // ---------------- height ----------------
-
-        static float Fbm(float x, float z)
+        sealed class PropRule
         {
-            float sum = 0f, amp = 1f, freq = 1f, norm = 0f;
-            for (int o = 0; o < 4; o++)
+            public string[] prefabs;
+            public int amount;
+            public float checkRadius, scaleMin, scaleMax, upOffset;
+            public bool align;
+            public PropRule(int amount, float r, float s0, float s1, params string[] prefabs) { this.amount = amount; checkRadius = r; scaleMin = s0; scaleMax = s1; this.prefabs = prefabs; }
+        }
+
+        sealed class Profile
+        {
+            public string name;
+            public int size;          // tiles per side
+            public float tile;        // scaledTileWidth (m)
+            public float volatility;
+            public string[] tops;     // flatMaterials' textures, one picked per tile
+            public string fillTop = "FillTop", fillMiddle = "FillMiddle";
+            public int fillFormat = 10;
+            public Color fog;
+            public float fogDensity = 0.007f;
+            public Color light = new Color(1f, 0.957f, 0.839f), ambience = new Color(0.745f, 0.745f, 0.745f);
+            public PropRule[] props;
+            public string[] tilePrefabs;
+            public float populateTiles = 0.25f;
+            public float Step => tile / 2f; // scaledTileHeight
+        }
+
+        static readonly string[] Rocks = { "rock_medium_01", "rock_medium_02", "rock_medium_03", "rock_small_01", "rock_small_02", "rock_small_05" };
+        static readonly string[] DarkRocks = { "rock_medium_01Dark", "rock_medium_02Dark", "rock_medium_03Dark", "rock_small_01Dark", "rock_small_02Dark", "rock_small_05Dark" };
+        static readonly string[] ForestTiles = Enumerable.Range(0, 9).Select(i => "Forest0_Prefab" + i).ToArray();
+
+        static readonly Profile[] Profiles =
+        {
+            new Profile
             {
-                sum += amp * Mathf.PerlinNoise(seedX + x * freq, seedZ + z * freq);
-                norm += amp;
-                amp *= 0.5f;
-                freq *= 2.03f;
-            }
-            return sum / norm;
-        }
-
-        /// <summary>Height above the map's base at local (x, z), centre = (0, 0).</summary>
-        public static float Height(float x, float z)
-        {
-            float n = Fbm(x * 0.0045f, z * 0.0045f);
-            float h = (n - 0.45f) * 42f;
-            // Megabonk's maps have flat tops and steps between them.
-            h = Mathf.Lerp(h, Mathf.Round(h / 7f) * 7f, 0.55f);
-            // A flat clearing where the players start.
-            float c = Mathf.Sqrt(x * x + z * z);
-            h *= Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(14f, 40f, c));
-            // Walls round the edge.
-            float d = Mathf.Max(Mathf.Abs(x), Mathf.Abs(z)) / half;
-            h += Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(Playable + 0.02f, 0.97f, d)) * 75f;
-            return h;
-        }
-
-        // ---------------- palette ----------------
-
-        // 0 grass light, 1 grass dark, 2 dirt, 3 rock, 4 rock dark, 5 wall top, 6 trunk, 7 leaves
-        static Color32[] Palette(string scene)
-        {
-            Color32 C(string hex) { ColorUtility.TryParseHtmlString(hex, out var c); return c; }
-            scene = scene ?? "";
-            if (scene.Contains("snow") || scene.Contains("frozen"))
-                return new[] { C("#e8f1ff"), C("#c9daf2"), C("#9fb3cf"), C("#7b8ba8"), C("#5d6a85"), C("#ffffff"), C("#5a4636"), C("#2f6b5a") };
-            if (scene.Contains("goolake") || scene.Contains("desert") || scene.Contains("ancientloft"))
-                return new[] { C("#f2d58a"), C("#e3bd6a"), C("#c99a52"), C("#b07a45"), C("#8a5a35"), C("#f7e3b0"), C("#6b4a2e"), C("#7fa34a") };
-            if (scene.Contains("wispgraveyard") || scene.Contains("shipgraveyard") || scene.Contains("rootjungle"))
-                return new[] { C("#e39a3c"), C("#c9782c"), C("#8f5a33"), C("#77685e"), C("#57493f"), C("#f2c46b"), C("#4d3526"), C("#d9572b") };
-            if (scene.Contains("dampcave") || scene.Contains("skymeadow") || scene.Contains("sulfur") || scene.Contains("void"))
-                return new[] { C("#6f6ad1"), C("#5650b0"), C("#45407f"), C("#3a3a5c"), C("#2a2a44"), C("#a59cff"), C("#3b2e4f"), C("#b45ad1") };
-            return new[] { C("#7bd34a"), C("#5db63a"), C("#9a7448"), C("#8d8f99"), C("#6c6e78"), C("#c9ef8e"), C("#6b4a2e"), C("#3f9e3a") };
-        }
-
-        static float[,] heights;
-        static readonly List<Vector2> treeSpots = new List<Vector2>();
-
-        /// <summary>The terrain mesh's height at local (x, z), from its grid (fast, matches the mesh).</summary>
-        static float GridHeight(float x, float z)
-        {
-            float cell = Size / Cells;
-            float fx = Mathf.Clamp((x + half) / cell, 0f, Cells - 0.001f), fz = Mathf.Clamp((z + half) / cell, 0f, Cells - 0.001f);
-            int i = (int)fx, j = (int)fz;
-            float tx = fx - i, tz = fz - j;
-            return Mathf.Lerp(Mathf.Lerp(heights[i, j], heights[i + 1, j], tx), Mathf.Lerp(heights[i, j + 1], heights[i + 1, j + 1], tx), tz);
-        }
-
-        static Material material;
-        static Texture2D paletteTex;
-
-        static Material Mat(Color32[] palette)
-        {
-            if (!paletteTex)
-            {
-                paletteTex = new Texture2D(8, 1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
-                material = new Material(Addressables.LoadAssetAsync<Shader>("RoR2/Base/Shaders/HGStandard.shader").WaitForCompletion());
-                material.SetTexture("_MainTex", paletteTex);
-                material.SetColor("_Color", Color.white);
-                if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", 0f);
-            }
-            paletteTex.SetPixels32(palette);
-            paletteTex.Apply();
-            return material;
-        }
-
-        static Vector2 Uv(int index) => new Vector2((index + 0.5f) / 8f, 0.5f);
-
-        // ---------------- meshes ----------------
-
-        /// <summary>Flat-shaded triangles; each gets its palette colour from its height and steepness.</summary>
-        static Mesh TerrainMesh()
-        {
-            float cell = Size / Cells;
-            var h = heights = new float[Cells + 1, Cells + 1];
-            for (int i = 0; i <= Cells; i++)
-                for (int j = 0; j <= Cells; j++)
-                    h[i, j] = Height(-half + i * cell, -half + j * cell);
-            var verts = new List<Vector3>(Cells * Cells * 6);
-            var uvs = new List<Vector2>(Cells * Cells * 6);
-            void Tri(Vector3 a, Vector3 b, Vector3 c)
-            {
-                var n = Vector3.Cross(b - a, c - a).normalized;
-                float y = (a.y + b.y + c.y) / 3f;
-                float steep = 1f - n.y;
-                var mid = (a + b + c) / 3f;
-                int col;
-                if (y > 40f) col = 5;
-                else if (steep > 0.35f) col = Mathf.PerlinNoise(mid.x * 0.05f, mid.z * 0.05f) > 0.5f ? 3 : 4;
-                else if (steep > 0.18f) col = 2;
-                else col = Mathf.PerlinNoise(seedX + mid.x * 0.02f, seedZ + mid.z * 0.02f) > 0.55f ? 1 : 0;
-                var uv = Uv(col);
-                verts.Add(a); verts.Add(b); verts.Add(c);
-                uvs.Add(uv); uvs.Add(uv); uvs.Add(uv);
-            }
-            for (int i = 0; i < Cells; i++)
-                for (int j = 0; j < Cells; j++)
+                name = "Forest 1", size = 15, tile = 40, volatility = 0.8f,
+                tops = new[] { "TopGrass12", "TopGrass2", "TopGrass3", "TopGrass4", "TopGrass5", "TopGrass6", "TopGrass7", "TopGrass8", "TopGrass9", "TopGrass11" },
+                fog = new Color(0f, 0.48f, 0.62f),
+                props = new[]
                 {
-                    float x0 = -half + i * cell, z0 = -half + j * cell;
-                    var p00 = new Vector3(x0, h[i, j], z0);
-                    var p10 = new Vector3(x0 + cell, h[i + 1, j], z0);
-                    var p01 = new Vector3(x0, h[i, j + 1], z0 + cell);
-                    var p11 = new Vector3(x0 + cell, h[i + 1, j + 1], z0 + cell);
-                    // Alternate the diagonal for the low-poly look.
-                    if (((i + j) & 1) == 0) { Tri(p00, p01, p11); Tri(p00, p11, p10); }
-                    else { Tri(p00, p01, p10); Tri(p10, p01, p11); }
-                }
-            var tris = new int[verts.Count];
-            for (int t = 0; t < tris.Length; t++) tris[t] = t;
-            var mesh = new Mesh { indexFormat = IndexFormat.UInt32, name = "BonkTerrain" };
-            mesh.SetVertices(verts);
-            mesh.SetUVs(0, uvs);
-            mesh.SetTriangles(tris, 0);
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-            return mesh;
-        }
-
-        /// <summary>Adds a flat-shaded n-sided cone or prism (radius r0 at y0, r1 at y1) to the lists.</summary>
-        static void Frustum(List<Vector3> v, List<Vector2> uv, int sides, float r0, float r1, float y0, float y1, int col, float twist)
-        {
-            for (int s = 0; s < sides; s++)
+                    new PropRule(300, 1f, 0.75f, 2.5f, "Tree0"), new PropRule(40, 2f, 0.75f, 1.5f, "Log0"), new PropRule(100, 0.5f, 0.75f, 1.25f, "Bush0"),
+                    new PropRule(150, 0.5f, 1f, 7f, Rocks), new PropRule(100, 0.5f, 1f, 2f, "Bush1") { align = true },
+                    new PropRule(8, 0.5f, 0.75f, 2f, "Boulder") { upOffset = 4f, align = true },
+                },
+                tilePrefabs = ForestTiles,
+            },
+            new Profile
             {
-                float a0 = twist + Mathf.PI * 2f * s / sides, a1 = twist + Mathf.PI * 2f * (s + 1) / sides;
-                var b0 = new Vector3(Mathf.Sin(a0) * r0, y0, Mathf.Cos(a0) * r0);
-                var b1 = new Vector3(Mathf.Sin(a1) * r0, y0, Mathf.Cos(a1) * r0);
-                var t0 = new Vector3(Mathf.Sin(a0) * r1, y1, Mathf.Cos(a0) * r1);
-                var t1 = new Vector3(Mathf.Sin(a1) * r1, y1, Mathf.Cos(a1) * r1);
-                v.Add(b0); v.Add(t0); v.Add(b1);
-                v.Add(b1); v.Add(t0); v.Add(t1);
-                v.Add(new Vector3(0, y0, 0)); v.Add(b0); v.Add(b1); // bottom cap
-                for (int k = 0; k < 9; k++) uv.Add(Uv(col));
+                name = "Forest 2", size = 15, tile = 44, volatility = 0.8f, tops = new[] { "Forest1_TopGrass" }, fog = new Color(0.38f, 0.28f, 0.62f), ambience = new Color(0.7f, 0.66f, 0.89f),
+                props = new[]
+                {
+                    new PropRule(300, 1f, 1f, 4f, "Tree0Forest2", "Tree1Forest2", "Tree2"), new PropRule(50, 2f, 0.75f, 3f, "Log0"),
+                    new PropRule(150, 0.5f, 1f, 7f, Rocks), new PropRule(300, 0.5f, 0.75f, 3.5f, "Bush") { align = true },
+                    new PropRule(8, 0.5f, 0.75f, 2f, "Boulder") { upOffset = 4f, align = true },
+                },
+                tilePrefabs = ForestTiles,
+            },
+            new Profile
+            {
+                name = "Forest 3", size = 16, tile = 48, volatility = 0.8f, tops = new[] { "Forest1_TopGrass" }, fog = new Color(0.3f, 0.08f, 0.08f), ambience = new Color(0.85f, 0.65f, 0.65f),
+                props = new[]
+                {
+                    new PropRule(300, 1f, 1f, 5f, "DeadTree0", "DeadTree1", "DeadTree2"), new PropRule(50, 2f, 0.75f, 3f, "Log0Dead"),
+                    new PropRule(150, 0.5f, 1f, 8f, DarkRocks), new PropRule(300, 0.5f, 0.75f, 3.5f, "BushRed") { align = true },
+                    new PropRule(8, 0.5f, 0.75f, 2f, "Boulder") { upOffset = 4f, align = true },
+                },
+                tilePrefabs = ForestTiles,
+            },
+            new Profile
+            {
+                name = "Graveyard", size = 19, tile = 40, volatility = 1f, tops = new[] { "TopGrass1" }, fillFormat = 4, fog = new Color(0.49f, 0.42f, 0.62f), fogDensity = 0.0075f, light = new Color(0.945f, 0.843f, 1f),
+                props = new[]
+                {
+                    new PropRule(450, 1f, 0.75f, 2.5f, "DeadTree0", "DeadTree1", "DeadTree2"), new PropRule(60, 2f, 0.75f, 1.5f, "Log0"),
+                    new PropRule(250, 0.5f, 1f, 7f, Rocks), new PropRule(15, 0.5f, 0.75f, 2f, "Boulder") { upOffset = 4f, align = true },
+                    new PropRule(25, 2f, 0.9f, 1.15f, "Lightpost", "Brazier") { align = true }, new PropRule(150, 0.5f, 1f, 2f, "Bush1") { align = true },
+                    new PropRule(50, 2f, 1f, 1f, "Fence", "Fence_Broken", "Arch") { align = true }, new PropRule(25, 2f, 1f, 1f, "Barrel") { align = true },
+                },
+                tilePrefabs = Enumerable.Range(0, 12).Select(i => "Graveyard_Tile" + i).ToArray(),
+            },
+        };
+
+        static Profile ProfileFor(int stage) => Profiles[Mathf.Min(stage, 3) % Profiles.Length];
+
+        // ---------------- Megabonk assets (read while the content loads) ----------------
+
+        static readonly Dictionary<string, RawProp> rawProps = new Dictionary<string, RawProp>();
+        static readonly Dictionary<string, RawTexture> rawTextures = new Dictionary<string, RawTexture>();
+
+        /// <summary>Reads Megabonk's map props and tile textures (Megabonk's files are open while the content loads).</summary>
+        public static void Prepare(MegabonkLibrary lib)
+        {
+            var sw = Stopwatch.StartNew();
+            foreach (var p in Profiles)
+            {
+                foreach (var name in p.props.SelectMany(r => r.prefabs).Concat(p.tilePrefabs))
+                    if (!rawProps.ContainsKey(name)) lock (lib) rawProps[name] = lib.ReadProp(name);
+                foreach (var t in p.tops.Concat(new[] { p.fillTop, p.fillMiddle }))
+                {
+                    string key = t + (t.StartsWith("Fill") ? p.fillFormat.ToString() : "");
+                    if (rawTextures.ContainsKey(key)) continue;
+                    lock (lib) rawTextures[key] = lib.ExactTexture(t, t.StartsWith("Fill") ? p.fillFormat : -1);
+                }
             }
+            var missing = rawProps.Where(k => k.Value == null).Select(k => k.Key).Concat(rawTextures.Where(k => k.Value == null).Select(k => k.Key)).ToList();
+            Log.Info($"Bonk style: {rawProps.Count(k => k.Value != null)} Megabonk props, {rawTextures.Count(k => k.Value != null)} tile textures read in {sw.ElapsedMilliseconds} ms"
+                     + (missing.Count > 0 ? "; missing: " + string.Join(", ", missing) : ""));
         }
 
-        static Mesh Build(List<Vector3> v, List<Vector2> uv, string name)
+        static readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
+        static readonly Dictionary<string, Mesh> propMeshes = new Dictionary<string, Mesh>();
+        static readonly Dictionary<string, Material[]> propMats = new Dictionary<string, Material[]>();
+        static Shader standard;
+
+        static Material Lit(Texture tex, Color color, string name)
         {
-            var tris = new int[v.Count];
-            for (int t = 0; t < tris.Length; t++) tris[t] = t;
-            var m = new Mesh { name = name };
-            m.SetVertices(v);
-            m.SetUVs(0, uv);
-            m.SetTriangles(tris, 0);
-            m.RecalculateNormals();
-            m.RecalculateBounds();
+            if (materials.TryGetValue(name, out var m)) return m;
+            if (!standard) standard = Addressables.LoadAssetAsync<Shader>("RoR2/Base/Shaders/HGStandard.shader").WaitForCompletion();
+            m = new Material(standard) { name = "Bonk_" + name };
+            if (tex) m.SetTexture("_MainTex", tex);
+            m.SetColor("_Color", color);
+            if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0f);
+            if (m.HasProperty("_SpecularStrength")) m.SetFloat("_SpecularStrength", 0f);
+            materials[name] = m;
             return m;
         }
 
-        static Mesh PineMesh()
+        static Material TileMat(string key, Color tint)
         {
-            var v = new List<Vector3>(); var uv = new List<Vector2>();
-            Frustum(v, uv, 6, 0.45f, 0.35f, -0.5f, 2.2f, 6, 0f);
-            Frustum(v, uv, 7, 2.6f, 0f, 1.8f, 5.2f, 7, 0.2f);
-            Frustum(v, uv, 7, 2.0f, 0f, 3.6f, 6.6f, 7, 0.6f);
-            Frustum(v, uv, 7, 1.4f, 0f, 5.2f, 8.0f, 7, 1.0f);
-            return Build(v, uv, "BonkPine");
+            rawTextures.TryGetValue(key, out var raw);
+            var tex = UnityConvert.Texture(raw);
+            if (tex) { tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Repeat; }
+            return Lit(tex, tex ? tint : new Color(0.4f, 0.7f, 0.3f), "tile_" + key);
         }
 
-        static Mesh RoundTreeMesh()
+        static bool PropModel(string name, out Mesh mesh, out Material[] mats)
         {
-            var v = new List<Vector3>(); var uv = new List<Vector2>();
-            Frustum(v, uv, 6, 0.5f, 0.35f, -0.5f, 3.0f, 6, 0f);
-            Frustum(v, uv, 8, 1.6f, 2.8f, 2.6f, 4.4f, 7, 0.3f);
-            Frustum(v, uv, 8, 2.8f, 1.2f, 4.4f, 6.8f, 7, 0.3f);
-            return Build(v, uv, "BonkTree");
+            mesh = null; mats = null;
+            if (!rawProps.TryGetValue(name, out var p) || p == null) return false;
+            if (!propMeshes.TryGetValue(name, out mesh))
+            {
+                propMeshes[name] = mesh = UnityConvert.Mesh(p.Model);
+                propMats[name] = p.Model.SubMeshes.Select((s, i) =>
+                {
+                    var tex = UnityConvert.Texture(s.Texture);
+                    if (tex) tex.filterMode = s.Texture.Filter == 0 ? FilterMode.Point : FilterMode.Bilinear;
+                    return Lit(tex, new Color(s.Color[0], s.Color[1], s.Color[2]), name + "_" + i + "_" + (s.Texture?.Name ?? "none"));
+                }).ToArray();
+            }
+            mats = propMats[name];
+            return true;
         }
 
-        static Mesh RockMesh(System.Random rng)
+        // ---------------- the maze ----------------
+
+        sealed class Cell
         {
-            var v = new List<Vector3>(); var uv = new List<Vector2>();
-            float r = 1f;
-            Frustum(v, uv, 6, r, r * 0.9f, -0.6f, 0.7f, 3, (float)rng.NextDouble());
-            Frustum(v, uv, 6, r * 0.9f, r * 0.25f, 0.7f, 1.5f, 4, (float)rng.NextDouble());
-            return Build(v, uv, "BonkRock");
+            public int x, z, level, yDir, parentX = -1, parentZ = -1;
+            public bool slope;   // a ramp from (level - yDir) at the parent's side to level at the far side
+            public int dirX, dirZ;
+            public bool inMaze;
+            public int top;      // the tile's top texture
+        }
+
+        static Profile profile;
+        static Cell[,] cells;
+        static int N;            // tiles per side, edge ring included
+        static float tile, step, half;
+        static int minLevel, maxLevel, edgeLevel;
+
+        /// <summary>Megabonk's Maze.Generate: a random depth-first spanning tree over the grid.</summary>
+        static void Maze(System.Random rng, int size, int startX, int startZ)
+        {
+            var stack = new Stack<Cell>();
+            var start = cells[startX, startZ];
+            start.inMaze = true;
+            stack.Push(start);
+            var order = new List<Cell> { start };
+            int[] dx = { 0, 1, 0, -1 }, dz = { 1, 0, -1, 0 };
+            while (stack.Count > 0)
+            {
+                var c = stack.Peek();
+                var options = new List<int>();
+                for (int d = 0; d < 4; d++)
+                {
+                    int nx = c.x + dx[d], nz = c.z + dz[d];
+                    if (nx >= 1 && nz >= 1 && nx <= size && nz <= size && !cells[nx, nz].inMaze) options.Add(d);
+                }
+                if (options.Count == 0) { stack.Pop(); continue; }
+                int pick = options[rng.Next(options.Count)];
+                var n = cells[c.x + dx[pick], c.z + dz[pick]];
+                n.inMaze = true;
+                n.parentX = c.x; n.parentZ = c.z;
+                n.dirX = dx[pick]; n.dirZ = dz[pick];
+                stack.Push(n);
+                order.Add(n);
+            }
+            // MazeHeightGenerator.GenerateHeightMe: walking the tree from the start, a tile that continues straight on from its
+            // parent changes height with chance volatility (and keeps going the same way while it can); turns stay level.
+            foreach (var c in order.Skip(1))
+            {
+                var p = cells[c.parentX, c.parentZ];
+                bool straight = p.parentX >= 0 && p.dirX == c.dirX && p.dirZ == c.dirZ;
+                if (straight && rng.NextDouble() < profile.volatility)
+                {
+                    int dir = p.yDir != 0 ? p.yDir : (rng.NextDouble() < 0.5 ? 1 : -1);
+                    // Megabonk biases heights towards centerHeightTarget; here the map stays within five levels.
+                    if (p.level + dir > 3 || p.level + dir < -2) dir = -dir;
+                    c.yDir = dir;
+                    c.slope = true;
+                    c.level = p.level + dir;
+                }
+                else
+                {
+                    c.yDir = straight ? p.yDir : 0;
+                    c.level = p.level;
+                }
+            }
+        }
+
+        static void BuildCells(System.Random rng)
+        {
+            int size = profile.size;
+            N = size + 2;
+            tile = profile.tile;
+            step = profile.Step;
+            half = N * tile / 2f;
+            cells = new Cell[N, N];
+            for (int x = 0; x < N; x++)
+                for (int z = 0; z < N; z++)
+                    cells[x, z] = new Cell { x = x, z = z, top = rng.Next(profile.tops.Length) };
+            int mid = 1 + size / 2;
+            Maze(rng, size, mid, mid);
+            minLevel = int.MaxValue; maxLevel = int.MinValue;
+            for (int x = 1; x <= size; x++)
+                for (int z = 1; z <= size; z++) { minLevel = Mathf.Min(minLevel, cells[x, z].level); maxLevel = Mathf.Max(maxLevel, cells[x, z].level); }
+            // Map edge: a ring of high walls (Megabonk's MapEdgeFillType Walls).
+            edgeLevel = maxLevel + 2;
+            for (int x = 0; x < N; x++)
+                for (int z = 0; z < N; z++)
+                    if (x == 0 || z == 0 || x == N - 1 || z == N - 1) cells[x, z].level = edgeLevel;
+        }
+
+        static Cell CellAt(float x, float z)
+        {
+            int i = Mathf.Clamp(Mathf.FloorToInt((x + half) / tile), 0, N - 1), j = Mathf.Clamp(Mathf.FloorToInt((z + half) / tile), 0, N - 1);
+            return cells[i, j];
+        }
+
+        /// <summary>Height of a tile's top at local (x, z): flat, or a ramp along the tile's direction.</summary>
+        static float TileHeight(Cell c, float x, float z)
+        {
+            if (!c.slope) return c.level * step;
+            float x0 = -half + c.x * tile, z0 = -half + c.z * tile;
+            float u = (x - x0) / tile, v = (z - z0) / tile;
+            // t: 0 at the side facing the parent, 1 at the far side.
+            float t = c.dirX > 0 ? u : c.dirX < 0 ? 1f - u : c.dirZ > 0 ? v : 1f - v;
+            return (c.level - c.yDir * (1f - Mathf.Clamp01(t))) * step;
+        }
+
+        /// <summary>Ground height at local (x, z) (exact, matches the mesh).</summary>
+        public static float Height(float x, float z) => cells == null ? 0f : TileHeight(CellAt(x, z), x, z);
+
+        static float GridHeight(float x, float z) => Height(x, z);
+
+        // ---------------- meshes ----------------
+
+        sealed class MeshBuilder
+        {
+            public readonly List<Vector3> v = new List<Vector3>();
+            public readonly List<Vector2> uv = new List<Vector2>();
+            public readonly Dictionary<int, List<int>> subs = new Dictionary<int, List<int>>();
+            public void Quad(int sub, Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector2 ua, Vector2 ub, Vector2 uc, Vector2 ud)
+            {
+                int i = v.Count;
+                v.Add(a); v.Add(b); v.Add(c); v.Add(d);
+                uv.Add(ua); uv.Add(ub); uv.Add(uc); uv.Add(ud);
+                if (!subs.TryGetValue(sub, out var t)) subs[sub] = t = new List<int>();
+                t.Add(i); t.Add(i + 1); t.Add(i + 2);
+                t.Add(i); t.Add(i + 2); t.Add(i + 3);
+            }
+            public Mesh Build(out int[] subIds)
+            {
+                var m = new Mesh { indexFormat = IndexFormat.UInt32, name = "BonkTerrain" };
+                m.SetVertices(v);
+                m.SetUVs(0, uv);
+                subIds = subs.Keys.OrderBy(k => k).ToArray();
+                m.subMeshCount = subIds.Length;
+                for (int s = 0; s < subIds.Length; s++) m.SetTriangles(subs[subIds[s]], s);
+                m.RecalculateNormals();
+                m.RecalculateBounds();
+                return m;
+            }
+        }
+
+        const int SubFillTop = 1000, SubFillMiddle = 1001;
+
+        /// <summary>Tile tops (one texture across each tile, like Megabonk's tile prefabs) and the cliff walls between tiles.</summary>
+        static Mesh TerrainMesh(out int[] subIds)
+        {
+            var b = new MeshBuilder();
+            float floor = (minLevel - 1) * step;
+            for (int x = 0; x < N; x++)
+                for (int z = 0; z < N; z++)
+                {
+                    var c = cells[x, z];
+                    float x0 = -half + x * tile, z0 = -half + z * tile, x1 = x0 + tile, z1 = z0 + tile;
+                    var p00 = new Vector3(x0, TileHeight(c, x0, z0), z0);
+                    var p10 = new Vector3(x1, TileHeight(c, x1 - 0.001f, z0), z0);
+                    var p11 = new Vector3(x1, TileHeight(c, x1 - 0.001f, z1 - 0.001f), z1);
+                    var p01 = new Vector3(x0, TileHeight(c, x0, z1 - 0.001f), z1);
+                    // Clockwise seen from above: the top faces up.
+                    b.Quad(c.top, p00, p01, p11, p10, new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0));
+                    // Walls on the four sides, from this tile's edge down to the neighbour's (or the floor), facing out.
+                    Wall(b, c, x0, z0, x1, z0, 0, -1, floor); // south
+                    Wall(b, c, x1, z0, x1, z1, 1, 0, floor);  // east
+                    Wall(b, c, x1, z1, x0, z1, 0, 1, floor);  // north
+                    Wall(b, c, x0, z1, x0, z0, -1, 0, floor); // west
+                }
+            return b.Build(out subIds);
+        }
+
+        static void Wall(MeshBuilder b, Cell c, float ax, float az, float bx, float bz, int nx, int nz, float floor)
+        {
+            int ox = c.x + nx, oz = c.z + nz;
+            Cell n = ox >= 0 && oz >= 0 && ox < N && oz < N ? cells[ox, oz] : null;
+            // Edge points, nudged into this tile and into the neighbour.
+            Vector3 inA = new Vector3(ax - nx * 0.001f + (bx - ax) * 0.0005f, 0, az - nz * 0.001f + (bz - az) * 0.0005f);
+            Vector3 inB = new Vector3(bx - nx * 0.001f - (bx - ax) * 0.0005f, 0, bz - nz * 0.001f - (bz - az) * 0.0005f);
+            float ta = TileHeight(c, inA.x, inA.z), tb = TileHeight(c, inB.x, inB.z);
+            float ba = n != null ? TileHeight(n, inA.x + nx * 0.002f, inA.z + nz * 0.002f) : floor;
+            float bb = n != null ? TileHeight(n, inB.x + nx * 0.002f, inB.z + nz * 0.002f) : floor;
+            ba = Mathf.Max(floor, Mathf.Min(ba, ta));
+            bb = Mathf.Max(floor, Mathf.Min(bb, tb));
+            if (ta - ba < 0.01f && tb - bb < 0.01f) return;
+            // Megabonk's fill tiles: one texture per tile width and per tile height step; FillTop (with the grass lip)
+            // on the step under the top, FillMiddle further down.
+            float len = Vector2.Distance(new Vector2(ax, az), new Vector2(bx, bz)) / tile;
+            float top = Mathf.Max(ta, tb), lipA = ta - step, lipB = tb - step;
+            var A = new Vector3(ax, 0, az); var B = new Vector3(bx, 0, bz);
+            // Upper band: from the top down one step (not below the neighbour).
+            float ua = Mathf.Max(ba, lipA), ub = Mathf.Max(bb, lipB);
+            b.Quad(SubFillTop, A + Vector3.up * ua, A + Vector3.up * ta, B + Vector3.up * tb, B + Vector3.up * ub,
+                new Vector2(0, (ua - lipA) / step), new Vector2(0, 1), new Vector2(len, 1), new Vector2(len, (ub - lipB) / step));
+            // Lower band.
+            if (ua - ba > 0.01f || ub - bb > 0.01f)
+                b.Quad(SubFillMiddle, A + Vector3.up * ba, A + Vector3.up * ua, B + Vector3.up * ub, B + Vector3.up * bb,
+                    new Vector2(0, ba / step), new Vector2(0, ua / step), new Vector2(len, ub / step), new Vector2(len, bb / step));
         }
 
         // ---------------- building the stage ----------------
@@ -264,10 +426,12 @@ namespace RiskOfBonk
             Log.Info($"Bonk style: hid {renderers} renderers and {colliders} colliders of the stage");
         }
 
+        static float Inner => half - tile; // inside the edge walls
+
         /// <summary>Fixed interactables of the stage (newt altars and the like) are set down on the new ground.</summary>
-        static void SettleInteractables(GameObject[] roots)
+        static void SettleInteractables(GameObject[] roots, System.Random rng)
         {
-            float lim = half * Playable - 10f;
+            float lim = Inner - 6f;
             foreach (var root in roots)
                 foreach (var it in root.GetComponentsInChildren<IInteractable>(true))
                 {
@@ -280,13 +444,15 @@ namespace RiskOfBonk
         }
 
         static GameObject terrainRoot;
+        static readonly List<Vector3> blockers = new List<Vector3>(); // (x, z, radius) of colliding props, for the node graphs
 
         static void BuildTerrain()
         {
             var sw = Stopwatch.StartNew();
-            var rng = new System.Random((int)(Seed() & 0x7fffffff) ^ (int)(Seed() >> 33));
-            seedX = (float)rng.NextDouble() * 1000f;
-            seedZ = (float)rng.NextDouble() * 1000f;
+            ulong seed = Seed();
+            var rng = new System.Random((int)(seed & 0x7fffffff) ^ (int)(seed >> 33));
+            profile = ProfileFor(Run.instance.stageClearCount);
+            BuildCells(rng);
             var scene = SceneManager.GetActiveScene();
             var roots = scene.GetRootGameObjects();
 
@@ -294,7 +460,7 @@ namespace RiskOfBonk
             var spawn = SpawnPoint.readOnlyInstancesList.Count > 0 ? SpawnPoint.readOnlyInstancesList[0].transform.position : Vector3.zero;
             Center = spawn - Vector3.up * 1f;
 
-            treeSpots.Clear();
+            blockers.Clear();
             HideStage(roots);
             foreach (var zone in Object.FindObjectsOfType<MapZone>()) zone.enabled = false;
 
@@ -302,51 +468,23 @@ namespace RiskOfBonk
             SceneManager.MoveGameObjectToScene(terrainRoot, scene);
             terrainRoot.transform.position = Center;
             terrainRoot.layer = WorldLayer;
-            var mat = Mat(Palette(scene.name.ToLowerInvariant()));
-            var mesh = TerrainMesh();
+            var mesh = TerrainMesh(out var subIds);
+            var fillKey = profile.fillFormat.ToString();
+            var mats = subIds.Select(s => s == SubFillTop ? TileMat(profile.fillTop + fillKey, new Color(0.77f, 0.77f, 0.77f))
+                : s == SubFillMiddle ? TileMat(profile.fillMiddle + fillKey, new Color(0.77f, 0.77f, 0.77f))
+                : TileMat(profile.tops[s], Color.white)).ToArray();
             terrainRoot.AddComponent<MeshFilter>().sharedMesh = mesh;
-            terrainRoot.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            var mr = terrainRoot.AddComponent<MeshRenderer>();
+            mr.sharedMaterials = mats;
             terrainRoot.AddComponent<MeshCollider>().sharedMesh = mesh;
+            Physics.SyncTransforms();
 
-            // Trees in groves, rocks scattered; none in the start clearing.
-            var pine = PineMesh();
-            var round = RoundTreeMesh();
-            var rocks = new[] { RockMesh(rng), RockMesh(rng), RockMesh(rng) };
-            float lim = half * Playable - 6f;
-            int trees = 0, stones = 0;
-            for (int n = 0; n < 900 && (trees < 140 || stones < 70); n++)
-            {
-                float x = ((float)rng.NextDouble() * 2f - 1f) * lim, z = ((float)rng.NextDouble() * 2f - 1f) * lim;
-                if (x * x + z * z < 30f * 30f) continue;
-                bool grove = Mathf.PerlinNoise(seedX + x * 0.012f, seedZ + z * 0.012f) > 0.52f;
-                bool tree = grove && trees < 140;
-                if (!tree && (stones >= 70 || rng.NextDouble() > 0.35)) continue;
-                float y = Height(x, z);
-                // Not on steep ground.
-                float dx = Height(x + 1.5f, z) - y, dz = Height(x, z + 1.5f) - y;
-                if (Mathf.Abs(dx) > 1.2f || Mathf.Abs(dz) > 1.2f) continue;
-                var go = new GameObject(tree ? "BonkTree" : "BonkRock");
-                go.layer = WorldLayer;
-                go.transform.SetParent(terrainRoot.transform, false);
-                go.transform.localPosition = new Vector3(x, y, z);
-                go.transform.localRotation = Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f);
-                float s = tree ? 0.8f + (float)rng.NextDouble() * 0.7f : 1.2f + (float)rng.NextDouble() * 2.8f;
-                go.transform.localScale = new Vector3(s, tree ? s : s * (0.6f + (float)rng.NextDouble() * 0.5f), s);
-                var m = tree ? (rng.NextDouble() < 0.6 ? pine : round) : rocks[rng.Next(rocks.Length)];
-                go.AddComponent<MeshFilter>().sharedMesh = m;
-                go.AddComponent<MeshRenderer>().sharedMaterial = mat;
-                if (tree)
-                {
-                    var cap = go.AddComponent<CapsuleCollider>();
-                    cap.radius = 0.5f; cap.height = 4f; cap.center = new Vector3(0, 1.5f, 0);
-                    treeSpots.Add(new Vector2(x, z));
-                    trees++;
-                }
-                else { go.AddComponent<MeshCollider>().sharedMesh = m; stones++; }
-            }
+            int dressed = DressTiles(rng);
+            int props = 0;
+            foreach (var rule in profile.props) props += Scatter(rule, rng);
 
-            SettleInteractables(roots);
-            // Players start in the clearing.
+            SettleInteractables(roots, rng);
+            // Players start on the first tile of the maze, in the middle.
             int i = 0;
             foreach (var sp in SpawnPoint.readOnlyInstancesList)
             {
@@ -355,25 +493,264 @@ namespace RiskOfBonk
                 sp.transform.position = Center + local + Vector3.up * (Height(local.x, local.z) + 0.5f);
             }
             Physics.SyncTransforms();
+            try { Sky(); } catch (System.Exception e) { Log.Warn($"Bonk style sky: {e.Message}"); }
             Active = true;
-            Log.Info($"Bonk style: terrain built in {sw.ElapsedMilliseconds} ms ({trees} trees, {stones} rocks), seed {seedX:0.0}/{seedZ:0.0}");
+            Log.Info($"Bonk style: Megabonk {profile.name} map, {profile.size}x{profile.size} tiles of {tile} m ({profile.size * tile} m), levels {minLevel}..{maxLevel} x {step} m, " +
+                     $"{props} props, {dressed} dressed tiles, built in {sw.ElapsedMilliseconds} ms");
         }
 
         /// <summary>
-        /// Host: new ground and air node graphs on the new terrain. The editor's bake tests every link with physics (over
-        /// 20 s for this map); the terrain is a known heightfield, so links, line of sight and Teleporter spots are worked
-        /// out from the heights instead.
+        /// Megabonk's StageData lighting on this screen: its fog colour (the distance fog and the sky take it), its sun colour
+        /// and ambience, and a neutral colour grade instead of the stage's own tint (Megabonk's look adds saturation on top).
+        /// </summary>
+        static void Sky()
+        {
+            var fog = profile.fog;
+            int volumes = 0;
+            foreach (var volume in Object.FindObjectsOfType<PostProcessVolume>())
+            {
+                if (!volume || !volume.sharedProfile || volume.gameObject.scene != SceneManager.GetActiveScene()) continue;
+                var p = volume.profile;
+                // Megabonk's fog is Unity's exponential distance fog (StageData.fogIntensity, fogColor), not the stage's ramp fog.
+                if (p.TryGetSettings<RampFog>(out var rf))
+                {
+                    if (TestKeys.On) Log.Info($"Bonk style: ramp fog on {volume.name}: intensity {rf.fogIntensity.value} power {rf.fogPower.value} zero {rf.fogZero.value} one {rf.fogOne.value} " +
+                        $"height {rf.fogHeightStart.value}..{rf.fogHeightEnd.value} x{rf.fogHeightIntensity.value} start {rf.fogColorStart.value} mid {rf.fogColorMid.value} end {rf.fogColorEnd.value} sky {rf.skyboxStrength.value} weight {volume.weight} global {volume.isGlobal}");
+                    rf.enabled.Override(false);
+                }
+                // The stage's own mood (night, haze, tints) goes: Megabonk's maps are graded only by its light and fog.
+                if (p.TryGetSettings<ColorGrading>(out var cg)) cg.enabled.Override(false);
+                if (p.TryGetSettings<Vignette>(out var vig)) vig.enabled.Override(false);
+                volumes++;
+            }
+            // Daylight like Megabonk's maps: one sun from high up in the stage's light colour, the flat ambience instead of the
+            // stage's baked light probes (night stages would leave everything dark), and a sky fading into the fog colour.
+            bool sun = false;
+            foreach (var l in Object.FindObjectsOfType<Light>())
+                if (l.type == LightType.Directional && l.gameObject.scene == SceneManager.GetActiveScene())
+                {
+                    if (sun) { l.enabled = false; continue; }
+                    sun = true;
+                    l.color = profile.light;
+                    l.intensity = 1.25f;
+                    l.shadows = LightShadows.Soft;
+                    l.shadowStrength = 0.55f; // Megabonk's toon shading keeps shade readable
+                    l.transform.rotation = Quaternion.Euler(55f, -35f, 0f);
+                }
+            if (sun)
+            {
+                // Megabonk's flat ambience lights every face the sun misses; Risk of Rain 2's deferred shading takes its ambient
+                // from the stage's own probes, so a soft shadowless fill light from the other side stands in for it.
+                var fill = new GameObject("BonkFillLight").AddComponent<Light>();
+                SceneManager.MoveGameObjectToScene(fill.gameObject, SceneManager.GetActiveScene());
+                fill.type = LightType.Directional;
+                fill.color = profile.ambience;
+                fill.intensity = 0.55f;
+                fill.shadows = LightShadows.None;
+                fill.transform.rotation = Quaternion.Euler(25f, 145f, 0f);
+            }
+            LightmapSettings.lightProbes = null;
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = profile.ambience;
+            RenderSettings.ambientEquatorColor = profile.ambience * 0.9f;
+            RenderSettings.ambientGroundColor = profile.ambience * 0.7f;
+            RenderSettings.ambientLight = profile.ambience;
+            var sh = new SphericalHarmonicsL2();
+            sh.AddAmbientLight(profile.ambience * 0.85f);
+            RenderSettings.ambientProbe = sh;
+            RenderSettings.ambientIntensity = 1f;
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogDensity = profile.fogDensity;
+            RenderSettings.fogColor = fog;
+            var old = RenderSettings.skybox;
+            if (old && old.shader.name == "Skybox/Cubemap")
+            {
+                var m = new Material(old.shader) { name = "BonkSky" };
+                m.SetTexture("_Tex", SkyCube(fog));
+                m.SetColor("_Tint", new Color(0.5f, 0.5f, 0.5f)); // the cubemap shader doubles its tint
+                m.SetFloat("_Exposure", 1f);
+                RenderSettings.skybox = m;
+            }
+            foreach (var cam in Object.FindObjectsOfType<Camera>()) if (TestKeys.On) Log.Info($"Bonk style: camera {cam.name} clear {cam.clearFlags} bg {cam.backgroundColor} far {cam.farClipPlane}");
+            Log.Info($"Bonk style: Megabonk {profile.name} lighting on {volumes} volumes");
+        }
+
+        static Cubemap skyCube;
+        static Color skyFor;
+
+        /// <summary>A plain sky: the fog colour at the horizon (and below), a clearer blue overhead.</summary>
+        static Cubemap SkyCube(Color fog)
+        {
+            if (skyCube && skyFor == fog) return skyCube;
+            const int n = 32;
+            if (!skyCube) skyCube = new Cubemap(n, TextureFormat.RGBA32, false) { name = "BonkSkyCube" };
+            skyFor = fog;
+            var zenith = Color.Lerp(fog, new Color(0.45f, 0.72f, 1f), 0.55f);
+            var horizon = Color.Lerp(fog, Color.white, 0.25f);
+            var px = new Color[n * n];
+            foreach (CubemapFace face in new[] { CubemapFace.PositiveX, CubemapFace.NegativeX, CubemapFace.PositiveY, CubemapFace.NegativeY, CubemapFace.PositiveZ, CubemapFace.NegativeZ })
+            {
+                for (int y = 0; y < n; y++)
+                    for (int x = 0; x < n; x++)
+                    {
+                        float u = (x + 0.5f) / n * 2f - 1f, v = (y + 0.5f) / n * 2f - 1f;
+                        Vector3 d;
+                        switch (face)
+                        {
+                            case CubemapFace.PositiveX: d = new Vector3(1, -v, -u); break;
+                            case CubemapFace.NegativeX: d = new Vector3(-1, -v, u); break;
+                            case CubemapFace.PositiveY: d = new Vector3(u, 1, v); break;
+                            case CubemapFace.NegativeY: d = new Vector3(u, -1, -v); break;
+                            case CubemapFace.PositiveZ: d = new Vector3(u, -v, 1); break;
+                            default: d = new Vector3(-u, -v, -1); break;
+                        }
+                        float up = d.normalized.y;
+                        px[y * n + x] = up <= 0f ? horizon : Color.Lerp(horizon, zenith, Mathf.Pow(up, 0.6f));
+                    }
+                skyCube.SetPixels(px, face);
+            }
+            skyCube.Apply();
+            return skyCube;
+        }
+
+        static bool NearSpawn(float x, float z) => x * x + z * z < (tile * 0.6f) * (tile * 0.6f);
+
+        /// <summary>Megabonk's GenerateTileObjects: a quarter of the flat tiles get one of the stage's pre-made dressings.</summary>
+        static int DressTiles(System.Random rng)
+        {
+            int n = 0;
+            for (int x = 1; x < N - 1; x++)
+                for (int z = 1; z < N - 1; z++)
+                {
+                    var c = cells[x, z];
+                    if (c.slope || rng.NextDouble() >= profile.populateTiles) continue;
+                    float cx = -half + (x + 0.5f) * tile, cz = -half + (z + 0.5f) * tile;
+                    if (NearSpawn(cx, cz)) continue;
+                    string name = profile.tilePrefabs[rng.Next(profile.tilePrefabs.Length)];
+                    if (!PropModel(name, out var mesh, out var mats)) continue;
+                    var go = new GameObject("BonkTile_" + name) { layer = WorldLayer };
+                    go.transform.SetParent(terrainRoot.transform, false);
+                    go.transform.localPosition = new Vector3(cx, c.level * step, cz);
+                    go.transform.localRotation = Quaternion.Euler(0f, 90f * rng.Next(4), 0f);
+                    go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                    go.AddComponent<MeshRenderer>().sharedMaterials = mats;
+                    go.AddComponent<MeshCollider>().sharedMesh = mesh; // ruins and castles: walk on and around them
+                    n++;
+                }
+            return n;
+        }
+
+        static readonly List<Vector4> placed = new List<Vector4>();
+
+        /// <summary>Megabonk's RandomObjectPlacer: amount objects at random spots on the map, at least checkRadius x scale apart.</summary>
+        static int Scatter(PropRule rule, System.Random rng)
+        {
+            int n = 0;
+            float lim = Inner - 2f;
+            for (int tries = 0; tries < rule.amount * 6 && n < rule.amount; tries++)
+            {
+                float x = ((float)rng.NextDouble() * 2f - 1f) * lim, z = ((float)rng.NextDouble() * 2f - 1f) * lim;
+                string name = rule.prefabs[rng.Next(rule.prefabs.Length)];
+                float s = Mathf.Lerp(rule.scaleMin, rule.scaleMax, (float)rng.NextDouble());
+                float yaw = (float)rng.NextDouble() * 360f;
+                if (NearSpawn(x, z)) continue;
+                float r = Mathf.Max(0.5f, rule.checkRadius * s);
+                bool free = true;
+                foreach (var p in placed) if ((new Vector2(p.x - x, p.z - z)).sqrMagnitude < (p.w + r) * (p.w + r) * 0.25f) { free = false; break; }
+                if (!free) continue;
+                if (!PropModel(name, out var mesh, out var mats)) continue;
+                var c = CellAt(x, z);
+                // On the ground (not halfway down a cliff): the ground must be level across the prop's own spot.
+                float y = TileHeight(c, x, z);
+                var go = new GameObject("BonkProp_" + name) { layer = WorldLayer };
+                go.transform.SetParent(terrainRoot.transform, false);
+                // (Megabonk drops its boulders from upOffset metres up to roll down; here they rest on the ground.)
+                go.transform.localPosition = new Vector3(x, y, z);
+                var up = Vector3.up;
+                if (rule.align && c.slope) up = Vector3.Cross(new Vector3(c.dirZ, 0, -c.dirX), new Vector3(c.dirX, c.yDir * step / tile, c.dirZ)).normalized;
+                if (Vector3.Dot(up, Vector3.up) < 0f) up = -up;
+                go.transform.localRotation = Quaternion.FromToRotation(Vector3.up, up) * Quaternion.Euler(0f, yaw, 0f);
+                go.transform.localScale = Vector3.one * s;
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var mr = go.AddComponent<MeshRenderer>();
+                mr.sharedMaterials = mats;
+                float blockRadius = AddColliders(go, rawProps[name], mesh, s);
+                if (blockRadius > 0f) blockers.Add(new Vector3(x, z, blockRadius));
+                placed.Add(new Vector4(x, y, z, r));
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// Colliders like Megabonk's (a trunk capsule, a boulder sphere), smooth primitives so nobody snags on them.
+        /// Props without a collider in Megabonk (bushes, small rocks) stay walk-through; rocks get a sphere only when big
+        /// enough to stand in the way, sunk into the ground so you slide around and over their edge. Returns the radius
+        /// that blocks monsters' paths (0: none).
+        /// </summary>
+        static float AddColliders(GameObject go, RawProp p, Mesh mesh, float s)
+        {
+            if (p.Colliders.Count > 0)
+            {
+                float block = 0f;
+                foreach (var c in p.Colliders)
+                {
+                    var center = new Vector3(c.Center[0], c.Center[1], c.Center[2]);
+                    switch (c.Kind)
+                    {
+                        case 0:
+                            var sph = go.AddComponent<SphereCollider>(); sph.center = center; sph.radius = c.Radius;
+                            block = Mathf.Max(block, c.Radius * s);
+                            break;
+                        case 1:
+                            var cap = go.AddComponent<CapsuleCollider>(); cap.center = center; cap.radius = c.Radius; cap.height = c.Height;
+                            var axis = new Vector3(c.Axis[0], c.Axis[1], c.Axis[2]);
+                            float ax = Mathf.Abs(axis.x), ay = Mathf.Abs(axis.y), az = Mathf.Abs(axis.z);
+                            cap.direction = ay >= ax && ay >= az ? 1 : ax >= az ? 0 : 2;
+                            block = Mathf.Max(block, c.Radius * s);
+                            break;
+                        default:
+                            var box = go.AddComponent<BoxCollider>(); box.center = center; box.size = new Vector3(c.Size[0], c.Size[1], c.Size[2]);
+                            block = Mathf.Max(block, Mathf.Max(c.Size[0], c.Size[2]) * 0.5f * s);
+                            break;
+                    }
+                }
+                return block;
+            }
+            if (p.Name.StartsWith("rock_") || p.Name.StartsWith("Rock"))
+            {
+                var b = mesh.bounds;
+                float r = Mathf.Max(b.extents.x, b.extents.z) * s;
+                if (r < 1.2f) return 0f; // pebbles: walk through
+                var sph = go.AddComponent<SphereCollider>();
+                sph.radius = Mathf.Max(b.extents.x, b.extents.z) * 0.9f;
+                sph.center = new Vector3(b.center.x, b.min.y + b.extents.y * 0.6f - sph.radius * 0.35f, b.center.z);
+                return r;
+            }
+            if (p.MeshCollider && (p.Name.StartsWith("Fence") || p.Name == "Arch" || p.Name.StartsWith("Ruins")))
+            {
+                go.AddComponent<MeshCollider>().sharedMesh = mesh;
+                return Mathf.Max(mesh.bounds.extents.x, mesh.bounds.extents.z) * s;
+            }
+            return 0f;
+        }
+
+        /// <summary>
+        /// Host: new ground and air node graphs on the new terrain. The editor's bake tests every link with physics; the
+        /// terrain is a known heightfield, so links, line of sight and Teleporter spots are worked out from the heights,
+        /// with neighbours found through a grid so the big maps bake quickly.
         /// </summary>
         static void BakeGraphs()
         {
             var sw = Stopwatch.StartNew();
             var info = SceneInfo.instance;
-            float lim = half * Playable - 4f;
+            float lim = Inner - 4f;
             const int AllHulls = (int)(HullMask.Human | HullMask.Golem | HullMask.BeetleQueen);
 
-            bool Clear(Vector3 a, Vector3 b, float above, float step = 4f)
+            bool Clear(Vector3 a, Vector3 b, float above, float stepLen = 3f)
             {
-                int steps = Mathf.CeilToInt(Vector3.Distance(a, b) / step);
+                int steps = Mathf.CeilToInt(Vector3.Distance(a, b) / stepLen);
                 for (int k = 1; k < steps; k++)
                 {
                     var p = Vector3.Lerp(a, b, (float)k / steps);
@@ -382,30 +759,41 @@ namespace RiskOfBonk
                 return true;
             }
 
-            NodeGraph Bake(string name, List<Vector3> spots, float linkRange, bool ground, out GameObject go)
+            NodeGraph Bake(string name, List<Vector3> spots, float spacing, float linkRange, bool ground, out GameObject go)
             {
                 go = new GameObject(name);
                 var nodes = new List<MapNode>(spots.Count);
-                foreach (var spot in spots)
+                var grid = new Dictionary<(int, int), List<int>>();
+                for (int k = 0; k < spots.Count; k++)
                 {
                     var n = new GameObject("MapNode");
                     n.transform.SetParent(go.transform, false);
-                    n.transform.position = Center + spot;
+                    n.transform.position = Center + spots[k];
                     var node = n.AddComponent<MapNode>();
                     node.flags = NodeFlags.NoCeiling;
                     nodes.Add(node);
+                    var key = (Mathf.FloorToInt(spots[k].x / spacing), Mathf.FloorToInt(spots[k].z / spacing));
+                    if (!grid.TryGetValue(key, out var l)) grid[key] = l = new List<int>();
+                    l.Add(k);
+                }
+                IEnumerable<int> Near(Vector3 p, float range)
+                {
+                    int r = Mathf.CeilToInt(range / spacing), cx = Mathf.FloorToInt(p.x / spacing), cz = Mathf.FloorToInt(p.z / spacing);
+                    for (int i = -r; i <= r; i++)
+                        for (int j = -r; j <= r; j++)
+                            if (grid.TryGetValue((cx + i, cz + j), out var l)) foreach (var k in l) yield return k;
                 }
                 for (int a = 0; a < spots.Count; a++)
                 {
-                    for (int b = 0; b < spots.Count; b++)
+                    foreach (int b in Near(spots[a], linkRange))
                     {
                         if (a == b) continue;
                         var d = spots[b] - spots[a];
                         float flat = new Vector2(d.x, d.z).magnitude;
                         if (flat > linkRange) continue;
-                        // Ground: walkable if the slope is under 45 degrees and the ground in between has no bump.
+                        // Ground: walkable if the slope is under 45 degrees and the ground in between has no bump (cliffs block).
                         bool ok = ground ? Mathf.Abs(d.y) <= flat && Clear(spots[a] + Vector3.up * 2f, spots[b] + Vector3.up * 2f, 0f)
-                            : Clear(spots[a], spots[b], 3f);
+                            : Clear(spots[a], spots[b], 3f, 6f);
                         if (ok) nodes[a].links.Add(new MapNode.Link { nodeB = nodes[b], distanceScore = d.magnitude, hullMask = AllHulls });
                     }
                     if (ground)
@@ -421,15 +809,15 @@ namespace RiskOfBonk
                         if (tp) nodes[a].flags |= NodeFlags.TeleporterOK;
                     }
                 }
-                // Line of sight, once per pair, up to 120 m (farther counts as out of sight).
+                // Line of sight, once per pair, up to 100 m (farther counts as out of sight).
                 var masks = new List<SerializableBitArray>(spots.Count);
                 for (int a = 0; a < spots.Count; a++) masks.Add(new SerializableBitArray(spots.Count));
                 for (int a = 0; a < spots.Count; a++)
                 {
                     masks[a][a] = true;
-                    for (int b = a + 1; b < spots.Count; b++)
+                    foreach (int b in Near(spots[a], 100f))
                     {
-                        if ((spots[b] - spots[a]).sqrMagnitude > 120f * 120f) continue;
+                        if (b <= a || (spots[b] - spots[a]).sqrMagnitude > 100f * 100f) continue;
                         if (Clear(spots[a] + Vector3.up, spots[b] + Vector3.up, 0f, 8f)) { masks[a][b] = true; masks[b][a] = true; }
                     }
                 }
@@ -439,29 +827,34 @@ namespace RiskOfBonk
                 return graph;
             }
 
+            bool Blocked(float x, float z, float margin)
+            {
+                foreach (var b in blockers) if ((new Vector2(b.x - x, b.y - z)).sqrMagnitude < (b.z + margin) * (b.z + margin)) return true;
+                return false;
+            }
+
             var groundSpots = new List<Vector3>();
             for (float x = -lim; x <= lim; x += 10f)
                 for (float z = -lim; z <= lim; z += 10f)
                 {
                     float y = GridHeight(x, z);
-                    if (y > 30f) continue;
-                    float dx = GridHeight(x + 2f, z) - GridHeight(x - 2f, z), dz = GridHeight(x, z + 2f) - GridHeight(x, z - 2f);
-                    if (Mathf.Abs(dx) > 2.8f || Mathf.Abs(dz) > 2.8f) continue; // steeper than ~35 degrees
-                    bool tree = false;
-                    foreach (var t in treeSpots) if ((t - new Vector2(x, z)).sqrMagnitude < 9f) { tree = true; break; }
-                    if (!tree) groundSpots.Add(new Vector3(x, y, z));
+                    // Not on a cliff edge: the ground 2 m around must be about as high.
+                    bool edge = false;
+                    foreach (var o in new[] { new Vector2(2, 0), new Vector2(-2, 0), new Vector2(0, 2), new Vector2(0, -2) })
+                        if (Mathf.Abs(GridHeight(x + o.x, z + o.y) - y) > 1.6f) { edge = true; break; }
+                    if (edge || Blocked(x, z, 1.5f)) continue;
+                    groundSpots.Add(new Vector3(x, y, z));
                 }
             var airSpots = new List<Vector3>();
             for (float x = -lim; x <= lim; x += 20f)
                 for (float z = -lim; z <= lim; z += 20f)
                 {
                     float y = GridHeight(x, z);
-                    if (y > 30f) continue;
                     airSpots.Add(new Vector3(x, y + 12f, z));
                     airSpots.Add(new Vector3(x, y + 26f, z));
                 }
-            var groundGraph = Bake("RiskOfBonkGroundNodes", groundSpots, 14.5f, true, out var groundGo);
-            var airGraph = Bake("RiskOfBonkAirNodes", airSpots, 29f, false, out var airGo);
+            var groundGraph = Bake("RiskOfBonkGroundNodes", groundSpots, 10f, 14.5f, true, out var groundGo);
+            var airGraph = Bake("RiskOfBonkAirNodes", airSpots, 20f, 29f, false, out var airGo);
 
             info.groundNodes = groundGraph;
             info.airNodes = airGraph;
@@ -470,7 +863,7 @@ namespace RiskOfBonk
             Log.Info($"Bonk style: node graphs built in {sw.ElapsedMilliseconds} ms ({groundSpots.Count} ground, {airSpots.Count} air)");
         }
 
-        /// <summary>Anyone who falls off the map comes back to the clearing.</summary>
+        /// <summary>Anyone who falls off the map comes back to the start.</summary>
         public sealed class FallGuard : MonoBehaviour
         {
             float next;
@@ -482,7 +875,7 @@ namespace RiskOfBonk
                 {
                     if (!b || !b.hasEffectiveAuthority) continue;
                     var p = b.footPosition - Center;
-                    bool outside = p.y < -60f || Mathf.Max(Mathf.Abs(p.x), Mathf.Abs(p.z)) > half + 20f;
+                    bool outside = p.y < (minLevel - 3) * step || Mathf.Max(Mathf.Abs(p.x), Mathf.Abs(p.z)) > half + 20f;
                     if (outside) TeleportHelper.TeleportBody(b, Center + Vector3.up * (Height(0f, 0f) + 3f));
                 }
             }
@@ -490,7 +883,7 @@ namespace RiskOfBonk
 
         public static void Init(Harmony harmony, GameObject host)
         {
-            SceneManager.activeSceneChanged += (a, b) => Active = false;
+            SceneManager.activeSceneChanged += (a, b) => { Active = false; placed.Clear(); };
             host.AddComponent<FallGuard>();
             harmony.PatchAll(typeof(Patches));
         }
@@ -505,6 +898,7 @@ namespace RiskOfBonk
                 if (Active || !StageMode.IsBonk || !Run.instance || !Eligible()) return;
                 try
                 {
+                    placed.Clear();
                     BuildTerrain();
                     if (NetworkServer.active) BakeGraphs();
                 }
