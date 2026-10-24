@@ -362,3 +362,14 @@
   while the Teleporter boss squad lives. Streamed from the .ogg (MegabonkSounds.OggFile converts FSB5 once) on its own
   thread through waveOut, looped, 0.8 s fades, master x music volume; Risk of Rain 2's music is muted through the
   Volume_MSX RTPC meanwhile and restored after. Checked: Menu -> Forest1_Loop -> ForestBoss_Loop (F9) -> Menu.
+- Update 28 (2026-10-24): Megabonk's enemies on Bonk style stages (src/MegabonkEnemies.cs, MegabonkEnemyData.cs,
+  tools/mbdata/enemies.py). Megabonk enemies are baked vertex animations (EnemyData.animation ->
+  AnimatedMeshScriptableObject: AnimationFPS and one Mesh per frame) with a material, renderer offset/rotation/scale,
+  hp, speed, isFlying. The reader takes EnemyData by name (script class checked: animations share the names) and
+  every frame mesh. Each regular monster (not champions or bosses) wears one from the map's pool by weight (base
+  health < 150 light, < 700 medium, else heavy; flyers fly): Forest GoblinWeak/Slime, GoblinStrong/Golem/BoomerSpider,
+  GoblinTank, Bee; Graveyard Skeleton/Zombie/Ghoul, SkeletonArmored, Ghost/GhostPurple/Head. The pick hashes the
+  monster's name and the stage, so every machine agrees. The Risk of Rain 2 renderers are forced off; the Megabonk mesh
+  follows the feet and facing, plays its walk frames at its FPS x (speed / Megabonk speed), keeps Megabonk's size
+  stretched at most 2x towards the monster's hurtbox, tints elites, and shrinks away on death. Checked: Lemurians
+  appear as Megabonk slimes.

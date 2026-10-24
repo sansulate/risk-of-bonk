@@ -88,6 +88,7 @@ namespace RiskOfBonk
             Part("Megabonk music", () => { MegabonkMusic.Enabled = music.Value; gameObject.AddComponent<MegabonkMusic>(); });
             Part("Melty test run", () => gameObject.AddComponent<MeltyTestRun>());
             Part("Bonk style terrain", () => BonkTerrain.Init(harmony, gameObject));
+            Part("Megabonk enemies", () => MegabonkEnemies.Init(harmony));
             if (look.Value) Part("Megabonk look", StageLook.Init);
             Log.Info($"{Name} {Version} loaded" + (failed > 0 ? $" ({failed} part(s) off, see the errors above)" : ""));
         }

@@ -59,6 +59,7 @@ namespace RiskOfBonk
             }
             try { WeaponVisuals.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk projectile models: {e.Message}"); }
             try { BonkTerrain.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk map props: {e.Message}"); }
+            try { MegabonkEnemies.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk enemies: {e.Message}"); }
             var masters = new List<GameObject>();
             MegabonkBosses.BuildAll(keys, bodies, masters);
             pack.bodyPrefabs.Add(bodies.ToArray());
