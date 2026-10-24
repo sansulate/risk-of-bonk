@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using EntityStates;
 using HarmonyLib;
@@ -243,6 +244,44 @@ namespace RiskOfBonk
                     Log.Info($"move: {h.magnitude:F2} m/s vy {m.velocity.y:F2} (run {run:F1}) {(m.isGrounded ? "ground" : "air")}{(st.sliding ? " sliding" : st.crouching ? " crouching" : "")}" +
                              $" y {m.transform.position.y:F2} input {dir.magnitude:F1} slideKey {slideHeld} t {System.DateTime.Now:HH:mm:ss.ff}");
                 }
+            }
+
+            // Megabonk's fall damage (PlayerHealth.OnPlayerLanded): nothing below a landing speed of 30 + jump height (about
+            // a 35 m drop at its gravity), else 10 + 80 x (speed - that) / (140 + jump height) of its 100 base health,
+            // never lethal, and none while sliding. Risk of Rain 2's starts at jump power + 20, so with Megabonk's jump of 7
+            // every 20 m cliff of a Bonk map hurt. Under Megabonk movement players use Megabonk's rule.
+            static readonly Dictionary<CharacterBody, float> fallFraction = new Dictionary<CharacterBody, float>();
+
+            [HarmonyPrefix, HarmonyPatch(typeof(GlobalEventManager), nameof(GlobalEventManager.OnCharacterHitGroundServer))]
+            static void Landed(CharacterBody characterBody, CharacterMotor.HitGroundInfo hitGroundInfo, ref bool __state)
+            {
+                __state = false;
+                if (!Enabled || !characterBody || !characterBody.isPlayerControlled) return;
+                float speed = Mathf.Abs(hitGroundInfo.velocity.y);
+                float min = 30f + characterBody.jumpPower;
+                bool sliding = IsSliding(characterBody.characterMotor); // known where the movement runs (the host's own player)
+                if (speed > min && !sliding)
+                {
+                    fallFraction[characterBody] = (10f + 80f * (speed - min) / (140f + characterBody.jumpPower)) / 100f;
+                    return;
+                }
+                if ((characterBody.bodyFlags & CharacterBody.BodyFlags.IgnoreFallDamage) != 0) return;
+                characterBody.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
+                __state = true;
+            }
+
+            [HarmonyPostfix, HarmonyPatch(typeof(GlobalEventManager), nameof(GlobalEventManager.OnCharacterHitGroundServer))]
+            static void LandedAfter(CharacterBody characterBody, bool __state)
+            {
+                if (__state && characterBody) characterBody.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+                if (characterBody) fallFraction.Remove(characterBody);
+            }
+
+            [HarmonyPrefix, HarmonyPriority(Priority.High), HarmonyPatch(typeof(HealthComponent), nameof(HealthComponent.TakeDamage))]
+            static void FallAmount(HealthComponent __instance, DamageInfo damageInfo)
+            {
+                if (damageInfo == null || (damageInfo.damageType & DamageType.FallDamage) == 0 || !__instance.body) return;
+                if (fallFraction.TryGetValue(__instance.body, out float f)) damageInfo.damage = f * __instance.fullHealth;
             }
 
             // Megabonk movement always runs and the Sprint key slides, so Risk of Rain 2's "Sprint to get around the map!"

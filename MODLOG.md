@@ -446,3 +446,14 @@
   when they burst next to the player (additive clouds; mines are dropped at your feet). The rest (Space Noodle beam,
   Sniper/Bow shots, Firestaff/Dragon's Breath fire, swords' slashes, Blood Magic, Black Hole, Chunkers, Tornado) read
   well at their scales.
+- Update 40 (2026-10-24): health bonuses fixed for real. Risk of Rain 2 sets health inside RecalculateStats from its
+  own maximum, before this mod's postfixes add Megabonk character health and HP Tomes: it clamps health to that lower
+  maximum on every recalculation (buffs, items, levels), so bonus max health was mostly unusable (Megachad sat at
+  110/132, HP Tome points barely helped anyone). Balance now notes health and maximum before RecalculateStats and, after
+  every postfix, sets health to what it was plus the whole rise of the final maximum (capped by it); shield likewise.
+  Checked: Megachad 132/132 through a fight. Megabonk's fall damage under Megabonk movement (PlayerHealth.OnPlayerLanded):
+  nothing below a landing speed of 30 + jump height (about a 35 m drop), else 10 + 80 x (speed - that) / (140 + jump
+  height) % of max health, never while sliding; Risk of Rain 2's started at jump power + 20 = 27 m/s, so every 20 m cliff
+  of a Bonk map hurt. No fall damage for 4 s after spawning on a Bonk stage (no pod: you appear above the ground).
+  Bonk style stages: Risk of Rain 2's ranged monsters (wisps, Clay Templars, Alloy Vultures, Solus Probes, Hermit Crabs,
+  Blind Pests, ...) spawn at bonk_ranged_weight (0.35) of their weight; Megabonk's hordes are melee chasers.

@@ -45,11 +45,12 @@ namespace RiskOfBonk
             cb.levelMaxShield = 0f;
         }
 
-        // Risk of Rain 2 heals a body by the rise in max health inside RecalculateStats, before this mod's health bonuses
-        // (Megabonk character health, HP Tomes) are added in postfixes. Without this, a Megachad starts at 110/132 and an
-        // HP Tome owner heals less on every level-up. First: what RecalculateStats started from and what the game made of
-        // it; last (after every other postfix): heal the rest of the rise, or cap health that is now above the maximum.
-        sealed class Before { public float health, shield, gameHealth, gameShield; }
+        // Risk of Rain 2 sets health inside RecalculateStats from its own maximum, before this mod's health bonuses
+        // (Megabonk character health, HP Tomes) are added in postfixes: it heals by its own rise and clamps health to its
+        // own (lower) maximum. Without this a Megachad started at 110/132 and was clamped back to 110 on every recalculation,
+        // and HP Tome owners healed less on level-ups. So: note health and maximum before, and after every postfix set
+        // health to what it was plus the whole rise of the final maximum (capped by it), the same for shield.
+        sealed class Before { public float max, shieldMax, health, shield; public bool alive; }
         static readonly System.Runtime.CompilerServices.ConditionalWeakTable<CharacterBody, Before> before = new System.Runtime.CompilerServices.ConditionalWeakTable<CharacterBody, Before>();
 
         [HarmonyPatch]
@@ -59,34 +60,29 @@ namespace RiskOfBonk
             static void Start(CharacterBody __instance)
             {
                 var b = before.GetOrCreateValue(__instance);
-                b.health = __instance.maxHealth;
-                b.shield = __instance.maxShield;
-            }
-
-            [HarmonyPostfix, HarmonyPriority(Priority.First), HarmonyPatch(typeof(CharacterBody), nameof(CharacterBody.RecalculateStats))]
-            static void Game(CharacterBody __instance)
-            {
-                if (!before.TryGetValue(__instance, out var b)) return;
-                b.gameHealth = __instance.maxHealth;
-                b.gameShield = __instance.maxShield;
+                var hc = __instance.healthComponent;
+                b.max = __instance.maxHealth;
+                b.shieldMax = __instance.maxShield;
+                b.alive = hc && hc.alive;
+                b.health = hc ? hc.health : 0f;
+                b.shield = hc ? hc.shield : 0f;
             }
 
             [HarmonyPostfix, HarmonyPriority(Priority.Last), HarmonyPatch(typeof(CharacterBody), nameof(CharacterBody.RecalculateStats))]
             static void Final(CharacterBody __instance)
             {
                 var hc = __instance.healthComponent;
-                if (!NetworkServer.active || !hc || !before.TryGetValue(__instance, out var b)) return;
-                // The game already healed max(0, its own max - the old max); the bonuses' share of the rise is the rest.
-                float rise = Mathf.Max(0f, __instance.maxHealth - b.health) - Mathf.Max(0f, b.gameHealth - b.health);
-                if (rise > 0.01f && hc.alive)
+                if (!NetworkServer.active || !hc || !hc.alive || !before.TryGetValue(__instance, out var b)) return;
+                // The first recalculation (spawn) starts from nothing: the game fills health itself, then to the final max.
+                float health = b.max <= 0f || !b.alive ? __instance.maxHealth : Mathf.Min(__instance.maxHealth, b.health + Mathf.Max(0f, __instance.maxHealth - b.max));
+                float shield = b.max <= 0f || !b.alive ? __instance.maxShield
+                    : Mathf.Min(__instance.maxShield, b.shield + Mathf.Max(0f, __instance.maxShield - b.shieldMax));
+                if (Mathf.Abs(hc.health - health) > 0.01f)
                 {
-                    hc.Networkhealth = Mathf.Min(__instance.maxHealth, hc.health + rise);
-                    if (TestKeys.On && __instance.isPlayerControlled) Log.Info($"health: {__instance.GetDisplayName()} healed {rise:0.#} of the bonuses' max health rise, now {hc.health:0}/{__instance.maxHealth:0}");
+                    if (TestKeys.On && __instance.isPlayerControlled && health > hc.health + 1f) Log.Info($"health: {__instance.GetDisplayName()} {hc.health:0} -> {health:0}/{__instance.maxHealth:0} after its bonuses");
+                    hc.Networkhealth = health;
                 }
-                float shieldRise = Mathf.Max(0f, __instance.maxShield - b.shield) - Mathf.Max(0f, b.gameShield - b.shield);
-                if (shieldRise > 0.01f && hc.alive) hc.Networkshield = Mathf.Min(__instance.maxShield, hc.shield + shieldRise);
-                if (hc.health > __instance.maxHealth) hc.Networkhealth = __instance.maxHealth;
-                if (hc.shield > __instance.maxShield) hc.Networkshield = __instance.maxShield;
+                if (Mathf.Abs(hc.shield - shield) > 0.01f) hc.Networkshield = shield;
             }
         }
 

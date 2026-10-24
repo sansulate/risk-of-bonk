@@ -871,6 +871,20 @@ namespace RiskOfBonk
             Log.Info($"Bonk style: node graphs built in {sw.ElapsedMilliseconds} ms ({groundSpots.Count} ground, {airSpots.Count} air)");
         }
 
+        /// <summary>Ends the spawn's fall damage immunity after a few seconds.</summary>
+        public sealed class SoftLandingTimer : MonoBehaviour
+        {
+            float until;
+            void Start() => until = Time.time + 4f;
+            void Update()
+            {
+                if (Time.time < until) return;
+                var b = GetComponent<CharacterBody>();
+                if (b) b.bodyFlags &= ~CharacterBody.BodyFlags.IgnoreFallDamage;
+                Destroy(this);
+            }
+        }
+
         /// <summary>Anyone who falls off the map comes back to the start.</summary>
         public sealed class FallGuard : MonoBehaviour
         {
@@ -918,6 +932,16 @@ namespace RiskOfBonk
             static void NoPod(Stage __instance)
             {
                 if (StageMode.IsBonk && __instance.usePod) __instance.usePod = false;
+            }
+
+            // Without the pod a player appears a little above the ground and took fall damage on landing: no fall damage
+            // for the first seconds on a Bonk style stage.
+            [HarmonyPostfix, HarmonyPatch(typeof(CharacterBody), "Start")]
+            static void SoftLanding(CharacterBody __instance)
+            {
+                if (!StageMode.IsBonk || !__instance.isPlayerControlled || (__instance.bodyFlags & CharacterBody.BodyFlags.IgnoreFallDamage) != 0) return;
+                __instance.bodyFlags |= CharacterBody.BodyFlags.IgnoreFallDamage;
+                __instance.gameObject.AddComponent<SoftLandingTimer>();
             }
         }
     }

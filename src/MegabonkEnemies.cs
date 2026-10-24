@@ -180,6 +180,42 @@ namespace RiskOfBonk
             }
         }
 
-        public static void Init(Harmony harmony) => harmony.PatchAll(typeof(Patches));
+        /// <summary>Risk of Rain 2 monsters that fight from range (bodies); on Bonk style stages they spawn less often.</summary>
+        static readonly HashSet<string> Ranged = new HashSet<string>
+        {
+            "WispBody", "GreaterWispBody", "ClayBruiserBody", "ClayGrenadierBody", "VultureBody", "RoboBallMiniBody", "LunarGolemBody",
+            "LunarWispBody", "BellBody", "HermitCrabBody", "FlyingVerminBody", "VoidJailerBody", "NullifierBody", "VoidBarnacleBody",
+            "ChildBody", "ScorchlingBody", "MinorConstructBody",
+        };
+
+        static void Weigh(ClassicStageInfo info)
+        {
+            var sel = info ? info.monsterSelection : null;
+            if (sel == null || !BonkTerrain.Active && !StageMode.IsBonk) return;
+            var lowered = new List<string>();
+            for (int i = 0; i < sel.Count; i++)
+            {
+                var choice = sel.GetChoice(i);
+                var master = choice.value?.spawnCard ? choice.value.spawnCard.prefab : null;
+                var body = master && master.GetComponent<CharacterMaster>() is CharacterMaster cm && cm.bodyPrefab ? cm.bodyPrefab.name : null;
+                if (body == null || !Ranged.Contains(body)) continue;
+                sel.ModifyChoiceWeight(i, choice.weight * Generated.Tune.BonkRangedWeight);
+                lowered.Add(body);
+            }
+            if (lowered.Count > 0) Log.Info($"Bonk style: ranged monsters spawn less often ({string.Join(", ", lowered)})");
+        }
+
+        [HarmonyPatch]
+        static class SpawnPatches
+        {
+            [HarmonyPostfix, HarmonyPatch(typeof(ClassicStageInfo), nameof(ClassicStageInfo.RebuildCards))]
+            static void Rebuilt(ClassicStageInfo __instance) => Weigh(__instance);
+        }
+
+        public static void Init(Harmony harmony)
+        {
+            harmony.PatchAll(typeof(Patches));
+            harmony.PatchAll(typeof(SpawnPatches));
+        }
     }
 }
