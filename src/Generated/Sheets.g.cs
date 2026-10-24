@@ -241,6 +241,8 @@ namespace RiskOfBonk.Generated
         public static float AnimHold = 0.12f;
         /// <summary>Volume of Megabonk's sounds, on top of Risk of Rain 2's master and sound effect volume. (x)</summary>
         public static float SoundVolume = 0.8f;
+        /// <summary>Megabonk's music (MegabonkMusic) plays at the game's master x music volume times this. (x music volume)</summary>
+        public static float MusicVolume = 0.7f;
         /// <summary>Megabonk weapon damage (mbDamage in weapons.json, e.g. Revolver 5 per bullet, Sniper 22) times this is the hit's damage coefficient in Risk of Rain 2 (x the body's base damage). Keeps Megabonk's balance between weapons; this value sets the overall strength. (x base damage per Megabonk damage point)</summary>
         public static float WeaponDamageScale = 0.4f;
     }

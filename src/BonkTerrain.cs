@@ -30,6 +30,8 @@ namespace RiskOfBonk
     {
         public static bool Active { get; private set; }
         public static Vector3 Center { get; private set; }
+        /// <summary>The Megabonk map of the current Bonk style stage ("Forest 1".."Forest 3", "Graveyard").</summary>
+        public static string MapName => Active && profile != null ? profile.name : null;
         static readonly int WorldLayer = LayerIndex.world.intVal;
 
         // ---------------- Megabonk's stages (StageData + MapParameters, tools/mbdata/stages.py) ----------------

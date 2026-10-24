@@ -101,6 +101,31 @@ namespace RiskOfBonk
             Log.Info($"Megabonk sounds ready: {ok}/{names.Count}");
         }
 
+        static Dictionary<uint, byte[]> vorbisHeaders;
+        static readonly object convertLock = new object();
+
+        /// <summary>A Megabonk sound as an .ogg file under the data folder (converted from Megabonk's FSB5 once), or null.</summary>
+        public static string OggFile(string name)
+        {
+            var lib = MegabonkLoader.Library;
+            string dir = Path.Combine(Plugin.DataDir, "sounds");
+            string file = Path.Combine(dir, name + ".ogg");
+            if (File.Exists(file)) return file;
+            if (lib == null) return null;
+            lock (convertLock)
+            {
+                if (File.Exists(file)) return file;
+                Directory.CreateDirectory(dir);
+                vorbisHeaders ??= FsbVorbis.LoadHeaders(Path.Combine(MegabonkLoader.GameDir, "UnityPlayer.dll"));
+                byte[] fsb;
+                lock (lib) fsb = lib.ReadSound(name);
+                var ogg = fsb != null ? FsbVorbis.ToOgg(fsb, vorbisHeaders) : null;
+                if (ogg == null) { Log.Warn($"Megabonk sound {name}: {(fsb == null ? "not found" : "not a known Vorbis sound")}"); return null; }
+                File.WriteAllBytes(file, ogg);
+                return file;
+            }
+        }
+
         static Pcm Decode(string file)
         {
             using (var vr = new NVorbis.VorbisReader(file))

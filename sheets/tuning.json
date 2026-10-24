@@ -499,6 +499,14 @@
    "verified": true
   },
   {
+   "id": "music_volume",
+   "value": 0.7,
+   "unit": "x music volume",
+   "system": "sounds",
+   "note": "Megabonk's music (MegabonkMusic) plays at the game's master x music volume times this.",
+   "verified": true
+  },
+  {
    "id": "weapon_damage_scale",
    "value": 0.4,
    "unit": "x base damage per Megabonk damage point",

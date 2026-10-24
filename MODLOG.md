@@ -356,3 +356,9 @@
   Lighting on Bonk maps: Megabonk's exponential fog (density 0.007, the stage's fog colour) instead of the stage's ramp
   fog, its sun and ambience colours (a shadowless fill light stands in for the flat ambience under deferred shading), a
   gradient sky in the fog colour, the stage's colour grading and vignette off. Node graphs use a spatial grid (0.5 s).
+- Update 27 (2026-10-24): Megabonk's soundtrack (src/MegabonkMusic.cs, config Gameplay/MegabonkMusic, tuning
+  music_volume): Menu on the main menu and lobby; on Bonk style stages Forest1/2/3_Loop for Forest 1-3 (Megabonk's
+  forest MusicTrack pool, then random), its Other tracks on the Graveyard, and ForestBoss_Loop / GraveyardBoss_Loop
+  while the Teleporter boss squad lives. Streamed from the .ogg (MegabonkSounds.OggFile converts FSB5 once) on its own
+  thread through waveOut, looped, 0.8 s fades, master x music volume; Risk of Rain 2's music is muted through the
+  Volume_MSX RTPC meanwhile and restored after. Checked: Menu -> Forest1_Loop -> ForestBoss_Loop (F9) -> Menu.
