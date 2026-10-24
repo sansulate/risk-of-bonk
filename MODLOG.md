@@ -440,3 +440,9 @@
   +1 projectile, +10% crit, +20% crit damage, +1 bounce, +20% projectile speed), bounces of 8-13 m onto Beetles and a
   Bison. Known: with the balance pull a non-damage level can lower the per-bullet number slightly while total power
   rises (about 10% per level, like a Damage Tome point).
+- Update 39 (2026-10-24): weapon effects pass with tools/ingame/fxtest.sh over every weapon (groups of three on Sir
+  Oofie, slow motion). Fixes: Wireless Dagger had no icon (Megabonk's texture is "Bluetooth Knife"; BluetoothDagger is
+  only its mesh); Poison Flask (0.6 -> 0.4), Mine (0.6 -> 0.35) and Dice (0.5 -> 0.35) hit effects filled the screen
+  when they burst next to the player (additive clouds; mines are dropped at your feet). The rest (Space Noodle beam,
+  Sniper/Bow shots, Firestaff/Dragon's Breath fire, swords' slashes, Blood Magic, Black Hole, Chunkers, Tornado) read
+  well at their scales.

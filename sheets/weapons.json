@@ -497,7 +497,7 @@
    "mbFxShot": "",
    "mbFxMode": "ghost",
    "mbFxHit": "DiceExplosion",
-   "mbFxScale": 0.5,
+   "mbFxScale": 0.35,
    "mbFxSpeed": 0
   },
   {
@@ -633,7 +633,7 @@
    "mbFxShot": "PoisonFlaskProjectile/SmokeTrail",
    "mbFxMode": "ghost",
    "mbFxHit": "PoisonFlaskProjectile/PoisonExplosionPurple",
-   "mbFxScale": 0.6,
+   "mbFxScale": 0.4,
    "mbFxSpeed": 0
   },
   {
@@ -677,7 +677,7 @@
    "mbFxShot": "",
    "mbFxMode": "ghost",
    "mbFxHit": "RocketExplosion",
-   "mbFxScale": 0.6,
+   "mbFxScale": 0.35,
    "mbFxSpeed": 0
   },
   {
@@ -1130,7 +1130,7 @@
   {
    "id": "wireless_dagger",
    "displayName": "Wireless Dagger",
-   "mbIcon": "BluetoothDagger",
+   "mbIcon": "Bluetooth Knife",
    "kind": "projectile",
    "damage": 1.3,
    "interval": 0.5,
