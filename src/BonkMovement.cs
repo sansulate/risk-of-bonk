@@ -245,6 +245,15 @@ namespace RiskOfBonk
                 }
             }
 
+            // Megabonk movement always runs and the Sprint key slides, so Risk of Rain 2's "Sprint to get around the map!"
+            // hint (which waits for a manual sprint) would stay up the whole run.
+            [HarmonyPostfix, HarmonyPatch(typeof(RoR2.UI.HUDTutorialController), "Update")]
+            static void NoSprintHint(RoR2.UI.HUDTutorialController __instance)
+            {
+                if (!Enabled || !__instance.sprintTutorialObject || !__instance.sprintTutorialObject.activeSelf) return;
+                __instance.sprintTutorialObject.SetActive(false);
+            }
+
             [HarmonyPostfix, HarmonyPatch(typeof(CharacterMotor), "OnLanded")]
             static void Landed(CharacterMotor __instance)
             {

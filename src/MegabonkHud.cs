@@ -12,7 +12,7 @@ namespace RiskOfBonk
     /// Megabonk's in-run HUD (its InventoryHud) in the top left: the health bar, a row with the four weapons and a row
     /// with every tome you own, each with its level. A Risk of Rain 2 survivor's row shows its four skills instead, with
     /// their cooldowns (a dark sweep and the seconds left) and charges, so the Megabonk HUD replaces Risk of Rain 2's skill
-    /// icons in the bottom right (hidden while this is up; equipment and the rest of that HUD stay).
+    /// icons, health bar and level display (hidden while this is up; buffs, money, items and equipment stay).
     /// </summary>
     public sealed class MegabonkHud : MonoBehaviour
     {
@@ -108,7 +108,7 @@ namespace RiskOfBonk
             var body = Run.instance ? LocalUserManager.GetFirstLocalUser()?.cachedBody : null;
             bool on = Enabled && body && body.healthComponent && body.healthComponent.alive;
             if (root.gameObject.activeSelf != on) root.gameObject.SetActive(on);
-            HideRoR2SkillIcons(on);
+            HideRoR2(on);
             if (!on) return;
 
             Health(body);
@@ -237,21 +237,48 @@ namespace RiskOfBonk
             s.rt.localScale = Vector3.one * (1f + 0.15f * s.pop);
         }
 
-        /// <summary>Risk of Rain 2's own skill icons are invisible while the Megabonk row shows the skills.</summary>
-        void HideRoR2SkillIcons(bool hide)
+        /// <summary>
+        /// While the Megabonk HUD shows, the Risk of Rain 2 pieces it replaces are invisible: the skill icons, the health
+        /// bar and the level/experience display (the Megabonk XP bar shows the level), and the sprint icon (Megabonk
+        /// movement always runs). Buffs, money, items and equipment stay.
+        /// </summary>
+        void HideRoR2(bool hide)
         {
             foreach (var hud in HUD.readOnlyInstanceList)
             {
-                if (!hud || hud.skillIcons == null) continue;
-                foreach (var icon in hud.skillIcons)
+                if (!hud) continue;
+                if (hud.skillIcons != null) foreach (var icon in hud.skillIcons) if (icon) Fade(icon.gameObject, hide);
+                if (hud.healthBar) Fade(hud.healthBar.gameObject, hide);
+                // The level display also holds the buffs: everything in it but them.
+                var cluster = hud.levelText ? hud.levelText.transform.parent : null;
+                if (cluster)
+                    foreach (Transform child in cluster)
+                        if (!(hud.buffDisplay && hud.buffDisplay.transform.IsChildOf(child))) Fade(child.gameObject, hide);
+                if (hud.expBar) Fade(hud.expBar.gameObject, hide);
+                if (hud.sprintIcon) Fade(hud.sprintIcon.gameObject, hide && BonkMovement.Enabled);
+                if (TestKeys.On && !logged && hud.levelText)
                 {
-                    if (!icon) continue;
-                    var group = icon.GetComponent<CanvasGroup>();
-                    if (!group) group = icon.gameObject.AddComponent<CanvasGroup>();
-                    float alpha = hide ? 0f : 1f;
-                    if (group.alpha != alpha) group.alpha = alpha;
+                    logged = true;
+                    Log.Info($"HUD: level display {Path(hud.levelText.transform.parent)}, health bar {Path(hud.healthBar ? hud.healthBar.transform : null)}, buffs {Path(hud.buffDisplay ? hud.buffDisplay.transform : null)}");
                 }
             }
+        }
+
+        bool logged;
+
+        static string Path(Transform t)
+        {
+            string p = "";
+            for (int i = 0; t && i < 5; i++, t = t.parent) p = "/" + t.name + p;
+            return p;
+        }
+
+        static void Fade(GameObject go, bool hide)
+        {
+            var group = go.GetComponent<CanvasGroup>();
+            if (!group) group = go.AddComponent<CanvasGroup>();
+            float alpha = hide ? 0f : 1f;
+            if (group.alpha != alpha) group.alpha = alpha;
         }
     }
 }

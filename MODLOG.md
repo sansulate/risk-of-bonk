@@ -395,3 +395,8 @@
   skills with a cooldown sweep, seconds left and charges), and every owned tome with its level; slots pop gold on a
   level up. Risk of Rain 2's own skill icons are hidden while it shows. Checked with tools/ingame/hudtest.sh as Megachad
   and Commando.
+- Update 32 (2026-10-24): smoother HUD. With the Megabonk HUD up, Risk of Rain 2's health bar, level/experience
+  display and sprint icon are hidden too (the Megabonk health bar and XP bar show them; buffs, money, items and
+  equipment stay). With Megabonk movement, Risk of Rain 2's "Sprint to get around the map!" hint is dismissed (it
+  waited for a manual sprint that never comes). Megabonk's BossSpawner was tried on the Teleporter and dropped: the
+  prefab is its whole 43 m portal set piece and does not read as a Teleporter.
