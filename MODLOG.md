@@ -431,3 +431,12 @@
   has no collider). Its 30 m underground skirt (BossPortalNormalBottom) is dropped; the first try stood the model on
   the skirt's bottom, 30 m in the air. The Teleporter's base, prongs, beacon and crystals are hidden; its charging
   range, beam and glow stay. tools/probe `prop <name> <dir>` writes a prop's submeshes as OBJs with their extents.
+- Update 38 (2026-10-24): all of Megabonk's weapon upgrade kinds except duration (tools/mbdata/upgrades.py ->
+  weapons.json mbUpgrades, in Megabonk's order): critdamage (that weapon's crit multiplier + v), bounces (src/Bounces.cs:
+  when a bullet or projectile reaches its target it jumps on to the nearest enemy not hit yet within 15 m, once per
+  bounce, with the weapon's own Megabonk shot effect; the owner deals the hop's damage as a bullet; lightning gets more
+  chain bounces), speed (projectile speed x(1+v), at most +100%), knockback (force x(1+v)). One crit roll per shot.
+  Balance counts crit damage and bounces (+0.5 enemies each). Checked: CL4NK's revolver to level 7 (+50% damage,
+  +1 projectile, +10% crit, +20% crit damage, +1 bounce, +20% projectile speed), bounces of 8-13 m onto Beetles and a
+  Bison. Known: with the balance pull a non-damage level can lower the per-bullet number slightly while total power
+  rises (about 10% per level, like a Damage Tome point).

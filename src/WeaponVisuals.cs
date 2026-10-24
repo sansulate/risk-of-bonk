@@ -83,6 +83,18 @@ namespace RiskOfBonk
             }
         }
 
+        /// <summary>A bounce (Bounces): the weapon's Megabonk shot flies from one enemy to the next.</summary>
+        public static void Hop(WeaponRow w, Vector3 from, Vector3 to, float size, float speed)
+        {
+            if (w == null || string.IsNullOrEmpty(w.MbFxShot)) return;
+            if (w.MbFxMode == "beam")
+            {
+                MegabonkFx.Beam(w.MbFxShot, from, to, w.MbFxScale);
+                MegabonkFx.Spawn(w.MbFxHit, to, Quaternion.identity, w.MbFxScale);
+            }
+            else MegabonkFx.Fly(w.MbFxShot, from, to, speed, w.MbFxScale * size, w.MbFxHit, w.MbFxScale);
+        }
+
         static Vector3 End(Vector3 from, Vector3 dir, float range)
         {
             range = Mathf.Clamp(range, 3f, 120f);

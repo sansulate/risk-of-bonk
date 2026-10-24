@@ -1,6 +1,6 @@
 {
  "sheet": "weapons",
- "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow|poison. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used. mbUpgrades = the weapon's Megabonk UpgradeData that this mod applies (damage = flat Megabonk damage, projectiles = more shots, size = radius/area x(1+v), crit = crit chance); each weapon level beyond the first applies the next one in order, cycling (Megabonk rolls a random few per level; the fixed order needs no network message). mbFx* = Megabonk's own effect prefabs for the weapon (MegabonkFx rebuilds their particle systems): mbFxMuzzle plays where a shot leaves, mbFxShot is the attack itself, placed by mbFxMode (fly: travels to the target at mbFxSpeed m/s; burst: at the muzzle towards the target; beam: a line to the target; slash: at the body towards the target; strike: at the target; ghost: on the Risk of Rain 2 projectile, replacing its look; aura: kept on the body, sized to the reach; stream: kept on the body, pointing at the target), mbFxHit plays where it lands; mbFxScale sizes them. Paths below a prefab name pick one child (PoisonFlaskProjectile/SmokeTrail).",
+ "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow|poison. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used. mbUpgrades = the weapon's Megabonk UpgradeData that this mod applies (damage = flat Megabonk damage, projectiles = more shots, size = radius/area x(1+v), crit = crit chance, critdamage = + crit multiplier, bounces = the shot jumps on to that many more enemies (Bounces.cs), speed = projectile speed x(1+v) (at most +100%), knockback = force x(1+v)); each weapon level beyond the first applies the next one in order, cycling (Megabonk rolls a random few per level; the fixed order needs no network message). mbFx* = Megabonk's own effect prefabs for the weapon (MegabonkFx rebuilds their particle systems): mbFxMuzzle plays where a shot leaves, mbFxShot is the attack itself, placed by mbFxMode (fly: travels to the target at mbFxSpeed m/s; burst: at the muzzle towards the target; beam: a line to the target; slash: at the body towards the target; strike: at the target; ghost: on the Risk of Rain 2 projectile, replacing its look; aura: kept on the body, sized to the reach; stream: kept on the body, pointing at the target), mbFxHit plays where it lands; mbFxScale sizes them. Paths below a prefab name pick one child (PoisonFlaskProjectile/SmokeTrail).",
  "rows": [
   {
    "id": "revolver",
@@ -37,7 +37,10 @@
    "mbUpgrades": [
     "damage:2.5",
     "projectiles:1",
-    "crit:0.1"
+    "crit:0.1",
+    "critdamage:0.2",
+    "bounces:1",
+    "speed:0.2"
    ],
    "mbFxMuzzle": "RevolverMuzzle",
    "mbFxShot": "RevolverProjectile",
@@ -82,7 +85,8 @@
     "damage:3",
     "projectiles:1",
     "size:0.15",
-    "crit:0.1"
+    "crit:0.1",
+    "critdamage:0.2"
    ],
    "mbFxMuzzle": "ShotgunMuzzle",
    "mbFxShot": "ShotgunProjectile",
@@ -168,10 +172,12 @@
    "mbProc": 1.0,
    "mbOnlyClose": true,
    "mbUpgrades": [
+    "speed:0.2",
     "damage:1.75",
     "projectiles:1",
     "size:0.15",
-    "crit:0.08"
+    "crit:0.08",
+    "critdamage:0.18"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "BowProjectile",
@@ -256,6 +262,7 @@
    "mbProc": 1.0,
    "mbOnlyClose": false,
    "mbUpgrades": [
+    "speed:0.2",
     "damage:2.5",
     "projectiles:1",
     "size:0.16"
@@ -345,7 +352,10 @@
    "mbUpgrades": [
     "damage:2.5",
     "projectiles:1",
-    "crit:0.12"
+    "speed:0.2",
+    "bounces:1",
+    "crit:0.12",
+    "critdamage:0.25"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "ProjectileBone/SparkTrail",
@@ -389,7 +399,8 @@
    "mbUpgrades": [
     "size:0.14",
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "speed:0.1"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "BananaProjectile/Renderer/Trail",
@@ -475,10 +486,12 @@
    "mbProc": 1.0,
    "mbOnlyClose": false,
    "mbUpgrades": [
+    "speed:0.2",
     "damage:2",
     "projectiles:1",
     "size:0.15",
-    "crit:0.1"
+    "crit:0.1",
+    "critdamage:0.2"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "",
@@ -520,6 +533,7 @@
    "mbProc": 1.0,
    "mbOnlyClose": true,
    "mbUpgrades": [
+    "speed:0.2",
     "damage:2",
     "projectiles:1",
     "crit:0.08"
@@ -566,7 +580,9 @@
    "mbUpgrades": [
     "size:0.2",
     "damage:3",
-    "projectiles:1"
+    "knockback:0.25",
+    "projectiles:1",
+    "speed:0.35"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "ChunkersAttack/Renderer/EarthMissile",
@@ -610,7 +626,8 @@
    "mbUpgrades": [
     "damage:0.5",
     "projectiles:1",
-    "size:0.15"
+    "size:0.15",
+    "speed:2"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "PoisonFlaskProjectile/SmokeTrail",
@@ -696,8 +713,10 @@
    "mbProc": 1.0,
    "mbOnlyClose": true,
    "mbUpgrades": [
+    "speed:0.2",
     "damage:2",
     "projectiles:1",
+    "knockback:0.2",
     "size:0.14"
    ],
    "mbFxMuzzle": "",
@@ -742,7 +761,8 @@
    "mbUpgrades": [
     "size:0.2",
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "knockback:0.25"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "SwordProjectilePrefab",
@@ -787,7 +807,8 @@
     "size:0.2",
     "damage:2.2",
     "projectiles:1",
-    "crit:0.08"
+    "crit:0.08",
+    "critdamage:0.2"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "KatanaProjectilePrefab",
@@ -831,7 +852,8 @@
    "mbUpgrades": [
     "size:0.15",
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "speed:4"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "HeroSwordProjectile",
@@ -875,7 +897,8 @@
    "mbUpgrades": [
     "size:0.2",
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "knockback:0.25"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "CorruptedSwordProjectile",
@@ -1094,7 +1117,8 @@
    "mbUpgrades": [
     "size:0.2",
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "bounces:1"
    ],
    "mbFxMuzzle": "",
    "mbFxShot": "LightningStrikeFx",
@@ -1137,7 +1161,9 @@
    "mbOnlyClose": true,
    "mbUpgrades": [
     "damage:2",
-    "projectiles:1"
+    "projectiles:1",
+    "bounces:1",
+    "speed:0.15"
    ],
    "mbFxMuzzle": "BluetoothMuzzle",
    "mbFxShot": "BluetoothProjectile",
@@ -1225,6 +1251,7 @@
    "mbUpgrades": [
     "size:0.15",
     "damage:2",
+    "knockback:0.25",
     "projectiles:1"
    ],
    "mbFxMuzzle": "",

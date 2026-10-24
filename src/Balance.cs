@@ -112,7 +112,8 @@ namespace RiskOfBonk
             float interval = w.MbBurstTime > 0f ? Mathf.Max(w.MbBurstTime / shots, w.MbMinBurstInterval) : 0f;
             float cycle = Mathf.Max(0.1f, w.MbEndCooldown + shots * interval);
             float coefficient = w.MbDamage > 0f ? s.damage * Tune.WeaponDamageScale : w.Damage * (1f + 0.25f * s.damageSteps);
-            return coefficient * shots / cycle * (1f + Mathf.Clamp01(s.crit)) * Area(w);
+            // Crits double a hit (plus the weapon's crit damage); each bounce reaches about half an enemy more in a horde.
+            return coefficient * shots / cycle * (1f + Mathf.Clamp01(s.crit) * (1f + s.critDamage)) * (Area(w) + 0.5f * s.bounces);
         }
 
         sealed class Entry { public float time = -1f, scale = 1f, raw, allowed; }

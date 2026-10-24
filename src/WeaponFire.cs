@@ -23,7 +23,8 @@ namespace RiskOfBonk
     public class WeaponFire : BaseSkillState
     {
         WeaponRow weapon;
-        float duration, shotInterval, damage, size = 1f, critBonus, lastSoundAge = -1f;
+        float duration, shotInterval, damage, size = 1f, critBonus, critDamage, speedBonus, knockback = 1f, lastSoundAge = -1f;
+        int bounces;
         int shots, shot;
         static int swingCount;
         static readonly Dictionary<GameObject, float> lastAuraFx = new Dictionary<GameObject, float>();
@@ -98,6 +99,10 @@ namespace RiskOfBonk
             shots = stats.shots;
             size = stats.size + Passives.SizeBonus(characterBody);
             critBonus = stats.crit;
+            critDamage = stats.critDamage;
+            speedBonus = stats.speed;
+            knockback = 1f + stats.knockback;
+            bounces = stats.bounces;
             shotInterval = weapon.MbBurstTime > 0f ? Mathf.Max(weapon.MbBurstTime / shots, weapon.MbMinBurstInterval) / speed : 0f;
             duration = Mathf.Max(0.1f, weapon.MbEndCooldown / speed + shots * shotInterval);
             float coefficient = weapon.MbDamage > 0f ? stats.damage * Tune.WeaponDamageScale : weapon.Damage * (1f + 0.25f * stats.damageSteps);
@@ -151,13 +156,25 @@ namespace RiskOfBonk
                 WeaponVisuals.Fired(gameObject, weapon, characterBody.corePosition); // Megabonk's sound, and its projectile look
             }
             WeaponVisuals.Attack(characterBody, weapon, aim, target, weapon.Kind == "aura" || weapon.Kind == "melee" ? Reach : Range, size);
+            // One crit roll per shot; Megabonk's crit damage upgrades raise this weapon's crit multiplier.
+            bool crit = Crit();
+            if (crit && critDamage > 0f) hit *= (characterBody.critMultiplier + critDamage) / Mathf.Max(1f, characterBody.critMultiplier);
             switch (weapon.Kind)
             {
-                case "bullet": Bullet(aim, hit); break;
-                case "projectile": Projectile(aim, hit); break;
-                case "melee": Melee(aim, hit); break;
-                case "aura": Aura(hit); break;
-                case "lightning": Lightning(aim, hit, target); break;
+                case "bullet": Bullet(aim, hit, crit); break;
+                case "projectile": Projectile(aim, hit, crit); break;
+                case "melee": Melee(aim, hit, crit); break;
+                case "aura": Aura(hit, crit); break;
+                case "lightning": Lightning(aim, hit, target, crit); break;
+            }
+            // Megabonk's bounce upgrades: the shot jumps on from the enemy it hit to the next ones.
+            if (bounces > 0 && target && (weapon.Kind == "bullet" || weapon.Kind == "projectile"))
+            {
+                float speed = weapon.MbFxSpeed > 0f ? weapon.MbFxSpeed
+                    : weapon.Kind == "projectile" && Prefab(weapon.Prefab) is GameObject p && p.GetComponent<ProjectileSimple>() is ProjectileSimple ps ? ps.desiredForwardSpeed * (1f + Mathf.Min(1f, speedBonus))
+                    : 120f;
+                float travel = Vector3.Distance(aim.origin, target.transform.position) / Mathf.Max(20f, speed);
+                Bounces.Start(characterBody, weapon, target, hit, crit, bounces, speed, travel, isAuthority, DamageType(), weapon.MbProc, size);
             }
         }
 
@@ -166,7 +183,7 @@ namespace RiskOfBonk
         /// <summary>Melee and aura reach, grown by the weapon's size upgrades.</summary>
         float Reach => weapon.Range * size;
 
-        void Bullet(Ray aim, float damage)
+        void Bullet(Ray aim, float damage, bool crit)
         {
             if (!isAuthority) return;
             new BulletAttack
@@ -180,11 +197,11 @@ namespace RiskOfBonk
                 bulletCount = (uint)Mathf.Max(1, weapon.Count),
                 damage = weapon.Count > 1 ? damage * 2f / weapon.Count : damage, // Megabonk's shotgun cone hits each enemy once
                 procCoefficient = weapon.MbProc,
-                force = 200f,
+                force = 200f * knockback,
                 // Megabonk's bullet and hit effects (WeaponVisuals) replace Risk of Rain 2's tracer and hit spark.
                 tracerEffectPrefab = WeaponVisuals.HasShot(weapon) ? null : Prefab(weapon.Effect),
                 hitEffectPrefab = WeaponVisuals.HasShot(weapon) ? null : Prefab("RoR2/Base/Commando/HitsparkCommando.prefab"),
-                isCrit = Crit(),
+                isCrit = crit,
                 radius = 0.4f,
                 smartCollision = true,
                 maxDistance = weapon.Range,
@@ -194,12 +211,13 @@ namespace RiskOfBonk
             }.Fire();
         }
 
-        void Projectile(Ray aim, float damage)
+        void Projectile(Ray aim, float damage, bool crit)
         {
             if (!isAuthority) return;
             var prefab = Prefab(weapon.Prefab);
             if (!prefab) return;
-            bool crit = Crit();
+            // Megabonk's projectile speed upgrades.
+            float speed = speedBonus > 0f && prefab.GetComponent<ProjectileSimple>() is ProjectileSimple simple ? simple.desiredForwardSpeed * (1f + Mathf.Min(1f, speedBonus)) : -1f; // at most +100% (Poison Flask's +200% would overshoot its arc)
             for (int i = 0; i < Mathf.Max(1, weapon.Count); i++)
             {
                 var dir = weapon.Spread > 0f ? Util.ApplySpread(aim.direction, 0f, weapon.Spread, 1f, 1f) : aim.direction;
@@ -210,14 +228,15 @@ namespace RiskOfBonk
                     rotation = Util.QuaternionSafeLookRotation(dir),
                     owner = gameObject,
                     damage = damage,
-                    force = 300f,
+                    force = 300f * knockback,
                     crit = crit,
+                    speedOverride = speed,
                     damageTypeOverride = weapon.DamageType == "none" ? (DamageTypeCombo?)null : DamageType(),
                 });
             }
         }
 
-        void Melee(Ray aim, float damage)
+        void Melee(Ray aim, float damage, bool crit)
         {
             var dir = aim.direction;
             var centre = characterBody.corePosition + dir * (Reach * 0.6f);
@@ -258,15 +277,15 @@ namespace RiskOfBonk
                 radius = Reach,
                 baseDamage = damage,
                 procCoefficient = weapon.MbProc,
-                crit = Crit(),
+                crit = crit,
                 falloffModel = BlastAttack.FalloffModel.None,
-                baseForce = 400f,
+                baseForce = 400f * knockback,
                 attackerFiltering = AttackerFiltering.NeverHitSelf,
                 damageType = DamageType(),
             }.Fire();
         }
 
-        void Aura(float damage)
+        void Aura(float damage, bool crit)
         {
             // Megabonk's aura is a steady ring that hurts every tick; the nova shows about once a second, not on every tick.
             var fx = WeaponVisuals.HasShot(weapon) ? null : Prefab(weapon.Effect);
@@ -285,15 +304,15 @@ namespace RiskOfBonk
                 radius = Reach,
                 baseDamage = damage,
                 procCoefficient = weapon.MbProc,
-                crit = Crit(),
+                crit = crit,
                 falloffModel = BlastAttack.FalloffModel.None,
-                baseForce = 200f,
+                baseForce = 200f * knockback,
                 attackerFiltering = AttackerFiltering.NeverHitSelf,
                 damageType = DamageType(),
             }.Fire();
         }
 
-        void Lightning(Ray aim, float damage, HurtBox target)
+        void Lightning(Ray aim, float damage, HurtBox target, bool crit)
         {
             // Orbs are the host's job; the host runs this state too.
             if (!NetworkServer.active) return;
@@ -303,8 +322,8 @@ namespace RiskOfBonk
             {
                 origin = aim.origin,
                 damageValue = damage,
-                isCrit = Crit(),
-                bouncesRemaining = 3,
+                isCrit = crit,
+                bouncesRemaining = 3 + bounces, // Megabonk's lightning bounce upgrades
                 teamIndex = GetTeam(),
                 attacker = gameObject,
                 procCoefficient = weapon.MbProc,

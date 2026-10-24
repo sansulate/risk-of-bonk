@@ -247,8 +247,8 @@ namespace RiskOfBonk
         /// <summary>A weapon's stats after its level-ups: Megabonk's upgrades (weapons.json mbUpgrades) in order, one per level above 1.</summary>
         public struct Leveled
         {
-            public float damage, size, crit;
-            public int shots, damageSteps;
+            public float damage, size, crit, critDamage, speed, knockback;
+            public int shots, damageSteps, bounces;
         }
 
         public static Leveled Stats(WeaponRow w, int level)
@@ -269,6 +269,10 @@ namespace RiskOfBonk
                 case "projectiles": s.shots += Mathf.RoundToInt(v); break;
                 case "size": s.size += v; break;
                 case "crit": s.crit += v; break;
+                case "critdamage": s.critDamage += v; break;
+                case "bounces": s.bounces += Mathf.RoundToInt(v); break;
+                case "speed": s.speed += v; break;
+                case "knockback": s.knockback += v; break;
             }
         }
 
@@ -276,19 +280,33 @@ namespace RiskOfBonk
         public static string Describe(WeaponRow w, int from, int count)
         {
             if (w.MbUpgrades.Length == 0) return $"+{count} levels";
-            float dmg = 0f, size = 0f, crit = 0f; int shots = 0;
+            float dmg = 0f, size = 0f, crit = 0f, critDamage = 0f, speed = 0f, knockback = 0f; int shots = 0, bounces = 0;
             for (int i = from - 1; i < from - 1 + count; i++)
             {
                 string up = w.MbUpgrades[i % w.MbUpgrades.Length];
                 int c = up.IndexOf(':');
                 float.TryParse(up.Substring(c + 1), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v);
-                switch (up.Substring(0, c)) { case "damage": dmg += v; break; case "projectiles": shots += Mathf.RoundToInt(v); break; case "size": size += v; break; case "crit": crit += v; break; }
+                switch (up.Substring(0, c))
+                {
+                    case "damage": dmg += v; break;
+                    case "projectiles": shots += Mathf.RoundToInt(v); break;
+                    case "size": size += v; break;
+                    case "crit": crit += v; break;
+                    case "critdamage": critDamage += v; break;
+                    case "bounces": bounces += Mathf.RoundToInt(v); break;
+                    case "speed": speed += v; break;
+                    case "knockback": knockback += v; break;
+                }
             }
             var parts = new List<string>();
             if (dmg > 0f) parts.Add(w.MbDamage > 0f ? $"+{Mathf.RoundToInt(100f * dmg / Mathf.Max(0.01f, w.MbDamage))}% damage" : "+damage");
             if (shots > 0) parts.Add($"+{shots} projectile{(shots > 1 ? "s" : "")}");
             if (size > 0f) parts.Add($"+{Mathf.RoundToInt(size * 100f)}% size");
             if (crit > 0f) parts.Add($"+{Mathf.RoundToInt(crit * 100f)}% crit chance");
+            if (critDamage > 0f) parts.Add($"+{Mathf.RoundToInt(critDamage * 100f)}% crit damage");
+            if (bounces > 0) parts.Add($"+{bounces} bounce{(bounces > 1 ? "s" : "")}");
+            if (speed > 0f) parts.Add($"+{Mathf.RoundToInt(speed * 100f)}% projectile speed");
+            if (knockback > 0f) parts.Add($"+{Mathf.RoundToInt(knockback * 100f)}% knockback");
             return string.Join(", ", parts);
         }
 
