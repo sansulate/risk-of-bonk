@@ -58,6 +58,8 @@ namespace RiskOfBonk
                 "Megabonk's soundtrack (read from your Megabonk install) on the main menu and on Bonk style stages, with its boss music at the Teleporter; Risk of Rain 2's music elsewhere. Only on your own machine.");
             ConfigEntry<bool> hud = Config.Bind("Gameplay", "MegabonkHud", true,
                 "Megabonk's HUD in the top left: health bar, weapons (or a Risk of Rain 2 survivor's skills with their cooldowns) and the tomes you own. Risk of Rain 2's skill icons are hidden while it shows.");
+            ConfigEntry<bool> levelPause = Config.Bind("Gameplay", "MegabonkLevelUpPause", true,
+                "Playing alone, the game pauses while the level-up menu is open, like Megabonk. With other players it cannot pause; you are invincible for a few seconds instead.");
             ConfigEntry<bool> look = Config.Bind("Gameplay", "MegabonkLook", true,
                 "Megabonk's look on stages: brighter, more saturated colours and lighter fog. Only changes your own screen.");
 
@@ -76,7 +78,7 @@ namespace RiskOfBonk
             Part("Megabonk chest upgrades", () => Chests.Init(harmony));
             if (bosses.Value) Part("Megabonk bosses", () => { MegabonkBosses.Init(harmony); gameObject.AddComponent<FinalSwarm>(); });
             Part("Test keys", () => { TestKeys.On = File.Exists(Path.Combine(DataDir, "testgod")); gameObject.AddComponent<TestKeys>(); });
-            Part("Level-up menu", () => gameObject.AddComponent<UpgradePanel>());
+            Part("Level-up menu", () => { UpgradePanel.PauseWhenAlone = levelPause.Value; gameObject.AddComponent<UpgradePanel>(); });
             Part("Megabonk XP", () => { XpGems.Init(harmony, gameObject, xp.Value); gameObject.AddComponent<XpBar>(); });
             Part("Megabonk shrines", () => Shrines.Init(gameObject, shrines.Value));
             Part("Lobby style sync", () => gameObject.AddComponent<StageMode.LobbyBeacon>());

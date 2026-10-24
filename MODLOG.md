@@ -479,3 +479,8 @@
   every stage load added +0.35 exposure, +35 saturation and +15 contrast again. Original values are now noted once per
   grading. Checked: nine stage loads over two runs, no whiteout (was mostly white after about a dozen loads). Music:
   the track choice is keyed on the map too (a quick stage change could keep the previous map's track).
+- Update 44 (2026-10-24): playing alone, the game pauses while the level-up menu is open, like Megabonk's
+  LevelupScreen (config Gameplay/MegabonkLevelUpPause, default on); the countdown line reads "Paused". With other
+  players it keeps the invincibility countdown. Never touches the time scale under Risk of Rain 2's own pause menu, and
+  restores it afterwards if a pick was made while that menu was open. Checked with tools/ingame/pausetest.sh: the run
+  timer stays at 00:38.04 for 2 s with the menu open, then runs on after the pick.

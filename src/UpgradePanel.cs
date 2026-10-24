@@ -11,7 +11,8 @@ namespace RiskOfBonk
     /// <summary>
     /// The Megabonk level-up menu: it pops up while the local player has picks pending and offers three cards, chosen
     /// with 1/2/3. Cards are tomes, and for Megabonk survivors also weapons (new ones fill right mouse, Shift, R in order;
-    /// owned ones level up). The game is not paused (online co-op): instead the host makes you invincible for
+    /// owned ones level up). Playing alone the game pauses while the menu is open, as Megabonk's LevelupScreen does
+    /// (config Gameplay/MegabonkLevelUpPause). With other players it cannot: instead the host makes you invincible for
     /// tuning.upgrade_invincibility seconds, shown as a countdown that turns red and shakes in its last 30%; picking
     /// ends it early. Icons are Megabonk's own.
     /// </summary>
@@ -44,6 +45,38 @@ namespace RiskOfBonk
         static readonly string[] padNames = { "X", "Y", "B" };
 
         public static bool Open { get; private set; }
+        public static bool PauseWhenAlone = true;
+        bool paused;
+        float pausedScale = 1f;
+
+        static bool Alone => UnityEngine.Networking.NetworkServer.active && NetworkUser.readOnlyInstancesList.Count <= 1;
+
+        /// <summary>Playing alone, time stands still while the menu is open (never over Risk of Rain 2's own pause menu).</summary>
+        void Pause(bool want)
+        {
+            want = want && PauseWhenAlone && Alone && Run.instance;
+            if (want == paused) return;
+            if (want)
+            {
+                if (PauseManager.isPaused) return;
+                pausedScale = Time.timeScale > 0f ? Time.timeScale : 1f;
+                Time.timeScale = 0f;
+            }
+            else if (!PauseManager.isPaused && Time.timeScale == 0f) Time.timeScale = pausedScale;
+            else restoreLater = true; // Risk of Rain 2's pause menu is open: it would bring back our 0 when it closes
+            paused = want;
+        }
+
+        bool restoreLater;
+
+        void LateUpdate()
+        {
+            if (!restoreLater || paused || PauseManager.isPaused) return;
+            restoreLater = false;
+            if (Time.timeScale == 0f) Time.timeScale = pausedScale;
+        }
+
+        void OnDisable() => Pause(false);
 
         /// <summary>Melty's test mode picks a card through this (0-2), as if its key was pressed.</summary>
         public static int TestPick = -1;
@@ -110,6 +143,7 @@ namespace RiskOfBonk
         {
             if (root.gameObject.activeSelf != on) root.gameObject.SetActive(on);
             Open = on;
+            Pause(on);
         }
 
         void Update()
@@ -177,7 +211,16 @@ namespace RiskOfBonk
             // Invincibility countdown: red and shaking in its last 30%.
             float total = Mathf.Max(0.1f, Tune.UpgradeInvincibility);
             float left = total - t;
-            if (left > 0f)
+            if (paused)
+            {
+                timerText.text = "Paused";
+                timerText.color = Color.white;
+                timerFillImg.color = Color.white;
+                timerFill.localScale = Vector3.one;
+                timerRt.anchoredPosition = new Vector2(0, -92);
+                timerRt.localScale = Vector3.one;
+            }
+            else if (left > 0f)
             {
                 float frac = left / total;
                 bool danger = frac <= 0.3f;
