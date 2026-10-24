@@ -50,7 +50,7 @@ namespace RiskOfBonk
             int monsters = TeamComponent.GetTeamMembers(TeamIndex.Monster).Count;
             float t = Mathf.Max(1f, run.GetRunStopwatch());
             Log.Info($"fight: {t:0}s {(body ? body.GetDisplayName() : "dead")} lv {(body ? body.level : 0):0} hp {(body && body.healthComponent ? body.healthComponent.combinedHealth : 0):0}/{(body && body.healthComponent ? body.healthComponent.fullCombinedHealth : 0):0}, " +
-                     $"dealt {dealt:0} ({dealt / t:0.#}/s), taken {taken:0} ({taken / t:0.#}/s), kills {kills}, deaths {deaths}, monsters alive {monsters}, difficulty {run.difficultyCoefficient:0.##}");
+                     $"dealt {dealt:0} ({dealt / t:0.#}/s), taken {taken:0} ({taken / t:0.#}/s), kills {kills}, deaths {deaths}, monsters alive {monsters} (target {Horde.Target()}), difficulty {run.difficultyCoefficient:0.##}");
         }
 
         void Update()

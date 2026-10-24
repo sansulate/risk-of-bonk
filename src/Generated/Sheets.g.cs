@@ -263,5 +263,17 @@ namespace RiskOfBonk.Generated
         public static float BalanceAreaLightning = 2.0f;
         /// <summary>Enemies a piercing bullet hits on average (Sniper, Space Noodle); other bullets hit one. (enemies)</summary>
         public static float BalanceAreaPierce = 2.0f;
+        /// <summary>Megabonk's StageSummoner.GetNumTargetEnemies: the enemies it keeps alive start at 5 + 200 x (stage time / stageDuration), times (1 + 0.4 x stage) here (Megabonk: 1 + 0.7 x Difficulty + 0.4 x its stage multiplier). This is the 5. (monsters)</summary>
+        public static float HordeTargetStart = 5.0f;
+        /// <summary>Megabonk's +200 enemies over a stage (GetNumTargetEnemies). (monsters)</summary>
+        public static float HordeTargetRamp = 200.0f;
+        /// <summary>Megabonk's stageDuration (MapData, Forest: 600 s): the target ramps over this long. (s)</summary>
+        public static float HordeStageSeconds = 600.0f;
+        /// <summary>Each stage cleared raises the target by this much of itself (Megabonk's 0.4 x stage multiplier). (x per stage)</summary>
+        public static float HordeTargetStageGrowth = 0.4f;
+        /// <summary>Risk of Rain 2 monsters are tougher, smarter and much heavier to run than Megabonk's, so the target is this share of Megabonk's (about 30 alive at 4 minutes, the horde_limit cap by 10), never above horde_limit. (x)</summary>
+        public static float HordeDensity = 0.35f;
+        /// <summary>While fewer monsters are alive than the target, each monster director without a boss squad earns this much extra credit per missing monster per second (a Lemurian costs 11, a Beetle 8), so the horde fills up like Megabonk's. (credits per missing monster per s)</summary>
+        public static float HordeFillCredit = 3.0f;
     }
 }

@@ -585,6 +585,54 @@
    "system": "balance",
    "note": "Enemies a piercing bullet hits on average (Sniper, Space Noodle); other bullets hit one.",
    "verified": false
+  },
+  {
+   "id": "horde_target_start",
+   "value": 5,
+   "unit": "monsters",
+   "system": "hordes",
+   "note": "Megabonk's StageSummoner.GetNumTargetEnemies: the enemies it keeps alive start at 5 + 200 x (stage time / stageDuration), times (1 + 0.4 x stage) here (Megabonk: 1 + 0.7 x Difficulty + 0.4 x its stage multiplier). This is the 5.",
+   "verified": false
+  },
+  {
+   "id": "horde_target_ramp",
+   "value": 200,
+   "unit": "monsters",
+   "system": "hordes",
+   "note": "Megabonk's +200 enemies over a stage (GetNumTargetEnemies).",
+   "verified": false
+  },
+  {
+   "id": "horde_stage_seconds",
+   "value": 600,
+   "unit": "s",
+   "system": "hordes",
+   "note": "Megabonk's stageDuration (MapData, Forest: 600 s): the target ramps over this long.",
+   "verified": false
+  },
+  {
+   "id": "horde_target_stage_growth",
+   "value": 0.4,
+   "unit": "x per stage",
+   "system": "hordes",
+   "note": "Each stage cleared raises the target by this much of itself (Megabonk's 0.4 x stage multiplier).",
+   "verified": false
+  },
+  {
+   "id": "horde_density",
+   "value": 0.35,
+   "unit": "x",
+   "system": "hordes",
+   "note": "Risk of Rain 2 monsters are tougher, smarter and much heavier to run than Megabonk's, so the target is this share of Megabonk's (about 30 alive at 4 minutes, the horde_limit cap by 10), never above horde_limit.",
+   "verified": false
+  },
+  {
+   "id": "horde_fill_credit",
+   "value": 3.0,
+   "unit": "credits per missing monster per s",
+   "system": "hordes",
+   "note": "While fewer monsters are alive than the target, each monster director without a boss squad earns this much extra credit per missing monster per second (a Lemurian costs 11, a Beetle 8), so the horde fills up like Megabonk's.",
+   "verified": false
   }
  ]
 }

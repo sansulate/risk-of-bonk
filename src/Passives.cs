@@ -455,10 +455,7 @@ namespace RiskOfBonk
                 Set(b, "maxHealth", baseHealth * Mathf.Max(0.1f, hp / MbBaseHealth));
                 float shield = Stat(row, "Shield");
                 if (shield > 0f) Set(b, "maxShield", b.maxShield + baseHealth * shield / MbBaseHealth);
-                // Characters with less health than the standard (Tony, CL4NK) spawn with the unmodified amount: cap it.
-                var hc = b.healthComponent;
-                if (NetworkServer.active && hc && hc.health > b.maxHealth) hc.Networkhealth = b.maxHealth;
-                if (NetworkServer.active && hc && hc.shield > b.maxShield) hc.Networkshield = b.maxShield;
+                // (Balance heals the rise in max health and caps health above it, after every bonus.)
                 // Armor: Megabonk's armor takes that fraction off each hit; Risk of Rain 2 armor a takes a / (100 + a).
                 float armor = Mathf.Min(0.9f, Stat(row, "Armor") + (p == "Reinforced" ? 0.01f * L : 0f));
                 if (armor > 0f) Set(b, "armor", b.armor + 100f * armor / (1f - armor));

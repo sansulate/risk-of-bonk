@@ -416,3 +416,13 @@
   a Risk of Rain 2 survivor. Fixes: characters with a negative Megabonk health modifier (Tony, CL4NK) spawned with the
   unmodified health and kept it until hurt (now capped), and Megabonk's Shield modifier is flat on the base like
   MaxHealth (CL4NK 44 health + 55 shield = 99, Megabonk's 90; was 22 shield).
+- Update 36 (2026-10-24): Megabonk's horde density (Horde.Target, tuning horde_target_*, horde_density,
+  horde_fill_credit). From Megabonk's StageSummoner.GetNumTargetEnemies: it keeps 5 + 200 x (stage time /
+  stageDuration) enemies alive (MapData Forest stageDuration 600 s), times 1 + 0.7 x Difficulty + 0.4 x its stage
+  multiplier; credits per second (1 + 0.5 x minutes); a summon every 2 s. Here the target is 35% of Megabonk's (Risk of
+  Rain 2 monsters are tougher and heavier to run), x (1 + 0.4 x stages cleared), capped by horde_limit 70, and while
+  fewer monsters are alive the stage's directors earn 3 credits per missing monster per second. Checked with the
+  Commando test bot: 8 -> 33 monsters alive over 4.5 minutes (was 5-10 throughout), 91 kills, health dipping to 103/154.
+  Fix: Risk of Rain 2 heals a body by the rise in max health inside RecalculateStats, before this mod's health bonuses
+  (Megabonk character health, HP Tomes); Balance now heals the rest of the rise after every bonus (and caps health above
+  the maximum). Megachad started at 110/132 and HP Tome owners healed less on level-ups; now 132/132.
