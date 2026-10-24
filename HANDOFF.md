@@ -13,8 +13,8 @@ re-ask the user about them.
 - Passives and character stats: src/Passives.cs (MODLOG 23). Weapon effects: Megabonk's own particle prefabs rebuilt by
   src/MegabonkFx.cs (MODLOG 24); first pass, mbFxScale per weapon needs tuning by eye (tools/ingame/fxtest.sh with F7
   slow motion), and only revolver/sword/shotgun/aura were looked at in game.
-- Bonk style is now Megabonk's own map generator, lighting, props, enemies and music (MODLOG 26-28), its chests, pots
-  and shrine statues (MODLOG 30), no drop pod and no leftover stage particles (MODLOG 34); chests can give weapon/tome
+- Bonk style is now Megabonk's own map generator, lighting, props, enemies and music (MODLOG 26-28), its chests, pots,
+  shrine statues (MODLOG 30) and boss portal as the Teleporter (MODLOG 37), no drop pod and no leftover stage particles (MODLOG 34); chests can give weapon/tome
   picks (MODLOG 25). Megabonk HUD (top left: health, weapons or RoR2 skills with cooldowns, tomes) replaces RoR2's
   skill icons, health bar and level display (MODLOG 31-32).
 - Balance (MODLOG 29, 33, 35, 36): src/Balance.cs scales Megabonk weapon damage to a Risk of Rain 2 kit's power
@@ -24,9 +24,9 @@ re-ask the user about them.
   plays close-range survivors (Megachad's aura) badly: it dies at about 55 s where Commando and CL4NK survive 4 min.
 - Test scripts: tools/ingame/terraintest.sh, stucktest.sh, enemytest.sh (testspawn takes a comma list), chesttest.sh
   (F2 opens the nearest chest), hudtest.sh (F1 visits interactables), survivetest.sh, tptest.sh.
-- Still open: projectile speed/bounce/duration upgrades; co-op with two players (per-slot weapon machines, enemy
+- Still open: Megabonk's duration upgrades (weapons.json skips them; crit damage, bounces, projectile speed and
+  knockback are in, MODLOG 38); co-op with two players (per-slot weapon machines, enemy
   looks, interactable looks and music are local and deterministic, untested together); Megabonk's desert/hell maps
-  (noise-mesh MapGenerator, not tile mazes) are not used; effect scales (mbFxScale) want tuning by eye; the Teleporter
-  keeps its Risk of Rain 2 look (Megabonk's BossSpawner prefab is a 43 m set piece); Risk of Rain 2's ranged monsters
+  (noise-mesh MapGenerator, not tile mazes) are not used; effect scales (mbFxScale) want tuning by eye; Risk of Rain 2's ranged monsters
   wear melee Megabonk looks and are hard on close-range survivors.
 - Melty publishing: only with the user's go-ahead (they paste a fresh Publish prompt; never save its token).
