@@ -489,3 +489,6 @@
 - Update 46 (2026-10-24): on Bonk style stages the stage title card names the Megabonk map ("Forest 1 / Megabonk's
   woods", "Desert 1 / Megabonk's dunes", "Graveyard / Megabonk's crypts") instead of the Risk of Rain 2 stage it
   replaced. Checked with tools/ingame/titletest.sh.
+- Update 47 (2026-10-24): on Bonk style stages the game's text calls the Teleporter the "Boss Portal" (it wears
+  Megabonk's boss portal): objectives, chat, prompts (Language.GetLocalizedStringByToken postfix, only while a Bonk map
+  is up). Checked: "Find and activate the Boss Portal", "You activated the Boss Portal".

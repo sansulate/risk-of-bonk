@@ -1136,6 +1136,20 @@ namespace RiskOfBonk
                 if (__instance.subtitleText) __instance.subtitleText.text = profile.noise ? "Megabonk's dunes" : profile.name == "Graveyard" ? "Megabonk's crypts" : "Megabonk's woods";
             }
 
+            // The Teleporter wears Megabonk's boss portal on Bonk style stages, so the game's text calls it that too
+            // (objectives, chat, its ping and prompt).
+            [HarmonyPostfix, HarmonyPatch(typeof(Language), nameof(Language.GetLocalizedStringByToken))]
+            static void PortalName(ref string __result) => Portal(ref __result);
+
+            [HarmonyPostfix, HarmonyPatch(typeof(Language), nameof(Language.GetLocalizedFormattedStringByToken))]
+            static void PortalNameFormatted(ref string __result) => Portal(ref __result);
+
+            static void Portal(ref string __result)
+            {
+                if (!Active || __result == null || __result.IndexOf("Teleporter", System.StringComparison.Ordinal) < 0) return;
+                __result = __result.Replace("Teleporter", "Boss Portal");
+            }
+
             // Megabonk drops you straight onto the map: no drop pod on Bonk style stages (host side).
             [HarmonyPrefix, HarmonyPatch(typeof(Stage), nameof(Stage.RespawnCharacter))]
             static void NoPod(Stage __instance)
