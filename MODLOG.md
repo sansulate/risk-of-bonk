@@ -405,3 +405,7 @@
   lines every 15 s in test runs (health, damage dealt/taken per second, kills, deaths, monsters alive, difficulty);
   tools/ingame/survivetest.sh runs a survivor in circles taking the first level-up card. A circling bot is a poor
   player (Megachad died at 54 s, the aura never stays on enemies), so it only shows trends.
+- Update 34 (2026-10-24): Bonk style stages start like Megabonk: no drop pod (Stage.usePod off on the host), you stand
+  on the map at once. The stage's own particle effects (waterfalls, falling leaves, dust) are hidden with its geometry;
+  they hung in mid-air over the Bonk map. Test key F10 takes a comma separated list in testspawn (each press spawns the
+  next, side by side). Checked: Imp, Beetle, Golem, Beetle Guard wear sword goblin, slime, golem and spider looks.

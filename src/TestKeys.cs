@@ -188,17 +188,23 @@ namespace RiskOfBonk
             Log.Info($"testweapons: {row.Id} now level {Weapons.Level(body, first)} ({Weapons.Describe(row, Weapons.Level(body, first) - 1, 1)})");
         }
 
+        static int spawnIndex;
+
         static void Spawn()
         {
             var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
             string file = Path.Combine(Plugin.DataDir, "testspawn");
             if (!body || !File.Exists(file)) return;
-            string name = File.ReadAllText(file).Trim();
+            // One master name, or a comma separated list: each press spawns the next, side by side.
+            var names = File.ReadAllText(file).Split(',');
+            int k = spawnIndex++ % names.Length;
+            string name = names[k].Trim();
             var prefab = MasterCatalog.FindMasterPrefab(name);
             if (!prefab) { Log.Warn("testspawn: no master " + name); return; }
             var aim = body.inputBank ? body.inputBank.aimDirection : body.transform.forward;
             aim.y = 0f;
-            var pos = body.footPosition + aim.normalized * 15f + Vector3.up;
+            var side = Vector3.Cross(Vector3.up, aim.normalized) * (names.Length > 1 ? (k - (names.Length - 1) * 0.5f) * 5f : 0f);
+            var pos = body.footPosition + aim.normalized * 15f + side + Vector3.up;
             var master = new MasterSummon { masterPrefab = prefab, position = pos, rotation = Quaternion.LookRotation(-aim), teamIndexOverride = TeamIndex.Monster, ignoreTeamMemberLimit = true }.Perform();
             Log.Info($"testspawn: {name} -> {(master ? master.name : "failed")}");
         }

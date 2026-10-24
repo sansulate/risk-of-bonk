@@ -403,9 +403,10 @@ namespace RiskOfBonk
             return s;
         }
 
+        // The stage's own particle effects (waterfalls, falling leaves, dust, rain) go too: they hang over the old
+        // geometry, in mid-air over the Bonk map.
         static bool KeepRenderer(Component c) =>
-            c is ParticleSystemRenderer || c.GetComponentInParent<NetworkIdentity>() || c.GetComponentInParent<IInteractable>() != null
-            || c.GetComponentInParent<SpawnPoint>();
+            c.GetComponentInParent<NetworkIdentity>() || c.GetComponentInParent<IInteractable>() != null || c.GetComponentInParent<SpawnPoint>();
 
         /// <summary>Hides the stage's own ground and props; its sky, light, fog and networked things stay.</summary>
         static void HideStage(GameObject[] roots)
@@ -415,7 +416,12 @@ namespace RiskOfBonk
             {
                 if (root.name.StartsWith("RiskOfBonk")) continue;
                 foreach (var r in root.GetComponentsInChildren<Renderer>(true))
-                    if (r.enabled && !KeepRenderer(r)) { r.enabled = false; renderers++; }
+                    if (r.enabled && !KeepRenderer(r))
+                    {
+                        r.enabled = false;
+                        renderers++;
+                        if (r is ParticleSystemRenderer && r.GetComponent<ParticleSystem>() is ParticleSystem ps) ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    }
                 foreach (var t in root.GetComponentsInChildren<Terrain>(true)) t.enabled = false;
                 foreach (var c in root.GetComponentsInChildren<Collider>(true))
                 {
@@ -905,6 +911,13 @@ namespace RiskOfBonk
                     if (NetworkServer.active) BakeGraphs();
                 }
                 catch (System.Exception e) { Log.Error($"Bonk style terrain: {e}"); }
+            }
+
+            // Megabonk drops you straight onto the map: no drop pod on Bonk style stages (host side).
+            [HarmonyPrefix, HarmonyPatch(typeof(Stage), nameof(Stage.RespawnCharacter))]
+            static void NoPod(Stage __instance)
+            {
+                if (StageMode.IsBonk && __instance.usePod) __instance.usePod = false;
             }
         }
     }
