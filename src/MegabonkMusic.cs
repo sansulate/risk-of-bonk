@@ -11,16 +11,17 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Megabonk's soundtrack, from the player's install: its Menu track on the main menu, and on Bonk style stages the map's
-    /// tracks (Megabonk's MusicTrack pools: Forest 1-4 on the forest stages, its other tracks on the Graveyard) with the
-    /// map's boss track (ForestBoss / GraveyardBoss) while the Teleporter boss is up. Risk of Rain 2's own music is muted
+    /// tracks (Megabonk's MusicTrack pools: Forest 1-4 on the forest stages, Desert 1-4 on the deserts, its other tracks on the
+    /// Graveyard) with the map's boss track (ForestBoss / DesertBoss / GraveyardBoss) while the Teleporter boss is up. Risk of Rain 2's own music is muted
     /// meanwhile and comes back elsewhere (Rain style). Played like the Megabonk sounds (Ogg Vorbis decoded with NVorbis,
     /// out through Windows' waveOut), streamed and looped on a thread of its own, at the game's master x music volume.
     /// </summary>
     public sealed class MegabonkMusic : MonoBehaviour
     {
         static readonly string[] Forest = { "Forest1_Loop", "Forest2_Loop", "Forest3_Loop", "Forest4_Loop" };
+        static readonly string[] Desert = { "Desert1_Loop", "Desert2_Loop", "Desert3_Loop", "Desert4_Loop" };
         static readonly string[] Graveyard = { "Other1_Loop", "Other2_Loop", "Other4_Loop", "Other5_Loop", "Other6_Loop", "Other7_Loop", "Other8Loop", "Other9_Loop" };
-        const string Menu = "Menu", ForestBoss = "ForestBoss_Loop", GraveyardBoss = "GraveyardBoss_Loop";
+        const string Menu = "Menu", ForestBoss = "ForestBoss_Loop", DesertBoss = "DesertBoss_Loop", GraveyardBoss = "GraveyardBoss_Loop";
 
         public static bool Enabled = true;
 
@@ -37,6 +38,20 @@ namespace RiskOfBonk
         {
             player = new Thread(PlayLoop) { IsBackground = true, Name = "RiskOfBonk music" };
             player.Start();
+            // Every track is converted from Megabonk's sound bank the first time it is needed, which can take a while; do
+            // them all once in the background (after the game has loaded), so a new stage's music starts at once.
+            new Thread(() =>
+            {
+                Thread.Sleep(20000);
+                var sw = System.Diagnostics.Stopwatch.StartNew();
+                int n = 0;
+                foreach (var t in new[] { Menu }.Concat(Forest).Concat(Desert).Concat(Graveyard).Concat(new[] { ForestBoss, DesertBoss, GraveyardBoss }))
+                {
+                    if (quitting) return;
+                    try { if (MegabonkSounds.OggFile(t) != null) n++; } catch (Exception e) { Log.Warn($"music {t}: {e.Message}"); }
+                }
+                Log.Info($"music: {n} Megabonk tracks ready in {sw.ElapsedMilliseconds} ms");
+            }) { IsBackground = true, Name = "RiskOfBonk music prepare", Priority = System.Threading.ThreadPriority.BelowNormal }.Start();
         }
 
         void Update()
@@ -59,17 +74,19 @@ namespace RiskOfBonk
         {
             if (RoR2.UI.MainMenu.MainMenuController.instance) return Menu;
             if (!Run.instance || !BonkTerrain.Active) return null;
-            bool graveyard = BonkTerrain.MapName == "Graveyard";
+            string map = BonkTerrain.MapName ?? "";
+            bool graveyard = map == "Graveyard", desert = map.StartsWith("Desert");
             var tp = TeleporterInteraction.instance;
             if (tp && tp.isCharging && tp.bossGroup && tp.bossGroup.combatSquad && tp.bossGroup.combatSquad.memberCount > 0)
-                return graveyard ? GraveyardBoss : ForestBoss;
+                return graveyard ? GraveyardBoss : desert ? DesertBoss : ForestBoss;
             int stage = Run.instance.stageClearCount;
             if (stageFor != stage || stageTrack == null)
             {
                 stageFor = stage;
-                var pool = graveyard ? Graveyard : Forest;
-                // Forest 1-3 start with their own track, like Megabonk's forest stages; then the pool at random.
-                stageTrack = !graveyard && stage < 3 ? pool[stage] : pool[new System.Random(stage * 7919 + (int)(Run.instance.seed & 0xffff)).Next(pool.Length)];
+                var pool = graveyard ? Graveyard : desert ? Desert : Forest;
+                // Forest 1-3 and Desert 1-3 play their own track, like Megabonk's stages; the Graveyard picks from its pool.
+                int tier = map.Length > 0 && char.IsDigit(map[map.Length - 1]) ? map[map.Length - 1] - '1' : -1;
+                stageTrack = tier >= 0 && tier < pool.Length ? pool[tier] : pool[new System.Random(stage * 7919 + (int)(Run.instance.seed & 0xffff)).Next(pool.Length)];
             }
             return stageTrack;
         }

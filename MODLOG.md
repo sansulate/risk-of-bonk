@@ -461,3 +461,16 @@
   monsters often fight from range (Lemurians spit fireballs before they bite), and a stand-and-fight test bot as
   Megachad took 144 damage in 10 s while its aura dealt 9 per second (the aura itself kills four Beetles within seconds
   of them arriving). Aura x0.59, Katana x0.79 at level 1. survivetest.sh: MOVEMS/PAUSEMS for stand-and-fight runs.
+- Update 42 (2026-10-24): Megabonk's Desert on Bonk style stages (BonkTerrain noise maps). Read from Megabonk:
+  StageDesert1-3 (tools/mbdata/stages.py now finds noise-map stages: an empty MapParameters reference, then the prop
+  rules), NoiseData (Desert 1/2: scale 100, 2 octaves, persistence 0.4, lacunarity 3; Desert 3: scale 40, 0.5),
+  TerrainDesert (heightMultiplier 11, a 4-key height curve), MapGenerator (mapChunkSize 241, the mesh scaled 4 x 8 x 4 x
+  StageData.proceduralMapScale 1 / 1.1 / 1.2), Noise.GenerateNoiseMap (octaves of Mathf.PerlinNoise at seeded offsets,
+  normalised; its blend warp is off for the desert) and the triplanar ground (SandNew on top, SandRockNew where steep;
+  Desert 3 the _2 textures). Desert 1 is 960 m across with dunes up to 50 m. Props by its rules: Landmark1-4 rock
+  formations, desert houses, seven rocks, Cactus1/2, logs, DesertTree1/2, 300 DesertBush; houses and landmarks collide.
+  Fog, light and ambience per stage (Desert 2 blue night, Desert 3 red). Invisible walls at the edges; node graphs every
+  12 m (about 1.1 s). Stage order: Forest 1, Desert 1, Forest 2, Desert 2, Graveyard, Forest 3, Desert 3. Desert enemy
+  looks: Mummy, Scorpion, Tumblebone; dusty Skeleton, big Scorpion, MummyTank; MummyAncient, armored dusty Skeleton;
+  Wisp flying. Music: Desert1-3_Loop and DesertBoss_Loop. All music tracks are now converted in the background 20 s after
+  start (20 tracks in under a second), so a stage's first track no longer starts late.

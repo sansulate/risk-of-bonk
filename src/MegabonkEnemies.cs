@@ -10,7 +10,8 @@ namespace RiskOfBonk
 {
     /// <summary>
     /// Megabonk's enemies on Bonk style stages: every regular monster (not bosses) wears a Megabonk enemy from the map's
-    /// pool (Forest: goblins, slimes, golems, boomer spiders, bees; Graveyard: skeletons, zombies, ghouls, ghosts, heads),
+    /// pool (Forest: goblins, slimes, golems, boomer spiders, bees; Desert: mummies, scorpions, tumblebones, dusty skeletons,
+    /// wisps; Graveyard: skeletons, zombies, ghouls, ghosts, heads),
     /// light monsters a light enemy, heavy ones a heavy one, flyers a flyer. Megabonk's enemies are baked vertex
     /// animations (AnimatedMeshScriptableObject: one mesh per frame), so the look is exactly Megabonk's: its walk frames
     /// play at its AnimationFPS, faster or slower with the monster's speed. The Risk of Rain 2 monster (its AI, attacks
@@ -37,13 +38,21 @@ namespace RiskOfBonk
             flying = new[] { "Ghost", "GhostPurple", "Head" },
         };
 
+        static readonly Pool DesertPool = new Pool
+        {
+            light = new[] { "Mummy", "Scorpion", "Tumblebone" },
+            medium = new[] { "SkeletonDusty", "ScorpionBig", "MummyTank" },
+            heavy = new[] { "MummyAncient", "SkeletonArmoredDusty" },
+            flying = new[] { "Wisp" },
+        };
+
         static Dictionary<string, RawEnemy> raws = new Dictionary<string, RawEnemy>();
 
         /// <summary>Reads the enemies (Megabonk's files are open while the content loads).</summary>
         public static void Prepare(MegabonkLibrary lib)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
-            var names = new HashSet<string>(new[] { ForestPool, GraveyardPool }.SelectMany(p => p.light.Concat(p.medium).Concat(p.heavy).Concat(p.flying)));
+            var names = new HashSet<string>(new[] { ForestPool, GraveyardPool, DesertPool }.SelectMany(p => p.light.Concat(p.medium).Concat(p.heavy).Concat(p.flying)));
             lock (lib) raws = lib.ReadEnemies(names);
             Log.Info($"Megabonk enemies read in {sw.ElapsedMilliseconds} ms: {string.Join(", ", raws.Select(r => $"{r.Key} ({r.Value?.Frames.Count ?? 0} frames)"))}"
                      + (raws.Count < names.Count ? "; missing: " + string.Join(", ", names.Where(n => !raws.ContainsKey(n))) : ""));
@@ -73,7 +82,8 @@ namespace RiskOfBonk
 
         static string Pick(CharacterBody body)
         {
-            var pool = BonkTerrain.MapName == "Graveyard" ? GraveyardPool : ForestPool;
+            string map = BonkTerrain.MapName ?? "";
+            var pool = map == "Graveyard" ? GraveyardPool : map.StartsWith("Desert") ? DesertPool : ForestPool;
             string[] options;
             if (body.isFlying) options = pool.flying;
             else if (body.baseMaxHealth < 150f) options = pool.light;

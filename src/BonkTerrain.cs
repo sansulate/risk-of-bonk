@@ -61,6 +61,13 @@ namespace RiskOfBonk
             public string[] tilePrefabs;
             public float populateTiles = 0.25f;
             public float Step => tile / 2f; // scaledTileHeight
+            // Noise-mesh maps (Desert): Megabonk's MapGenerator (NoiseData, TerrainData, StageData.proceduralMapScale).
+            public bool noise;
+            public float noiseScale, persistence, lacunarity, heightMultiplier, mapScale = 1f;
+            public int octaves;
+            public Keyframe[] curve;
+            public string sand, sandSide;
+            public int sandFormat = 4, sideFormat = 10;
         }
 
         static readonly string[] Rocks = { "rock_medium_01", "rock_medium_02", "rock_medium_03", "rock_small_01", "rock_small_02", "rock_small_05" };
@@ -118,7 +125,45 @@ namespace RiskOfBonk
             },
         };
 
-        static Profile ProfileFor(int stage) => Profiles[Mathf.Min(stage, 3) % Profiles.Length];
+        // Megabonk's TerrainDesert height curve (keyframes: time, value, in and out tangent).
+        static readonly Keyframe[] DesertCurve =
+        {
+            new Keyframe(0.0013f, 0.001f, 1.8899f, 1.8899f), new Keyframe(0.0718f, 0.1013f, 0.1141f, 0.1141f),
+            new Keyframe(0.3345f, 0.1109f, 0.118f, 0.118f), new Keyframe(0.8312f, 0.5727f, -0.0059f, -0.0059f),
+        };
+        static readonly string[] DesertRocks = { "Rock_4_Small", "Rock_10_Small", "Rock_11_Small", "Rock_12_Small", "Rock_13_Small", "Rock_14_Small", "Rock_15_Small" };
+        static readonly string[] Landmarks = { "Ladnmark1", "Ladnmark2", "Landmark3", "Landmark4" };
+
+        static Profile Desert(string name, float mapScale, float noiseScale, float persistence, Color fog, Color ambience, Color light, float landmarkMax, int landmarks, float rockMax, int rocks, int trees, string sand, string side, int sideFormat) => new Profile
+        {
+            name = name, noise = true, mapScale = mapScale, noiseScale = noiseScale, octaves = 2, persistence = persistence, lacunarity = 3f,
+            heightMultiplier = 11f, curve = DesertCurve, sand = sand, sandSide = side, sideFormat = sideFormat,
+            fog = fog, fogDensity = 0.006f, ambience = ambience, light = light, tops = new string[0], tilePrefabs = new string[0],
+            props = new[]
+            {
+                new PropRule(landmarks, 0.5f, landmarkMax * 0.45f, landmarkMax, Landmarks),
+                new PropRule(15, 0.5f, 1f, 1.25f, "TilePrefabHouse", "TilePrefabHouse2") { align = true },
+                new PropRule(rocks, 1f, 0.75f, rockMax, DesertRocks) { align = true },
+                new PropRule(120, 1f, 0.8f, 4f, "Cactus1", "Cactus2"),
+                new PropRule(60, 1f, 1f, 4f, "Log0 1", "Log2") { align = true },
+                new PropRule(trees, 1f, 0.5f, 2.5f, "DesertTree1", "DesertTree2"),
+                new PropRule(300, 0.5f, 0.75f, 1.5f, "DesertBush"),
+            },
+        };
+
+        static readonly Profile[] Deserts =
+        {
+            // StageDesert1-3: fog, ambience and light colours, map scale, NoiseDesert1 (scale 100, persistence 0.4) or
+            // NoiseDesert3 (scale 40, 0.5), and their prop rules.
+            Desert("Desert 1", 1f, 100f, 0.4f, new Color(0.93f, 0.82f, 0.59f), new Color(0.75f, 0.75f, 0.75f), new Color(1f, 0.96f, 0.84f), 3f, 8, 6f, 60, 15, "SandNew", "SandRockNew", 10),
+            Desert("Desert 2", 1.1f, 100f, 0.4f, new Color(0.42f, 0.62f, 0.94f), new Color(0.47f, 0.56f, 0.95f), new Color(0.36f, 0.64f, 1f), 5f, 8, 6f, 60, 15, "SandNew", "SandRockNew", 10),
+            Desert("Desert 3", 1.2f, 40f, 0.5f, new Color(0.58f, 0.19f, 0.19f), new Color(0.82f, 0.63f, 0.62f), new Color(0.88f, 0.74f, 0.72f) * 0.75f, 6f, 14, 8f, 100, 50, "SandNew_2", "SandRockNew_2", 4),
+        };
+
+        // Stage order: Megabonk's maps in turn, each map's tiers in order.
+        static readonly Profile[] Order = { Profiles[0], Deserts[0], Profiles[1], Deserts[1], Profiles[3], Profiles[2], Deserts[2] };
+
+        static Profile ProfileFor(int stage) => Order[stage % Order.Length];
 
         // ---------------- Megabonk assets (read while the content loads) ----------------
 
@@ -129,8 +174,16 @@ namespace RiskOfBonk
         public static void Prepare(MegabonkLibrary lib)
         {
             var sw = Stopwatch.StartNew();
-            foreach (var p in Profiles)
+            foreach (var p in Profiles.Concat(Deserts))
             {
+                if (p.noise)
+                {
+                    foreach (var name in p.props.SelectMany(r => r.prefabs))
+                        if (!rawProps.ContainsKey(name)) lock (lib) rawProps[name] = lib.ReadProp(name);
+                    foreach (var (t, f) in new[] { (p.sand, p.sandFormat), (p.sandSide, p.sideFormat) })
+                        if (!rawTextures.ContainsKey(t + f)) lock (lib) rawTextures[t + f] = lib.ExactTexture(t, f);
+                    continue;
+                }
                 foreach (var name in p.props.SelectMany(r => r.prefabs).Concat(p.tilePrefabs))
                     if (!rawProps.ContainsKey(name)) lock (lib) rawProps[name] = lib.ReadProp(name);
                 foreach (var t in p.tops.Concat(new[] { p.fillTop, p.fillMiddle }))
@@ -297,7 +350,144 @@ namespace RiskOfBonk
         }
 
         /// <summary>Ground height at local (x, z) (exact, matches the mesh).</summary>
-        public static float Height(float x, float z) => cells == null ? 0f : TileHeight(CellAt(x, z), x, z);
+        public static float Height(float x, float z) => profile != null && profile.noise ? (noiseH == null ? 0f : NoiseHeight(x, z)) : cells == null ? 0f : TileHeight(CellAt(x, z), x, z);
+
+        /// <summary>The ground's up direction at local (x, z).</summary>
+        static Vector3 GroundNormal(float x, float z)
+        {
+            if (profile.noise)
+            {
+                float dx = Height(x + 1f, z) - Height(x - 1f, z), dz = Height(x, z + 1f) - Height(x, z - 1f);
+                return new Vector3(-dx, 2f, -dz).normalized;
+            }
+            var c = CellAt(x, z);
+            if (!c.slope) return Vector3.up;
+            var up = Vector3.Cross(new Vector3(c.dirZ, 0, -c.dirX), new Vector3(c.dirX, c.yDir * step / tile, c.dirZ)).normalized;
+            return Vector3.Dot(up, Vector3.up) < 0f ? -up : up;
+        }
+
+        // ---------------- noise-mesh maps (Megabonk's MapGenerator: the Desert) ----------------
+
+        const int NoiseVerts = 241;  // MapGenerator.mapChunkSize
+        static float[,] noiseH;      // vertex heights (m)
+        static float spacing;        // metres between vertices: the mesh's localScale, 4 x StageData.proceduralMapScale
+        static float lowest, highest;
+
+        /// <summary>
+        /// MapGenerator.GenerateMap: Noise.GenerateNoiseMap (octaves of Perlin noise from seeded offsets, amplitude x
+        /// persistence and frequency x lacunarity per octave, normalised to 0..1), then MeshGenerator's heights:
+        /// heightCurve(h) x heightMultiplier, with the mesh scaled 4 x 8 x 4 by the stage's map scale.
+        /// </summary>
+        static void BuildNoise(System.Random rng)
+        {
+            int n = NoiseVerts;
+            spacing = 4f * profile.mapScale;
+            half = (n - 1) * spacing / 2f;
+            tile = 40f; step = 20f;
+            var curve = new AnimationCurve(profile.curve);
+            var offsets = new Vector2[profile.octaves];
+            for (int o = 0; o < offsets.Length; o++) offsets[o] = new Vector2(rng.Next(-10000, 10000), rng.Next(-10000, 10000));
+            var raw = new float[n, n];
+            float min = float.MaxValue, max = float.MinValue, hw = n / 2f, scale = Mathf.Max(0.0001f, profile.noiseScale);
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float amp = 1f, freq = 1f, h = 0f;
+                    for (int o = 0; o < offsets.Length; o++)
+                    {
+                        float sx = (x - hw) / scale * freq + offsets[o].x, sy = (y - hw) / scale * freq + offsets[o].y;
+                        h += (Mathf.PerlinNoise(sx, sy) * 2f - 1f) * amp;
+                        amp *= profile.persistence;
+                        freq *= profile.lacunarity;
+                    }
+                    raw[x, y] = h;
+                    if (h < min) min = h;
+                    if (h > max) max = h;
+                }
+            noiseH = new float[n, n];
+            float hs = profile.heightMultiplier * 8f * profile.mapScale;
+            lowest = float.MaxValue; highest = float.MinValue;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float v = curve.Evaluate(Mathf.InverseLerp(min, max, raw[x, y])) * hs;
+                    noiseH[x, y] = v;
+                    lowest = Mathf.Min(lowest, v); highest = Mathf.Max(highest, v);
+                }
+            minLevel = Mathf.FloorToInt(lowest / step); maxLevel = Mathf.CeilToInt(highest / step);
+        }
+
+        /// <summary>Height on the noise mesh, on the same two triangles per quad as the mesh.</summary>
+        static float NoiseHeight(float x, float z)
+        {
+            int n = NoiseVerts;
+            float gx = Mathf.Clamp((x + half) / spacing, 0f, n - 1.001f), gz = Mathf.Clamp((z + half) / spacing, 0f, n - 1.001f);
+            int i = (int)gx, j = (int)gz;
+            float fx = gx - i, fz = gz - j;
+            float h00 = noiseH[i, j], h10 = noiseH[i + 1, j], h01 = noiseH[i, j + 1], h11 = noiseH[i + 1, j + 1];
+            return fz > fx ? h00 + fz * (h01 - h00) + fx * (h11 - h01) : h00 + fx * (h10 - h00) + fz * (h11 - h10);
+        }
+
+        const int SubSand = 0, SubSandSide = 1;
+
+        /// <summary>The noise map's mesh: Megabonk's triplanar sand (its top texture on gentle ground, the rock side texture where steep).</summary>
+        static Mesh NoiseMesh(out int[] subIds)
+        {
+            int n = NoiseVerts;
+            const float texMetres = 8f; // Megabonk's triplanar sand repeats every few metres
+            var v = new Vector3[n * n];
+            var uv = new Vector2[n * n];
+            for (int j = 0; j < n; j++)
+                for (int i = 0; i < n; i++)
+                {
+                    float x = -half + i * spacing, z = -half + j * spacing;
+                    v[j * n + i] = new Vector3(x, noiseH[i, j], z);
+                    uv[j * n + i] = new Vector2(x / texMetres, z / texMetres);
+                }
+            var sand = new List<int>((n - 1) * (n - 1) * 6);
+            var side = new List<int>();
+            void Tri(int a, int b, int c)
+            {
+                var nrm = Vector3.Cross(v[b] - v[a], v[c] - v[a]).normalized;
+                var list = Mathf.Abs(nrm.y) < 0.8f ? side : sand;
+                list.Add(a); list.Add(b); list.Add(c);
+            }
+            for (int j = 0; j < n - 1; j++)
+                for (int i = 0; i < n - 1; i++)
+                {
+                    int p00 = j * n + i, p10 = p00 + 1, p01 = p00 + n, p11 = p01 + 1;
+                    Tri(p00, p01, p11);
+                    Tri(p00, p11, p10);
+                }
+            var m = new Mesh { indexFormat = IndexFormat.UInt32, name = "BonkNoiseTerrain" };
+            m.vertices = v;
+            m.uv = uv;
+            m.subMeshCount = 2;
+            m.SetTriangles(sand, SubSand);
+            m.SetTriangles(side, SubSandSide);
+            m.RecalculateNormals();
+            m.RecalculateBounds();
+            subIds = new[] { SubSand, SubSandSide };
+            return m;
+        }
+
+        /// <summary>Invisible walls along the noise map's edges (Megabonk's map edge), so nobody walks off it.</summary>
+        static void EdgeWalls()
+        {
+            float h = highest - lowest + 80f, y = (lowest + highest) / 2f + 20f;
+            var walls = new[]
+            {
+                (new Vector3(half + 2f, y, 0f), new Vector3(4f, h, half * 2f + 8f)), (new Vector3(-half - 2f, y, 0f), new Vector3(4f, h, half * 2f + 8f)),
+                (new Vector3(0f, y, half + 2f), new Vector3(half * 2f + 8f, h, 4f)), (new Vector3(0f, y, -half - 2f), new Vector3(half * 2f + 8f, h, 4f)),
+            };
+            foreach (var (pos, size) in walls)
+            {
+                var go = new GameObject("BonkEdge") { layer = WorldLayer };
+                go.transform.SetParent(terrainRoot.transform, false);
+                go.transform.localPosition = pos;
+                go.AddComponent<BoxCollider>().size = size;
+            }
+        }
 
         static float GridHeight(float x, float z) => Height(x, z);
 
@@ -434,7 +624,7 @@ namespace RiskOfBonk
             Log.Info($"Bonk style: hid {renderers} renderers and {colliders} colliders of the stage");
         }
 
-        static float Inner => half - tile; // inside the edge walls
+        static float Inner => profile != null && profile.noise ? half - 6f : half - tile; // inside the edge walls
 
         /// <summary>Fixed interactables of the stage (newt altars and the like) are set down on the new ground.</summary>
         static void SettleInteractables(GameObject[] roots, System.Random rng)
@@ -460,7 +650,7 @@ namespace RiskOfBonk
             ulong seed = Seed();
             var rng = new System.Random((int)(seed & 0x7fffffff) ^ (int)(seed >> 33));
             profile = ProfileFor(Run.instance.stageClearCount);
-            BuildCells(rng);
+            if (profile.noise) BuildNoise(rng); else BuildCells(rng);
             var scene = SceneManager.GetActiveScene();
             var roots = scene.GetRootGameObjects();
 
@@ -476,18 +666,22 @@ namespace RiskOfBonk
             SceneManager.MoveGameObjectToScene(terrainRoot, scene);
             terrainRoot.transform.position = Center;
             terrainRoot.layer = WorldLayer;
-            var mesh = TerrainMesh(out var subIds);
+            int[] subIds;
+            var mesh = profile.noise ? NoiseMesh(out subIds) : TerrainMesh(out subIds);
             var fillKey = profile.fillFormat.ToString();
-            var mats = subIds.Select(s => s == SubFillTop ? TileMat(profile.fillTop + fillKey, new Color(0.77f, 0.77f, 0.77f))
-                : s == SubFillMiddle ? TileMat(profile.fillMiddle + fillKey, new Color(0.77f, 0.77f, 0.77f))
-                : TileMat(profile.tops[s], Color.white)).ToArray();
+            var mats = profile.noise
+                ? new[] { TileMat(profile.sand + profile.sandFormat, new Color(0.9f, 0.86f, 0.78f)), TileMat(profile.sandSide + profile.sideFormat, new Color(0.8f, 0.78f, 0.74f)) }
+                : subIds.Select(s => s == SubFillTop ? TileMat(profile.fillTop + fillKey, new Color(0.77f, 0.77f, 0.77f))
+                    : s == SubFillMiddle ? TileMat(profile.fillMiddle + fillKey, new Color(0.77f, 0.77f, 0.77f))
+                    : TileMat(profile.tops[s], Color.white)).ToArray();
             terrainRoot.AddComponent<MeshFilter>().sharedMesh = mesh;
             var mr = terrainRoot.AddComponent<MeshRenderer>();
             mr.sharedMaterials = mats;
             terrainRoot.AddComponent<MeshCollider>().sharedMesh = mesh;
+            if (profile.noise) EdgeWalls();
             Physics.SyncTransforms();
 
-            int dressed = DressTiles(rng);
+            int dressed = profile.noise ? 0 : DressTiles(rng);
             int props = 0;
             foreach (var rule in profile.props) props += Scatter(rule, rng);
 
@@ -503,8 +697,10 @@ namespace RiskOfBonk
             Physics.SyncTransforms();
             try { Sky(); } catch (System.Exception e) { Log.Warn($"Bonk style sky: {e.Message}"); }
             Active = true;
-            Log.Info($"Bonk style: Megabonk {profile.name} map, {profile.size}x{profile.size} tiles of {tile} m ({profile.size * tile} m), levels {minLevel}..{maxLevel} x {step} m, " +
-                     $"{props} props, {dressed} dressed tiles, built in {sw.ElapsedMilliseconds} ms");
+            Log.Info(profile.noise
+                ? $"Bonk style: Megabonk {profile.name} map, noise mesh {NoiseVerts}x{NoiseVerts} at {spacing} m ({half * 2f:0} m), heights {lowest:0.#}..{highest:0.#} m, {props} props, built in {sw.ElapsedMilliseconds} ms"
+                : $"Bonk style: Megabonk {profile.name} map, {profile.size}x{profile.size} tiles of {tile} m ({profile.size * tile} m), levels {minLevel}..{maxLevel} x {step} m, " +
+                  $"{props} props, {dressed} dressed tiles, built in {sw.ElapsedMilliseconds} ms");
         }
 
         /// <summary>
@@ -668,16 +864,12 @@ namespace RiskOfBonk
                 foreach (var p in placed) if ((new Vector2(p.x - x, p.z - z)).sqrMagnitude < (p.w + r) * (p.w + r) * 0.25f) { free = false; break; }
                 if (!free) continue;
                 if (!PropModel(name, out var mesh, out var mats)) continue;
-                var c = CellAt(x, z);
-                // On the ground (not halfway down a cliff): the ground must be level across the prop's own spot.
-                float y = TileHeight(c, x, z);
+                float y = Height(x, z);
                 var go = new GameObject("BonkProp_" + name) { layer = WorldLayer };
                 go.transform.SetParent(terrainRoot.transform, false);
                 // (Megabonk drops its boulders from upOffset metres up to roll down; here they rest on the ground.)
                 go.transform.localPosition = new Vector3(x, y, z);
-                var up = Vector3.up;
-                if (rule.align && c.slope) up = Vector3.Cross(new Vector3(c.dirZ, 0, -c.dirX), new Vector3(c.dirX, c.yDir * step / tile, c.dirZ)).normalized;
-                if (Vector3.Dot(up, Vector3.up) < 0f) up = -up;
+                var up = rule.align ? GroundNormal(x, z) : Vector3.up;
                 go.transform.localRotation = Quaternion.FromToRotation(Vector3.up, up) * Quaternion.Euler(0f, yaw, 0f);
                 go.transform.localScale = Vector3.one * s;
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
@@ -736,7 +928,9 @@ namespace RiskOfBonk
                 sph.center = new Vector3(b.center.x, b.min.y + b.extents.y * 0.6f - sph.radius * 0.35f, b.center.z);
                 return r;
             }
-            if (p.MeshCollider && (p.Name.StartsWith("Fence") || p.Name == "Arch" || p.Name.StartsWith("Ruins")))
+            // Buildings and big rock formations: walk on and around them (fences, arches, ruins, desert houses and landmarks).
+            if (p.MeshCollider && (p.Name.StartsWith("Fence") || p.Name == "Arch" || p.Name.StartsWith("Ruins") || p.Name.StartsWith("TilePrefabHouse")
+                                   || p.Name.StartsWith("Landmark") || p.Name.StartsWith("Ladnmark")))
             {
                 go.AddComponent<MeshCollider>().sharedMesh = mesh;
                 return Mathf.Max(mesh.bounds.extents.x, mesh.bounds.extents.z) * s;
@@ -841,9 +1035,11 @@ namespace RiskOfBonk
                 return false;
             }
 
+            // Ground nodes every 10 m (12 m on the big noise maps, so their bake stays quick).
+            float gs = profile.noise ? 12f : 10f;
             var groundSpots = new List<Vector3>();
-            for (float x = -lim; x <= lim; x += 10f)
-                for (float z = -lim; z <= lim; z += 10f)
+            for (float x = -lim; x <= lim; x += gs)
+                for (float z = -lim; z <= lim; z += gs)
                 {
                     float y = GridHeight(x, z);
                     // Not on a cliff edge: the ground 2 m around must be about as high.
@@ -861,7 +1057,7 @@ namespace RiskOfBonk
                     airSpots.Add(new Vector3(x, y + 12f, z));
                     airSpots.Add(new Vector3(x, y + 26f, z));
                 }
-            var groundGraph = Bake("RiskOfBonkGroundNodes", groundSpots, 10f, 14.5f, true, out var groundGo);
+            var groundGraph = Bake("RiskOfBonkGroundNodes", groundSpots, gs, gs * 1.45f, true, out var groundGo);
             var airGraph = Bake("RiskOfBonkAirNodes", airSpots, 20f, 29f, false, out var airGo);
 
             info.groundNodes = groundGraph;
@@ -897,7 +1093,8 @@ namespace RiskOfBonk
                 {
                     if (!b || !b.hasEffectiveAuthority) continue;
                     var p = b.footPosition - Center;
-                    bool outside = p.y < (minLevel - 3) * step || Mathf.Max(Mathf.Abs(p.x), Mathf.Abs(p.z)) > half + 20f;
+                    float floorY = profile != null && profile.noise ? lowest - 30f : (minLevel - 3) * step;
+                    bool outside = p.y < floorY || Mathf.Max(Mathf.Abs(p.x), Mathf.Abs(p.z)) > half + 20f;
                     if (outside) TeleportHelper.TeleportBody(b, Center + Vector3.up * (Height(0f, 0f) + 3f));
                 }
             }
@@ -905,7 +1102,7 @@ namespace RiskOfBonk
 
         public static void Init(Harmony harmony, GameObject host)
         {
-            SceneManager.activeSceneChanged += (a, b) => { Active = false; placed.Clear(); };
+            SceneManager.activeSceneChanged += (a, b) => { Active = false; placed.Clear(); noiseH = null; };
             host.AddComponent<FallGuard>();
             harmony.PatchAll(typeof(Patches));
         }
