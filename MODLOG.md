@@ -327,3 +327,13 @@
   damage/level), Curse (+1% difficulty/level: monster directors earn that much more credit). Checked with
   tools/ingame/passivetest.sh: Megachad flexes on cooldown, Bush marks/explosions, Dicehead 5 rolls in 5 levels,
   Calcium speed +0.6 falling on hits, Tony zaps after running, Amog plague bursts, Ninja executed a Blind Pest.
+- Update 24 (2026-10-24): Megabonk's own weapon effects (src/MegabonkFx.cs, MegabonkFxData.cs). The Megabonk reader
+  copies effect prefabs (particle systems with all their modules, mesh/trail/line renderers, materials, textures,
+  meshes); MegabonkFx rebuilds them as Unity particle systems at runtime. Each weapon's prefabs come from its
+  WeaponData.attack -> WeaponAttack (prefabProjectile / prefabMuzzle / prefabHit) or its constant attack (CombatAura,
+  IceAura, DragonsBreath, LaserBeamAttack); weapons.json mbFxMuzzle/mbFxShot/mbFxMode/mbFxHit/mbFxScale/mbFxSpeed say
+  which and how they are placed (fly, burst, beam, slash, strike, ghost, aura, stream). Retro Arsenal shaders map to
+  RoR2's Cloud Remap with the remap off (vertex colour on, vertex alpha off, as RoR2's own particle materials do);
+  _ExtraGlow >= 2 adds light (SrcAlpha/One), the rest blends. Risk of Rain 2 tracers, hit sparks, swings and novas are
+  left out where Megabonk's effect exists. Checked: 36 prefabs read, Megachad's aura ring, revolver/sword/shotgun
+  effects in game. First pass: per-weapon scales (mbFxScale) still want tuning by eye.

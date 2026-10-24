@@ -1,6 +1,6 @@
 {
  "sheet": "weapons",
- "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow|poison. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used. mbUpgrades = the weapon's Megabonk UpgradeData that this mod applies (damage = flat Megabonk damage, projectiles = more shots, size = radius/area x(1+v), crit = crit chance); each weapon level beyond the first applies the next one in order, cycling (Megabonk rolls a random few per level; the fixed order needs no network message).",
+ "note": "Megabonk weapons as skills for the Megabonk survivors only. Each survivor starts with its startWeapon (characters.json) on primary (left mouse); weapons picked on level up fill secondary (right mouse), utility (Shift) and special (R) in pick order: 4 weapons per run. Picking an owned weapon again levels it (+25% damage per level). kind: bullet | projectile | melee | aura | lightning. damage = x base damage per hit; interval = seconds between attacks (attack speed shortens it); cooldown = seconds between uses on slots 2-4; range = bullet range or melee/aura radius (m); prefab = RoR2 projectile address; effect = tracer (bullet) or swing/nova effect address; damageType none|ignite|bleed|slow|poison. mbIcon = exact Megabonk Texture2D name. mbSound = Megabonk AudioClip played on every attack instead of the RoR2 sound (empty: no short Megabonk sound fits, the RoR2 sound stays). mbProjectile = Megabonk model the projectile shows instead of its RoR2 look (projScale, projSpin deg/s); weapons without one have only particle effects in Megabonk, so they keep RoR2's. mb* = Megabonk's own WeaponData (sharedassets1, read with Il2CppDumper's layout): mbDamage per hit (x tuning weapon_damage_scale = damage coefficient; 0 = use damage), mbProjectiles shots per attack (0: a constant attack that ticks), fired one after another over mbBurstTime (at least mbMinBurstInterval apart), then mbEndCooldown before the next attack; attack speed divides all of it (Megabonk's WeaponUtility.GetWeaponCooldown). mbRange = targeting range (closest enemies first; 0 = melee/aura: range is used). mbOnlyClose: holds fire while no enemy is in range. mbCritChance adds to crit chance, mbProc is the proc coefficient. Weapons fire by themselves, as in Megabonk; interval and cooldown are no longer used. mbUpgrades = the weapon's Megabonk UpgradeData that this mod applies (damage = flat Megabonk damage, projectiles = more shots, size = radius/area x(1+v), crit = crit chance); each weapon level beyond the first applies the next one in order, cycling (Megabonk rolls a random few per level; the fixed order needs no network message). mbFx* = Megabonk's own effect prefabs for the weapon (MegabonkFx rebuilds their particle systems): mbFxMuzzle plays where a shot leaves, mbFxShot is the attack itself, placed by mbFxMode (fly: travels to the target at mbFxSpeed m/s; burst: at the muzzle towards the target; beam: a line to the target; slash: at the body towards the target; strike: at the target; ghost: on the Risk of Rain 2 projectile, replacing its look; aura: kept on the body, sized to the reach; stream: kept on the body, pointing at the target), mbFxHit plays where it lands; mbFxScale sizes them. Paths below a prefab name pick one child (PoisonFlaskProjectile/SmokeTrail).",
  "rows": [
   {
    "id": "revolver",
@@ -38,7 +38,13 @@
     "damage:2.5",
     "projectiles:1",
     "crit:0.1"
-   ]
+   ],
+   "mbFxMuzzle": "RevolverMuzzle",
+   "mbFxShot": "RevolverProjectile",
+   "mbFxMode": "fly",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 90
   },
   {
    "id": "shotgun",
@@ -77,7 +83,13 @@
     "projectiles:1",
     "size:0.15",
     "crit:0.1"
-   ]
+   ],
+   "mbFxMuzzle": "ShotgunMuzzle",
+   "mbFxShot": "ShotgunProjectile",
+   "mbFxMode": "burst",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "sniper",
@@ -115,7 +127,13 @@
     "damage:4",
     "projectiles:1",
     "size:0.13"
-   ]
+   ],
+   "mbFxMuzzle": "SniperMuzzle",
+   "mbFxShot": "SniperProjectile",
+   "mbFxMode": "fly",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 150
   },
   {
    "id": "bow",
@@ -154,7 +172,13 @@
     "projectiles:1",
     "size:0.15",
     "crit:0.08"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "BowProjectile",
+   "mbFxMode": "fly",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 70
   },
   {
    "id": "space_noodle",
@@ -191,7 +215,13 @@
    "mbUpgrades": [
     "size:0.2",
     "damage:2"
-   ]
+   ],
+   "mbFxMuzzle": "LaserBeamAttack/LaserStartGreen",
+   "mbFxShot": "LaserBeamAttack/LaserBeamGreen",
+   "mbFxMode": "beam",
+   "mbFxHit": "LaserBeamAttack/Explosion",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "firestaff",
@@ -229,7 +259,13 @@
     "damage:2.5",
     "projectiles:1",
     "size:0.16"
-   ]
+   ],
+   "mbFxMuzzle": "FireballMuzzle",
+   "mbFxShot": "FireballProjectile",
+   "mbFxMode": "ghost",
+   "mbFxHit": "FireballExplosion",
+   "mbFxScale": 0.7,
+   "mbFxSpeed": 0
   },
   {
    "id": "dragons_breath",
@@ -266,7 +302,13 @@
    "mbUpgrades": [
     "size:0.15",
     "damage:4"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "DragonsBreath",
+   "mbFxMode": "stream",
+   "mbFxHit": "",
+   "mbFxScale": 0.8,
+   "mbFxSpeed": 0
   },
   {
    "id": "bone",
@@ -304,7 +346,13 @@
     "damage:2.5",
     "projectiles:1",
     "crit:0.12"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "ProjectileBone/SparkTrail",
+   "mbFxMode": "ghost",
+   "mbFxHit": "BoneProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "bananarang",
@@ -342,7 +390,13 @@
     "size:0.14",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "BananaProjectile/Renderer/Trail",
+   "mbFxMode": "ghost",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "axe",
@@ -380,7 +434,13 @@
     "size:0.1",
     "damage:1.5",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "AxeProjectile/Renderer/Trail",
+   "mbFxMode": "ghost",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "dice",
@@ -419,7 +479,13 @@
     "projectiles:1",
     "size:0.15",
     "crit:0.1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "",
+   "mbFxMode": "ghost",
+   "mbFxHit": "DiceExplosion",
+   "mbFxScale": 0.5,
+   "mbFxSpeed": 0
   },
   {
    "id": "slutty_rocket",
@@ -457,7 +523,13 @@
     "damage:2",
     "projectiles:1",
     "crit:0.08"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "RocketProjectile/GlowParticles",
+   "mbFxMode": "ghost",
+   "mbFxHit": "RocketExplosion",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "chunkers",
@@ -495,7 +567,13 @@
     "size:0.2",
     "damage:3",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "ChunkersAttack/Renderer/EarthMissile",
+   "mbFxMode": "ghost",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.8,
+   "mbFxSpeed": 0
   },
   {
    "id": "poison_flask",
@@ -533,7 +611,13 @@
     "damage:0.5",
     "projectiles:1",
     "size:0.15"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "PoisonFlaskProjectile/SmokeTrail",
+   "mbFxMode": "ghost",
+   "mbFxHit": "PoisonFlaskProjectile/PoisonExplosionPurple",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "mine",
@@ -571,7 +655,13 @@
     "size:0.15",
     "damage:3",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "",
+   "mbFxMode": "ghost",
+   "mbFxHit": "RocketExplosion",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "tornado",
@@ -609,7 +699,13 @@
     "damage:2",
     "projectiles:1",
     "size:0.14"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "TornadoProjectile",
+   "mbFxMode": "ghost",
+   "mbFxHit": "",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "sword",
@@ -647,7 +743,13 @@
     "size:0.2",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "SwordProjectilePrefab",
+   "mbFxMode": "slash",
+   "mbFxHit": "",
+   "mbFxScale": 0.45,
+   "mbFxSpeed": 0
   },
   {
    "id": "katana",
@@ -686,7 +788,13 @@
     "damage:2.2",
     "projectiles:1",
     "crit:0.08"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "KatanaProjectilePrefab",
+   "mbFxMode": "strike",
+   "mbFxHit": "",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "hero_sword",
@@ -724,7 +832,13 @@
     "size:0.15",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "HeroSwordProjectile",
+   "mbFxMode": "slash",
+   "mbFxHit": "",
+   "mbFxScale": 0.5,
+   "mbFxSpeed": 0
   },
   {
    "id": "corrupted_sword",
@@ -762,7 +876,13 @@
     "size:0.2",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "CorruptedSwordProjectile",
+   "mbFxMode": "slash",
+   "mbFxHit": "",
+   "mbFxScale": 0.5,
+   "mbFxSpeed": 0
   },
   {
    "id": "dexecutioner",
@@ -801,7 +921,13 @@
     "damage:2",
     "projectiles:1",
     "crit:0.05"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "DexecutionerProjectilePrefab",
+   "mbFxMode": "slash",
+   "mbFxHit": "",
+   "mbFxScale": 0.3,
+   "mbFxSpeed": 0
   },
   {
    "id": "aura",
@@ -838,7 +964,13 @@
    "mbUpgrades": [
     "size:0.14",
     "damage:1.4"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "AuraAttack",
+   "mbFxMode": "aura",
+   "mbFxHit": "",
+   "mbFxScale": 1.0,
+   "mbFxSpeed": 0
   },
   {
    "id": "frostwalker",
@@ -875,7 +1007,13 @@
    "mbUpgrades": [
     "size:0.1",
     "damage:2"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "IceRing",
+   "mbFxMode": "aura",
+   "mbFxHit": "",
+   "mbFxScale": 1.0,
+   "mbFxSpeed": 0
   },
   {
    "id": "blood_magic",
@@ -913,7 +1051,13 @@
     "size:0.15",
     "damage:1.5",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "BloodStaffProjectile",
+   "mbFxMode": "strike",
+   "mbFxHit": "",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "lightning_staff",
@@ -951,7 +1095,13 @@
     "size:0.2",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "LightningStrikeFx",
+   "mbFxMode": "strike",
+   "mbFxHit": "",
+   "mbFxScale": 0.7,
+   "mbFxSpeed": 0
   },
   {
    "id": "wireless_dagger",
@@ -988,7 +1138,13 @@
    "mbUpgrades": [
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "BluetoothMuzzle",
+   "mbFxShot": "BluetoothProjectile",
+   "mbFxMode": "ghost",
+   "mbFxHit": "GeneralProjectileHit",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "black_hole",
@@ -1026,7 +1182,13 @@
     "damage:1.25",
     "projectiles:1",
     "size:0.13"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "BlackHoleProjectile",
+   "mbFxMode": "ghost",
+   "mbFxHit": "",
+   "mbFxScale": 0.6,
+   "mbFxSpeed": 0
   },
   {
    "id": "aegis",
@@ -1064,7 +1226,13 @@
     "size:0.15",
     "damage:2",
     "projectiles:1"
-   ]
+   ],
+   "mbFxMuzzle": "",
+   "mbFxShot": "AegisAttack",
+   "mbFxMode": "slash",
+   "mbFxHit": "",
+   "mbFxScale": 0.5,
+   "mbFxSpeed": 0
   }
  ]
 }

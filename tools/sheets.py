@@ -133,7 +133,8 @@ def generate(s):
                  f"{cs(r.get('mbSound', ''))}, {cs(r.get('mbProjectile', ''))}, {cs(r.get('projScale', 1))}, {cs(r.get('projSpin', 0))}, "
                  f"{cs(float(r.get('mbDamage', 0)))}, {int(r.get('mbProjectiles', 1))}, {cs(float(r.get('mbBurstTime', 0)))}, {cs(float(r.get('mbMinBurstInterval', 0)))}, "
                  f"{cs(float(r.get('mbEndCooldown', r['interval'])))}, {cs(float(r.get('mbRange', 0)))}, {cs(float(r.get('mbCritChance', 0)))}, {cs(float(r.get('mbProc', 1)))}, "
-                 f"{cs(r.get('mbOnlyClose', False))}, {cs(r.get('mbUpgrades', []))}),")
+                 f"{cs(r.get('mbOnlyClose', False))}, {cs(r.get('mbUpgrades', []))}, "
+                 f"{cs(r.get('mbFxMuzzle', ''))}, {cs(r.get('mbFxShot', ''))}, {cs(r.get('mbFxMode', ''))}, {cs(r.get('mbFxHit', ''))}, {cs(float(r.get('mbFxScale', 1)))}, {cs(float(r.get('mbFxSpeed', 0)))}),")
     L.append("        };")
     L.append("        public static readonly BossRow[] Bosses =\n        {")
     for r in s["bosses"]:

@@ -10,8 +10,11 @@ re-ask the user about them.
 - Character grid: GRID_START (cells before Megachad) is 18 with every DLC survivor showing, 11 without.
 - Megabonk ground truth: tools/mbdata (README): Il2CppDumper output + raw asset readers + dis.py. Weapons, characters,
   weapon upgrades, movement, crouch, wall climb, model tilt and air deceleration now come from it.
-- Still open toward "play like Megabonk": weapon visuals are Risk of Rain 2 effects (Megabonk's are particles);
-  projectile speed/size/bounce/duration upgrades and character passives other than WallClimb are not applied;
-  Megabonk's per-character health/armor/etc. stat modifiers (tools/mbdata/characters.py) are not applied; co-op of
-  the per-slot weapon state machines not tested with two players.
+- Passives and character stats: src/Passives.cs (MODLOG 23). Weapon effects: Megabonk's own particle prefabs rebuilt by
+  src/MegabonkFx.cs (MODLOG 24); first pass, mbFxScale per weapon needs tuning by eye (tools/ingame/fxtest.sh with F7
+  slow motion), and only revolver/sword/shotgun/aura were looked at in game.
+- Still open: projectile speed/bounce/duration upgrades; co-op of the per-slot weapon state machines with two players;
+  Bonk style terrain (BonkTerrain.cs) wanted by the user: bigger maps at Megabonk's size and scale, Megabonk-like
+  generation, nicer look, and no getting stuck on trees/rocks (Megabonk's generator: MapGenerationController,
+  MapGenerator, ProceduralTiles namespace, MazeHeightGenerator in the Il2CppDumper dump) - not started.
 - Melty publishing: only with the user's go-ahead (they paste a fresh Publish prompt; never save its token).

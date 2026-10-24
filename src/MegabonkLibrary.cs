@@ -13,6 +13,8 @@ namespace RiskOfBonk
     {
         public string Name;
         public int Width, Height, Format, MipCount;
+        /// <summary>Unity's FilterMode from the texture's import settings (0 point, 1 bilinear, 2 trilinear).</summary>
+        public int Filter = 1;
         public byte[] Data;
     }
 
@@ -557,6 +559,7 @@ namespace RiskOfBonk
                 Height = t["m_Height"].AsInt,
                 Format = t["m_TextureFormat"].AsInt,
                 MipCount = t["m_MipCount"].IsDummy ? 1 : t["m_MipCount"].AsInt,
+                Filter = t["m_TextureSettings.m_FilterMode"].IsDummy ? 1 : t["m_TextureSettings.m_FilterMode"].AsInt,
                 Data = data,
             };
             texCache[(file, key)] = raw;

@@ -150,6 +150,7 @@ namespace RiskOfBonk
                 lastSoundAge = fixedAge;
                 WeaponVisuals.Fired(gameObject, weapon, characterBody.corePosition); // Megabonk's sound, and its projectile look
             }
+            WeaponVisuals.Attack(characterBody, weapon, aim, target, weapon.Kind == "aura" || weapon.Kind == "melee" ? Reach : Range, size);
             switch (weapon.Kind)
             {
                 case "bullet": Bullet(aim, hit); break;
@@ -180,8 +181,9 @@ namespace RiskOfBonk
                 damage = weapon.Count > 1 ? damage * 2f / weapon.Count : damage, // Megabonk's shotgun cone hits each enemy once
                 procCoefficient = weapon.MbProc,
                 force = 200f,
-                tracerEffectPrefab = Prefab(weapon.Effect),
-                hitEffectPrefab = Prefab("RoR2/Base/Commando/HitsparkCommando.prefab"),
+                // Megabonk's bullet and hit effects (WeaponVisuals) replace Risk of Rain 2's tracer and hit spark.
+                tracerEffectPrefab = WeaponVisuals.HasShot(weapon) ? null : Prefab(weapon.Effect),
+                hitEffectPrefab = WeaponVisuals.HasShot(weapon) ? null : Prefab("RoR2/Base/Commando/HitsparkCommando.prefab"),
                 isCrit = Crit(),
                 radius = 0.4f,
                 smartCollision = true,
@@ -220,7 +222,7 @@ namespace RiskOfBonk
             var dir = aim.direction;
             var centre = characterBody.corePosition + dir * (Reach * 0.6f);
             // The swing is shown on every machine; the hit is dealt once, by the player who owns the body.
-            var fx = Prefab(weapon.Effect);
+            var fx = WeaponVisuals.HasShot(weapon) ? null : Prefab(weapon.Effect); // Megabonk's slash replaces Risk of Rain 2's
             // Mercenary's slash animation where the body has it (alternating swings), with the slash on the blade's muzzle.
             string swing = (swingCount++ & 1) == 0 ? "GroundLight1" : "GroundLight2";
             var animator = GetModelAnimator();
@@ -267,7 +269,7 @@ namespace RiskOfBonk
         void Aura(float damage)
         {
             // Megabonk's aura is a steady ring that hurts every tick; the nova shows about once a second, not on every tick.
-            var fx = Prefab(weapon.Effect);
+            var fx = WeaponVisuals.HasShot(weapon) ? null : Prefab(weapon.Effect);
             if (fx && (!lastAuraFx.TryGetValue(gameObject, out float last) || Time.time - last > 0.9f))
             {
                 lastAuraFx[gameObject] = Time.time;

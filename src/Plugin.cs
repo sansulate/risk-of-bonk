@@ -81,7 +81,7 @@ namespace RiskOfBonk
                 MegabonkSounds.LoadAll(System.Linq.Enumerable.Concat(System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Weapons, w => w.MbSound),
                     System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Sounds, s => s.MbSound)));
             });
-            Part("Megabonk projectiles", () => WeaponVisuals.Init(harmony));
+            Part("Megabonk projectiles", () => WeaponVisuals.Init(harmony, gameObject));
             Part("Melty test run", () => gameObject.AddComponent<MeltyTestRun>());
             Part("Bonk style terrain", () => BonkTerrain.Init(harmony, gameObject));
             if (look.Value) Part("Megabonk look", StageLook.Init);
