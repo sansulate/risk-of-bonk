@@ -253,10 +253,10 @@ namespace RiskOfBonk.Generated
         public static float BalanceStrength = 0.6f;
         /// <summary>Weak loadouts are raised at most this much (most are lowered). (x)</summary>
         public static float BalanceMaxBoost = 1.15f;
-        /// <summary>Enemies a melee swing hits on average in a horde (used to compare its power). (enemies)</summary>
-        public static float BalanceAreaMelee = 2.0f;
-        /// <summary>Enemies an aura hits on average in a horde. (enemies)</summary>
-        public static float BalanceAreaAura = 2.0f;
+        /// <summary>Enemies a melee swing hits on average in a horde (used to compare its power). Lowered to 1.5: Risk of Rain 2 monsters often fight from range (a Lemurian spits fireballs before it bites), so close-range weapons reach fewer of them than in Megabonk's melee hordes (test bot: Megachad took 144 damage in 10 s while dealing 9 per second). (enemies)</summary>
+        public static float BalanceAreaMelee = 1.5f;
+        /// <summary>Enemies an aura hits on average in a horde. Lowered to 1.5: Risk of Rain 2 monsters often fight from range (a Lemurian spits fireballs before it bites), so close-range weapons reach fewer of them than in Megabonk's melee hordes (test bot: Megachad took 144 damage in 10 s while dealing 9 per second). (enemies)</summary>
+        public static float BalanceAreaAura = 1.5f;
         /// <summary>Enemies a projectile hits on average (some explode, bounce or return). (enemies)</summary>
         public static float BalanceAreaProjectile = 1.3f;
         /// <summary>Enemies a lightning strike reaches on average (it chains). (enemies)</summary>

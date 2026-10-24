@@ -457,3 +457,7 @@
   of a Bonk map hurt. No fall damage for 4 s after spawning on a Bonk stage (no pod: you appear above the ground).
   Bonk style stages: Risk of Rain 2's ranged monsters (wisps, Clay Templars, Alloy Vultures, Solus Probes, Hermit Crabs,
   Blind Pests, ...) spawn at bonk_ranged_weight (0.35) of their weight; Megabonk's hordes are melee chasers.
+- Update 41 (2026-10-24): close-range weapons counted as reaching 1.5 enemies (was aura 2, melee 2): Risk of Rain 2's
+  monsters often fight from range (Lemurians spit fireballs before they bite), and a stand-and-fight test bot as
+  Megachad took 144 damage in 10 s while its aura dealt 9 per second (the aura itself kills four Beetles within seconds
+  of them arriving). Aura x0.59, Katana x0.79 at level 1. survivetest.sh: MOVEMS/PAUSEMS for stand-and-fight runs.

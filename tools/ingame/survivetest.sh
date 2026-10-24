@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Balance check (needs testgod and testmortal: keys on, damage real): pick Megabonk survivor N (CELL=k: grid cell k,
 # a Risk of Rain 2 survivor), Bonk style unless NOTOGGLE, start, leave the pod, then for SECONDS (default 180) run in
-# wide circles, turning, taking the first level-up card whenever one is offered; screenshots every minute; quit.
+# wide circles (MOVEMS of running, then PAUSEMS standing still when set: stand and fight), turning, taking the first level-up card whenever one is offered; screenshots every minute; quit.
 # The log shows "fight:" lines every 15 s (health, damage dealt/taken per second, kills, deaths, monsters alive).
 # Usage: survivetest.sh N outPrefix
 set -e
@@ -16,7 +16,8 @@ ps click.ps1 -X 1030 -Y 868; sleep 40
 ps key.ps1 -Key e; sleep 4
 end=$(( $(date +%s) + ${SECONDS_:-180} )); n=0
 while [ "$(date +%s)" -lt "$end" ]; do
-  ps hold.ps1 -Vks "0x57,0x44" -Ms 2500 -TapVk 0x31 -TapEveryMs 1200 >/dev/null 2>&1 || true
+  ps hold.ps1 -Vks "0x57,0x44" -Ms ${MOVEMS:-2500} -TapVk 0x31 -TapEveryMs 1200 >/dev/null 2>&1 || true
+  if [ -n "$PAUSEMS" ]; then ps key.ps1 -Key 1 >/dev/null 2>&1; sleep $(awk "BEGIN{print $PAUSEMS/1000}"); fi
   ps look.ps1 -Dx 250 >/dev/null 2>&1 || true
   n=$((n+1)); if [ $((n % 20)) -eq 0 ]; then ps shot.ps1 -Out "$(out m$((n/20)) "$2")" >/dev/null; fi
 done

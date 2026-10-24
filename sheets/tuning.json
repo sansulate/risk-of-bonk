@@ -548,18 +548,18 @@
   },
   {
    "id": "balance_area_melee",
-   "value": 2.0,
+   "value": 1.5,
    "unit": "enemies",
    "system": "balance",
-   "note": "Enemies a melee swing hits on average in a horde (used to compare its power).",
+   "note": "Enemies a melee swing hits on average in a horde (used to compare its power). Lowered to 1.5: Risk of Rain 2 monsters often fight from range (a Lemurian spits fireballs before it bites), so close-range weapons reach fewer of them than in Megabonk's melee hordes (test bot: Megachad took 144 damage in 10 s while dealing 9 per second).",
    "verified": false
   },
   {
    "id": "balance_area_aura",
-   "value": 2.0,
+   "value": 1.5,
    "unit": "enemies",
    "system": "balance",
-   "note": "Enemies an aura hits on average in a horde.",
+   "note": "Enemies an aura hits on average in a horde. Lowered to 1.5: Risk of Rain 2 monsters often fight from range (a Lemurian spits fireballs before it bites), so close-range weapons reach fewer of them than in Megabonk's melee hordes (test bot: Megachad took 144 damage in 10 s while dealing 9 per second).",
    "verified": false
   },
   {
