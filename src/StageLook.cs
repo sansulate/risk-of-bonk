@@ -23,6 +23,11 @@ namespace RiskOfBonk
         }
 
         static readonly List<Graded> graded = new List<Graded>();
+        // Each grading's own values, noted the first time it is seen. Some volumes outlive their stage (the game keeps them
+        // across scene loads); reading their values again would read our own boost back and add it again on every stage
+        // (after a dozen stages the screen burned to white).
+        static readonly System.Runtime.CompilerServices.ConditionalWeakTable<ColorGrading, Graded> originals = new System.Runtime.CompilerServices.ConditionalWeakTable<ColorGrading, Graded>();
+        static readonly System.Runtime.CompilerServices.ConditionalWeakTable<RampFog, object> fogOriginals = new System.Runtime.CompilerServices.ConditionalWeakTable<RampFog, object>();
         static readonly List<(RampFog fog, float original)> fogs = new List<(RampFog, float)>();
         static PostProcessVolume fallback;
         static bool on = true, usingFallback;
@@ -67,16 +72,26 @@ namespace RiskOfBonk
                 // volume.profile is this volume's own copy, so the game's asset stays as it is.
                 var profile = volume.profile;
                 if (profile.TryGetSettings<ColorGrading>(out var cg))
-                    graded.Add(new Graded
+                {
+                    if (!originals.TryGetValue(cg, out var g))
                     {
-                        cg = cg,
-                        sat = cg.saturation.overrideState ? cg.saturation.value : 0f, satOn = cg.saturation.overrideState,
-                        con = cg.contrast.overrideState ? cg.contrast.value : 0f, conOn = cg.contrast.overrideState,
-                        exp = cg.postExposure.overrideState ? cg.postExposure.value : 0f, expOn = cg.postExposure.overrideState,
-                        bri = cg.brightness.overrideState ? cg.brightness.value : 0f, briOn = cg.brightness.overrideState,
-                    });
+                        g = new Graded
+                        {
+                            cg = cg,
+                            sat = cg.saturation.overrideState ? cg.saturation.value : 0f, satOn = cg.saturation.overrideState,
+                            con = cg.contrast.overrideState ? cg.contrast.value : 0f, conOn = cg.contrast.overrideState,
+                            exp = cg.postExposure.overrideState ? cg.postExposure.value : 0f, expOn = cg.postExposure.overrideState,
+                            bri = cg.brightness.overrideState ? cg.brightness.value : 0f, briOn = cg.brightness.overrideState,
+                        };
+                        originals.Add(cg, g);
+                    }
+                    graded.Add(g);
+                }
                 if (Tune.LookFog != 1f && profile.TryGetSettings<RampFog>(out var fog) && fog.fogIntensity.overrideState)
-                    fogs.Add((fog, fog.fogIntensity.value));
+                {
+                    if (!fogOriginals.TryGetValue(fog, out var original)) fogOriginals.Add(fog, original = fog.fogIntensity.value);
+                    fogs.Add((fog, (float)original));
+                }
             }
             if (graded.Count == 0)
             {

@@ -474,3 +474,8 @@
   looks: Mummy, Scorpion, Tumblebone; dusty Skeleton, big Scorpion, MummyTank; MummyAncient, armored dusty Skeleton;
   Wisp flying. Music: Desert1-3_Loop and DesertBoss_Loop. All music tracks are now converted in the background 20 s after
   start (20 tracks in under a second), so a stage's first track no longer starts late.
+- Update 43 (2026-10-24): fixed the screen burning to white after many stages in one game session. StageLook read
+  each post-processing volume's grading as its base and added Megabonk's boost; some volumes outlive their stage, so
+  every stage load added +0.35 exposure, +35 saturation and +15 contrast again. Original values are now noted once per
+  grading. Checked: nine stage loads over two runs, no whiteout (was mostly white after about a dozen loads). Music:
+  the track choice is keyed on the map too (a quick stage change could keep the previous map's track).

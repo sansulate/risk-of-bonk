@@ -21,7 +21,9 @@ namespace RiskOfBonk
     /// direction up or down), so the map is flat plateaus joined by ramps with cliffs between different heights; tile
     /// tops and cliff sides use Megabonk's tile textures, and Megabonk's own trees, logs, bushes, rocks, boulders and
     /// ruins are scattered by its StageData.randomMapObjects rules (amounts, scales, spacing) plus its pre-made tile
-    /// dressings on a quarter of the tiles. Stages follow Megabonk's maps: Forest 1-3, then the Graveyard.
+    /// dressings on a quarter of the tiles. The Desert is Megabonk's other generator (MapGenerator): a Perlin-noise
+    /// heightmap of dunes shaped by its height curve, with its triplanar sand. Stages take Megabonk's maps in turn:
+    /// Forest 1, Desert 1, Forest 2, Desert 2, Graveyard, Forest 3, Desert 3, and round again.
     /// The stage's own ground is hidden (its sky stays), its fixed interactables are set down on the new ground, and the
     /// host bakes ground and air node graphs from the tile heights so the Teleporter, chests and monsters use the map.
     /// Props only collide where Megabonk's do (tree trunks, logs, boulders, big rocks), with smooth primitive colliders.
@@ -30,7 +32,7 @@ namespace RiskOfBonk
     {
         public static bool Active { get; private set; }
         public static Vector3 Center { get; private set; }
-        /// <summary>The Megabonk map of the current Bonk style stage ("Forest 1".."Forest 3", "Graveyard").</summary>
+        /// <summary>The Megabonk map of the current Bonk style stage ("Forest 1".."Forest 3", "Desert 1".."Desert 3", "Graveyard").</summary>
         public static string MapName => Active && profile != null ? profile.name : null;
         static readonly int WorldLayer = LayerIndex.world.intVal;
 

@@ -30,7 +30,7 @@ namespace RiskOfBonk
         static volatile bool quitting;
         static Thread player;
         static bool muted;
-        string stageTrack;
+        string stageTrack, stageMap;
         int stageFor = -1;
         float nextCheck;
 
@@ -80,9 +80,10 @@ namespace RiskOfBonk
             if (tp && tp.isCharging && tp.bossGroup && tp.bossGroup.combatSquad && tp.bossGroup.combatSquad.memberCount > 0)
                 return graveyard ? GraveyardBoss : desert ? DesertBoss : ForestBoss;
             int stage = Run.instance.stageClearCount;
-            if (stageFor != stage || stageTrack == null)
+            if (stageFor != stage || stageMap != map || stageTrack == null)
             {
                 stageFor = stage;
+                stageMap = map;
                 var pool = graveyard ? Graveyard : desert ? Desert : Forest;
                 // Forest 1-3 and Desert 1-3 play their own track, like Megabonk's stages; the Graveyard picks from its pool.
                 int tier = map.Length > 0 && char.IsDigit(map[map.Length - 1]) ? map[map.Length - 1] - '1' : -1;
