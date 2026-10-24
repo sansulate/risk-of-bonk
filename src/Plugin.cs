@@ -142,7 +142,7 @@ namespace RiskOfBonk
             static void TestGod(CharacterBody __instance)
             {
                 if (!__instance.isPlayerControlled || !UnityEngine.Networking.NetworkServer.active || !__instance.healthComponent) return;
-                if (!TestGodOn) return;
+                if (!TestGodOn || File.Exists(Path.Combine(DataDir, "testmortal"))) return; // testmortal: keys on, damage real
                 __instance.healthComponent.godMode = true;
                 Log.Info($"testgod: {__instance.name} is unkillable");
             }

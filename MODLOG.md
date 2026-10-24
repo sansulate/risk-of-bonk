@@ -380,8 +380,9 @@
   a Megabonk survivor's raw power is the sum of its weapons' Megabonk damage x shots / attack cycle x crit x area
   (melee 2, aura 3, projectile 1.3, lightning 2, piercing bullets 2), from WeaponFire's own formulas. Megabonk survivors
   take weapon picks where Risk of Rain 2 survivors take tomes, so each weapon level may add balance_pick_value (5%) of
-  the reference. Weapon damage is pulled to that allowance (strength 0.9, weak loadouts raised at most 15%): Megachad's
-  aura x0.24, Ninja's katana x0.6, a lone revolver unchanged. Megabonk survivor bodies now use Commando's base stats
+  the reference. Weapon damage is pulled to that allowance (strength 0.6, weak loadouts raised at most 15%): Megachad's
+  aura x0.5 (aura counted as reaching 2 enemies; at 0.24 it needed 7 ticks for a Lemurian where Megabonk's aura kills
+  a goblin in 1-2), Ninja's katana x0.67, a lone revolver unchanged (2 shots per Lemurian, as per goblin in Megabonk). Megabonk survivor bodies now use Commando's base stats
   (110 health +33/level, 12 damage, no armor) instead of their moveset body's (Loader/Acrid 160 health, 20 armor),
   with the character's Megabonk health modifier on top: Megachad at level 5 291 health instead of 403.
 - Update 30 (2026-10-24): Megabonk's chests, pots and shrines on Bonk style stages (src/MegabonkInteractables.cs):
@@ -400,3 +401,7 @@
   equipment stay). With Megabonk movement, Risk of Rain 2's "Sprint to get around the map!" hint is dismissed (it
   waited for a manual sprint that never comes). Megabonk's BossSpawner was tried on the Teleporter and dropped: the
   prefab is its whole 43 m portal set piece and does not read as a Teleporter.
+- Update 33 (2026-10-24): balance test tools: testmortal (with testgod: test keys on, damage real) and "fight:" log
+  lines every 15 s in test runs (health, damage dealt/taken per second, kills, deaths, monsters alive, difficulty);
+  tools/ingame/survivetest.sh runs a survivor in circles taking the first level-up card. A circling bot is a poor
+  player (Megachad died at 54 s, the aura never stays on enemies), so it only shows trends.

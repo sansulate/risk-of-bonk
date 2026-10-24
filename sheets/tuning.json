@@ -532,7 +532,7 @@
   },
   {
    "id": "balance_strength",
-   "value": 0.9,
+   "value": 0.6,
    "unit": "0..1",
    "system": "balance",
    "note": "How strongly the weapons are pulled to the allowed power: 1 makes every loadout exactly as strong, lower lets strong weapon choices stay a little stronger (power = allowed^strength x raw^(1-strength)).",
@@ -556,7 +556,7 @@
   },
   {
    "id": "balance_area_aura",
-   "value": 3.0,
+   "value": 2.0,
    "unit": "enemies",
    "system": "balance",
    "note": "Enemies an aura hits on average in a horde.",

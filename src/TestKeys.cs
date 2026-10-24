@@ -17,8 +17,46 @@ namespace RiskOfBonk
 
         bool assetsChecked;
 
+        // Fight numbers for balance checks: logged every 15 s of a run.
+        static float dealt, taken, nextReport;
+        static int kills, deaths;
+        static bool hooked;
+
+        static void Hook()
+        {
+            hooked = true;
+            GlobalEventManager.onServerDamageDealt += r =>
+            {
+                if (!On || r == null || r.damageInfo == null) return;
+                var victim = r.victimBody;
+                if (victim && victim.isPlayerControlled) taken += r.damageDealt;
+                else if (r.attackerBody && r.attackerBody.isPlayerControlled) dealt += r.damageDealt;
+            };
+            GlobalEventManager.onCharacterDeathGlobal += r =>
+            {
+                if (!On || r == null) return;
+                if (r.victimBody && r.victimBody.isPlayerControlled) deaths++;
+                else if (r.attackerBody && r.attackerBody.isPlayerControlled) kills++;
+            };
+            Run.onRunStartGlobal += _ => { dealt = taken = 0f; kills = deaths = 0; nextReport = 0f; };
+        }
+
+        static void Report()
+        {
+            var run = Run.instance;
+            if (!run || run.GetRunStopwatch() < nextReport) return;
+            nextReport = run.GetRunStopwatch() + 15f;
+            var body = LocalUserManager.GetFirstLocalUser()?.cachedBody;
+            int monsters = TeamComponent.GetTeamMembers(TeamIndex.Monster).Count;
+            float t = Mathf.Max(1f, run.GetRunStopwatch());
+            Log.Info($"fight: {t:0}s {(body ? body.GetDisplayName() : "dead")} lv {(body ? body.level : 0):0} hp {(body && body.healthComponent ? body.healthComponent.combinedHealth : 0):0}/{(body && body.healthComponent ? body.healthComponent.fullCombinedHealth : 0):0}, " +
+                     $"dealt {dealt:0} ({dealt / t:0.#}/s), taken {taken:0} ({taken / t:0.#}/s), kills {kills}, deaths {deaths}, monsters alive {monsters}, difficulty {run.difficultyCoefficient:0.##}");
+        }
+
         void Update()
         {
+            if (On && !hooked) Hook();
+            if (On && UnityEngine.Networking.NetworkServer.active) Report();
             if (On && !assetsChecked && RoR2.UI.MainMenu.MainMenuController.instance)
             {
                 // Load every weapon asset once, so a wrong address shows up in the log right away.

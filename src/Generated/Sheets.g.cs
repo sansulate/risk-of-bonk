@@ -250,13 +250,13 @@ namespace RiskOfBonk.Generated
         /// <summary>Each weapon level a Megabonk survivor gains (a new weapon is one level, an upgrade pick adds its rarity's levels) raises the power its weapons may reach by this much of the reference: a little less than one Damage Tome point (8%), since a Megabonk survivor's weapons also reach more enemies, so a weapon pick and a tome pick are worth the same and Risk of Rain 2 survivors (who take only tomes) keep up. (x reference power per weapon level)</summary>
         public static float BalancePickValue = 0.05f;
         /// <summary>How strongly the weapons are pulled to the allowed power: 1 makes every loadout exactly as strong, lower lets strong weapon choices stay a little stronger (power = allowed^strength x raw^(1-strength)). (0..1)</summary>
-        public static float BalanceStrength = 0.9f;
+        public static float BalanceStrength = 0.6f;
         /// <summary>Weak loadouts are raised at most this much (most are lowered). (x)</summary>
         public static float BalanceMaxBoost = 1.15f;
         /// <summary>Enemies a melee swing hits on average in a horde (used to compare its power). (enemies)</summary>
         public static float BalanceAreaMelee = 2.0f;
         /// <summary>Enemies an aura hits on average in a horde. (enemies)</summary>
-        public static float BalanceAreaAura = 3.0f;
+        public static float BalanceAreaAura = 2.0f;
         /// <summary>Enemies a projectile hits on average (some explode, bounce or return). (enemies)</summary>
         public static float BalanceAreaProjectile = 1.3f;
         /// <summary>Enemies a lightning strike reaches on average (it chains). (enemies)</summary>
