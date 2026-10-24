@@ -277,5 +277,7 @@ namespace RiskOfBonk.Generated
         public static float HordeFillCredit = 3.0f;
         /// <summary>On Bonk style stages Risk of Rain 2's ranged monsters (MegabonkEnemies.Ranged: wisps, Clay Templars, Alloy Vultures, Solus Probes, Hermit Crabs, Brass Contraptions, lunar and void shooters...) spawn this much as often: Megabonk's hordes are melee chasers, and its looks on them are melee enemies. Close-range survivors (Megachad's aura) need the enemies to come to them. (x spawn weight)</summary>
         public static float BonkRangedWeight = 0.35f;
+        /// <summary>Megabonk's map ambience loops (Ambience_Forest / _Desert / _Graveyard) play on Bonk style maps at the game's master x sound effect volume times this; the replaced stage's own ambient sounds are stopped. (x)</summary>
+        public static float AmbienceVolume = 0.5f;
     }
 }

@@ -25,10 +25,20 @@ namespace RiskOfBonk
 
         public static bool Enabled = true;
 
-        static volatile string wanted;      // track the main thread wants (null: none)
-        static volatile float volume;       // settings volume, set by the main thread
+        /// <summary>One looping track at a time with its own thread and buffers: the music, and the map's ambience.</summary>
+        sealed class Channel
+        {
+            public readonly string label;
+            public volatile string wanted;  // track the main thread wants (null: none)
+            public volatile float volume;   // settings volume, set by the main thread
+            public Thread thread;
+            public readonly float[] floats = new float[48000 * 2];
+            public readonly short[] shorts = new short[48000 * 2];
+            public Channel(string label) { this.label = label; }
+        }
+
+        static readonly Channel music = new Channel("music"), ambience = new Channel("ambience");
         static volatile bool quitting;
-        static Thread player;
         static bool muted;
         string stageTrack, stageMap;
         int stageFor = -1;
@@ -36,8 +46,12 @@ namespace RiskOfBonk
 
         void Start()
         {
-            player = new Thread(PlayLoop) { IsBackground = true, Name = "RiskOfBonk music" };
-            player.Start();
+            foreach (var ch in new[] { music, ambience })
+            {
+                var c = ch;
+                c.thread = new Thread(() => PlayLoop(c)) { IsBackground = true, Name = "RiskOfBonk " + c.label };
+                c.thread.Start();
+            }
             // Every track is converted from Megabonk's sound bank the first time it is needed, which can take a while; do
             // them all once in the background (after the game has loaded), so a new stage's music starts at once.
             new Thread(() =>
@@ -45,7 +59,7 @@ namespace RiskOfBonk
                 Thread.Sleep(20000);
                 var sw = System.Diagnostics.Stopwatch.StartNew();
                 int n = 0;
-                foreach (var t in new[] { Menu }.Concat(Forest).Concat(Desert).Concat(Graveyard).Concat(new[] { ForestBoss, DesertBoss, GraveyardBoss }))
+                foreach (var t in new[] { Menu }.Concat(Forest).Concat(Desert).Concat(Graveyard).Concat(new[] { ForestBoss, DesertBoss, GraveyardBoss }).Concat(Ambiences))
                 {
                     if (quitting) return;
                     try { if (MegabonkSounds.OggFile(t) != null) n++; } catch (Exception e) { Log.Warn($"music {t}: {e.Message}"); }
@@ -58,9 +72,11 @@ namespace RiskOfBonk
         {
             if (Time.unscaledTime < nextCheck) return;
             nextCheck = Time.unscaledTime + 0.5f;
-            volume = Settings();
+            music.volume = Settings();
+            ambience.volume = SfxSettings() * Generated.Tune.AmbienceVolume;
             string track = Enabled ? Pick() : null;
-            wanted = track;
+            music.wanted = track;
+            ambience.wanted = Enabled ? PickAmbience() : null;
             // Risk of Rain 2's music off while Megabonk's plays.
             bool mute = track != null;
             if (mute != muted)
@@ -98,6 +114,18 @@ namespace RiskOfBonk
             return c != null && float.TryParse(c.GetString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float f) ? f : 100f;
         }
 
+        // Megabonk's map ambience loops (MapData.ambience), on Bonk style maps.
+        static readonly string[] Ambiences = { "Ambience_Forest", "Ambience_Desert", "Ambience_Graveyard" };
+
+        static string PickAmbience()
+        {
+            if (!Run.instance || !BonkTerrain.Active) return null;
+            string map = BonkTerrain.MapName ?? "";
+            return map == "Graveyard" ? Ambiences[2] : map.StartsWith("Desert") ? Ambiences[1] : Ambiences[0];
+        }
+
+        static float SfxSettings() => ConVar("volume_master") / 100f * ConVar("volume_sfx") / 100f;
+
         static float Settings() => ConVar("volume_master") / 100f * ConVar("volume_msx") / 100f * Generated.Tune.MusicVolume;
 
         void OnApplicationQuit() => Stop();
@@ -106,7 +134,7 @@ namespace RiskOfBonk
         static void Stop()
         {
             quitting = true;
-            try { player?.Join(1500); } catch { }
+            foreach (var c in new[] { music, ambience }) try { c.thread?.Join(1500); } catch { }
         }
 
         // ---------------- player thread ----------------
@@ -138,7 +166,7 @@ namespace RiskOfBonk
             public bool stopping;
         }
 
-        static void PlayLoop()
+        static void PlayLoop(Channel ch)
         {
             Stream cur = null;
             var failed = new HashSet<string>();
@@ -146,18 +174,18 @@ namespace RiskOfBonk
             {
                 try
                 {
-                    string want = wanted;
+                    string want = ch.wanted;
                     if (cur != null && cur.name != want) cur.stopping = true;
                     if (cur != null && cur.stopping && cur.fade <= 0f) { Close(cur); cur = null; }
                     if (cur == null && want != null && !failed.Contains(want))
                     {
                         cur = Open(want);
                         if (cur == null) failed.Add(want);
-                        else Log.Info($"music: {want}");
+                        else Log.Info($"{ch.label}: {want}");
                     }
-                    if (cur != null) Feed(cur);
+                    if (cur != null) Feed(cur, ch);
                 }
-                catch (Exception e) { Log.Warn("music: " + e.Message); if (cur != null) { Close(cur); cur = null; } Thread.Sleep(1000); }
+                catch (Exception e) { Log.Warn(ch.label + ": " + e.Message); if (cur != null) { Close(cur); cur = null; } Thread.Sleep(1000); }
                 Thread.Sleep(30);
             }
             if (cur != null) Close(cur);
@@ -182,11 +210,10 @@ namespace RiskOfBonk
             return s;
         }
 
-        static readonly float[] floats = new float[48000 * 2];
-        static readonly short[] shorts = new short[48000 * 2];
-
-        static void Feed(Stream s)
+        static void Feed(Stream s, Channel ch)
         {
+            var floats = ch.floats;
+            var shorts = ch.shorts;
             int hs = Marshal.SizeOf(typeof(WaveHdr));
             for (int i = 0; i < Buffers; i++)
             {
@@ -204,7 +231,7 @@ namespace RiskOfBonk
                 // Fade in on start, out when switching tracks (about 0.8 s).
                 float step = (float)BufferMs / 800f;
                 s.fade = Mathf.Clamp01(s.fade + (s.stopping ? -step : step));
-                float v = volume * s.fade;
+                float v = ch.volume * s.fade;
                 for (int k = 0; k < n; k++) shorts[k] = (short)Mathf.Clamp(floats[k] * v * 32767f, -32768f, 32767f);
                 Marshal.Copy(shorts, 0, s.data[i], n);
                 Marshal.StructureToPtr(new WaveHdr { data = s.data[i], length = (uint)(n * 2) }, s.hdrs[i], false);

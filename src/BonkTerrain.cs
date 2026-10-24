@@ -623,7 +623,23 @@ namespace RiskOfBonk
                     colliders++;
                 }
             }
-            Log.Info($"Bonk style: hid {renderers} renderers and {colliders} colliders of the stage");
+            // The stage's ambient sound emitters (wind, water, birds) go quiet: the map plays Megabonk's ambience
+            // (MegabonkMusic). Networked things (interactables, the Teleporter) keep their sounds.
+            int sounds = 0;
+            foreach (var root in roots)
+            {
+                if (root.name.StartsWith("RiskOfBonk")) continue;
+                foreach (var b in root.GetComponentsInChildren<Behaviour>(true))
+                {
+                    if (!b || !b.enabled) continue;
+                    string t = b.GetType().Name;
+                    if (t != "AkAmbient" && t != "AkEvent" || b.GetComponentInParent<NetworkIdentity>()) continue;
+                    try { AkSoundEngine.StopAll(b.gameObject); } catch { }
+                    b.enabled = false;
+                    sounds++;
+                }
+            }
+            Log.Info($"Bonk style: hid {renderers} renderers and {colliders} colliders of the stage, stopped {sounds} ambient sounds");
         }
 
         static float Inner => profile != null && profile.noise ? half - 6f : half - tile; // inside the edge walls

@@ -492,3 +492,8 @@
 - Update 47 (2026-10-24): on Bonk style stages the game's text calls the Teleporter the "Boss Portal" (it wears
   Megabonk's boss portal): objectives, chat, prompts (Language.GetLocalizedStringByToken postfix, only while a Bonk map
   is up). Checked: "Find and activate the Boss Portal", "You activated the Boss Portal".
+- Update 48 (2026-10-24): Megabonk's map ambience on Bonk style maps (Ambience_Forest / _Desert / _Graveyard, its
+  MapData.ambience) as a second looping channel next to the music, at master x sound effect volume x tuning
+  ambience_volume (0.5); the replaced stage's own ambient emitters (AkAmbient / AkEvent outside networked objects) are
+  stopped. The music player became two channels with their own threads and buffers. Checked in the log: 2 and 12
+  stage ambient sounds stopped, Ambience_Forest and Ambience_Desert playing (not listened to).
