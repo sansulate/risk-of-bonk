@@ -245,5 +245,23 @@ namespace RiskOfBonk.Generated
         public static float MusicVolume = 0.7f;
         /// <summary>Megabonk weapon damage (mbDamage in weapons.json, e.g. Revolver 5 per bullet, Sniper 22) times this is the hit's damage coefficient in Risk of Rain 2 (x the body's base damage). Keeps Megabonk's balance between weapons; this value sets the overall strength. (x base damage per Megabonk damage point)</summary>
         public static float WeaponDamageScale = 0.4f;
+        /// <summary>What a Risk of Rain 2 survivor's own kit deals per second, in units of its base damage, counting each extra enemy a hit reaches (Commando: Double Tap about 5/s, Phase Round and Suppressive Fire about 1.7/s more, little area). A Megabonk survivor's weapons are scaled towards this so they are as strong as the Risk of Rain 2 survivors next to them; RoR2 items, levels and tomes then grow both alike. (damage per second (x base damage))</summary>
+        public static float BalanceReferencePower = 5.0f;
+        /// <summary>Each weapon level a Megabonk survivor gains (a new weapon is one level, an upgrade pick adds its rarity's levels) raises the power its weapons may reach by this much of the reference: a little less than one Damage Tome point (8%), since a Megabonk survivor's weapons also reach more enemies, so a weapon pick and a tome pick are worth the same and Risk of Rain 2 survivors (who take only tomes) keep up. (x reference power per weapon level)</summary>
+        public static float BalancePickValue = 0.05f;
+        /// <summary>How strongly the weapons are pulled to the allowed power: 1 makes every loadout exactly as strong, lower lets strong weapon choices stay a little stronger (power = allowed^strength x raw^(1-strength)). (0..1)</summary>
+        public static float BalanceStrength = 0.9f;
+        /// <summary>Weak loadouts are raised at most this much (most are lowered). (x)</summary>
+        public static float BalanceMaxBoost = 1.15f;
+        /// <summary>Enemies a melee swing hits on average in a horde (used to compare its power). (enemies)</summary>
+        public static float BalanceAreaMelee = 2.0f;
+        /// <summary>Enemies an aura hits on average in a horde. (enemies)</summary>
+        public static float BalanceAreaAura = 3.0f;
+        /// <summary>Enemies a projectile hits on average (some explode, bounce or return). (enemies)</summary>
+        public static float BalanceAreaProjectile = 1.3f;
+        /// <summary>Enemies a lightning strike reaches on average (it chains). (enemies)</summary>
+        public static float BalanceAreaLightning = 2.0f;
+        /// <summary>Enemies a piercing bullet hits on average (Sniper, Space Noodle); other bullets hit one. (enemies)</summary>
+        public static float BalanceAreaPierce = 2.0f;
     }
 }

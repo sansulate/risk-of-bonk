@@ -287,6 +287,7 @@ namespace RiskOfBonk
             public float progress, shown, usedAt = -1f, phase;
         }
 
+        static readonly string[] statueNames = { "ChargeShrine", "MagnetShrine", "ShrineMaoi", "GreedShrine", "ChallengeShrine", "CursedShrine" };
         const float CrystalHeight = 4.5f; // over a player standing in the middle
         static readonly Dictionary<uint, Visual> visuals = new Dictionary<uint, Visual>();
         static readonly Color[] kindColors =
@@ -370,6 +371,9 @@ namespace RiskOfBonk
             var crystal = Part(go.transform, "Crystal", XpGems.GemMesh(), Mat(color, 0.8f));
             crystal.transform.localPosition = Vector3.up * CrystalHeight;
             crystal.transform.localScale = Vector3.one * (kind == KindCharge ? 2.6f : 1.8f);
+            // Megabonk's own statue in the middle when it was read; the crystal then stays hidden (it still flies up when used).
+            var statue = MegabonkInteractables.Model(statueNames[Mathf.Min(kind, statueNames.Length - 1)], go.transform, 1f);
+            if (statue) crystal.GetComponent<MeshRenderer>().enabled = false;
             return new Visual { go = go, crystal = crystal.transform, fill = fill.GetComponent<MeshFilter>(), fillTr = fill.transform, kind = kind, phase = Random.value * 6f };
         }
 

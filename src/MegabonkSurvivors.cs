@@ -60,6 +60,7 @@ namespace RiskOfBonk
             try { WeaponVisuals.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk projectile models: {e.Message}"); }
             try { BonkTerrain.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk map props: {e.Message}"); }
             try { MegabonkEnemies.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk enemies: {e.Message}"); }
+            try { MegabonkInteractables.Prepare(MegabonkLoader.Library); } catch (Exception e) { Log.Warn($"Megabonk chests and shrines: {e.Message}"); }
             var masters = new List<GameObject>();
             MegabonkBosses.BuildAll(keys, bodies, masters);
             pack.bodyPrefabs.Add(bodies.ToArray());
@@ -142,6 +143,7 @@ namespace RiskOfBonk
             Weapons.SetupBody(body, row);
             var cb = body.GetComponent<CharacterBody>();
             cb.baseNameToken = tok + "_NAME";
+            Balance.SetupBody(cb);
             cb.subtitleNameToken = tok + "_SUBTITLE";
             cb.bodyColor = color;
             var portrait = UnityConvert.Texture(portraitRaw, lib) ?? SolidPortrait(color);

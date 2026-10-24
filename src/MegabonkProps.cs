@@ -24,6 +24,8 @@ namespace RiskOfBonk
         public readonly List<RawCollider> Colliders = new List<RawCollider>();
         /// <summary>Whether the prefab collides through a mesh collider (buildings and ruins).</summary>
         public bool MeshCollider;
+        /// <summary>The prefab root's own scale (FindModel builds the model without it).</summary>
+        public float RootScale = 1f;
     }
 
     public sealed partial class MegabonkLibrary
@@ -47,6 +49,7 @@ namespace RiskOfBonk
                     var t = tf.baseField;
                     // The same root convention as BuildModel: placement dropped, tilt and scale kept.
                     var root = Matrix.TRS(new float[3], Tilt(Q(t["m_LocalRotation"])), V3(t["m_LocalScale"]));
+                    prop.RootScale = V3(t["m_LocalScale"])[1];
                     PropColliders(prop, tf, go, root, 0);
                 }
                 catch (Exception ex) { log($"prop {name} colliders: {ex.Message}"); }

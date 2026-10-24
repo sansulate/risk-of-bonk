@@ -373,3 +373,25 @@
   follows the feet and facing, plays its walk frames at its FPS x (speed / Megabonk speed), keeps Megabonk's size
   stretched at most 2x towards the monster's hurtbox, tints elites, and shrinks away on death. Checked: Lemurians
   appear as Megabonk slimes.
+- Update 29 (2026-10-24): balance between Megabonk and Risk of Rain 2 survivors (src/Balance.cs, tuning balance_*).
+  Both games' scaling are compared as power = damage per second in base-damage units x enemies each hit reaches.
+  Levels, items and tomes grow both kinds of survivor through the same stats, so only the Megabonk weapons are
+  compared: a Risk of Rain 2 kit is worth balance_reference_power (5, Commando's Double Tap plus its other skills);
+  a Megabonk survivor's raw power is the sum of its weapons' Megabonk damage x shots / attack cycle x crit x area
+  (melee 2, aura 3, projectile 1.3, lightning 2, piercing bullets 2), from WeaponFire's own formulas. Megabonk survivors
+  take weapon picks where Risk of Rain 2 survivors take tomes, so each weapon level may add balance_pick_value (5%) of
+  the reference. Weapon damage is pulled to that allowance (strength 0.9, weak loadouts raised at most 15%): Megachad's
+  aura x0.24, Ninja's katana x0.6, a lone revolver unchanged. Megabonk survivor bodies now use Commando's base stats
+  (110 health +33/level, 12 damage, no armor) instead of their moveset body's (Loader/Acrid 160 health, 20 armor),
+  with the character's Megabonk health modifier on top: Megachad at level 5 291 health instead of 403.
+- Update 30 (2026-10-24): Megabonk's chests, pots and shrines on Bonk style stages (src/MegabonkInteractables.cs):
+  chests wear Megabonk's Chest (OpenChest once bought), money barrels its PotSmall/PotBig, equipment barrels its Barrel,
+  printers its Microwave, shrines its statues (Chance/Order: Balance, Blood: Greed, Combat: Challenge, Mountain: Cursed,
+  Woods/Cleansing: Moai). The prefabs' encounter ring, floating "!" and chest shadow decal are dropped and the model
+  stood on the ground. The Risk of Rain 2 object stays underneath (renderers off, highlight on the Megabonk model). The
+  Megabonk shrines (Shrines.cs) show their statues on every stage. Test key F1 visits the next interactable.
+- Update 31 (2026-10-24): Megabonk's HUD (src/MegabonkHud.cs, config Gameplay/MegabonkHud): top left under the money,
+  a red health bar (shield and barrier over it), the four weapons with their levels (Risk of Rain 2 survivors: their four
+  skills with a cooldown sweep, seconds left and charges), and every owned tome with its level; slots pop gold on a
+  level up. Risk of Rain 2's own skill icons are hidden while it shows. Checked with tools/ingame/hudtest.sh as Megachad
+  and Commando.

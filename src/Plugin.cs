@@ -56,6 +56,8 @@ namespace RiskOfBonk
                 "Megabonk Charge Shrines (stand inside to charge, everyone gets an upgrade) and Magnet Shrines (pull every XP gem) on each stage, next to Risk of Rain 2's shrines. Applies when you host.");
             ConfigEntry<bool> music = Config.Bind("Gameplay", "MegabonkMusic", true,
                 "Megabonk's soundtrack (read from your Megabonk install) on the main menu and on Bonk style stages, with its boss music at the Teleporter; Risk of Rain 2's music elsewhere. Only on your own machine.");
+            ConfigEntry<bool> hud = Config.Bind("Gameplay", "MegabonkHud", true,
+                "Megabonk's HUD in the top left: health bar, weapons (or a Risk of Rain 2 survivor's skills with their cooldowns) and the tomes you own. Risk of Rain 2's skill icons are hidden while it shows.");
             ConfigEntry<bool> look = Config.Bind("Gameplay", "MegabonkLook", true,
                 "Megabonk's look on stages: brighter, more saturated colours and lighter fog. Only changes your own screen.");
 
@@ -85,6 +87,8 @@ namespace RiskOfBonk
                     System.Linq.Enumerable.Select(RiskOfBonk.Generated.Sheets.Sounds, s => s.MbSound)));
             });
             Part("Megabonk projectiles", () => WeaponVisuals.Init(harmony, gameObject));
+            Part("Megabonk HUD", () => { MegabonkHud.Enabled = hud.Value; gameObject.AddComponent<MegabonkHud>(); });
+            Part("Megabonk chests and shrines", () => gameObject.AddComponent<MegabonkInteractables.Scanner>());
             Part("Megabonk music", () => { MegabonkMusic.Enabled = music.Value; gameObject.AddComponent<MegabonkMusic>(); });
             Part("Melty test run", () => gameObject.AddComponent<MeltyTestRun>());
             Part("Bonk style terrain", () => BonkTerrain.Init(harmony, gameObject));

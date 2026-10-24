@@ -122,7 +122,7 @@ namespace RiskOfBonk
 
         // ---------------- Megabonk assets (read while the content loads) ----------------
 
-        static readonly Dictionary<string, RawProp> rawProps = new Dictionary<string, RawProp>();
+        internal static readonly Dictionary<string, RawProp> rawProps = new Dictionary<string, RawProp>();
         static readonly Dictionary<string, RawTexture> rawTextures = new Dictionary<string, RawTexture>();
 
         /// <summary>Reads Megabonk's map props and tile textures (Megabonk's files are open while the content loads).</summary>
@@ -171,7 +171,7 @@ namespace RiskOfBonk
             return Lit(tex, tex ? tint : new Color(0.4f, 0.7f, 0.3f), "tile_" + key);
         }
 
-        static bool PropModel(string name, out Mesh mesh, out Material[] mats)
+        internal static bool PropModel(string name, out Mesh mesh, out Material[] mats)
         {
             mesh = null; mats = null;
             if (!rawProps.TryGetValue(name, out var p) || p == null) return false;

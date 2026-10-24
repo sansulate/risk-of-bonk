@@ -101,7 +101,7 @@ namespace RiskOfBonk
             shotInterval = weapon.MbBurstTime > 0f ? Mathf.Max(weapon.MbBurstTime / shots, weapon.MbMinBurstInterval) / speed : 0f;
             duration = Mathf.Max(0.1f, weapon.MbEndCooldown / speed + shots * shotInterval);
             float coefficient = weapon.MbDamage > 0f ? stats.damage * Tune.WeaponDamageScale : weapon.Damage * (1f + 0.25f * stats.damageSteps);
-            damage = damageStat * coefficient;
+            damage = damageStat * coefficient * Balance.WeaponScale(characterBody);
             if (TestKeys.On) Log.Info($"weapon {weapon.Id} ({weapon.Kind}) lv {level}, {damage:0.#} damage x {shots} over {shots * shotInterval:0.##} s, cycle {duration:0.##} s, authority {isAuthority}");
             FireDue();
         }

@@ -513,6 +513,78 @@
    "system": "weapons",
    "note": "Megabonk weapon damage (mbDamage in weapons.json, e.g. Revolver 5 per bullet, Sniper 22) times this is the hit's damage coefficient in Risk of Rain 2 (x the body's base damage). Keeps Megabonk's balance between weapons; this value sets the overall strength.",
    "verified": true
+  },
+  {
+   "id": "balance_reference_power",
+   "value": 5.0,
+   "unit": "damage per second (x base damage)",
+   "system": "balance",
+   "note": "What a Risk of Rain 2 survivor's own kit deals per second, in units of its base damage, counting each extra enemy a hit reaches (Commando: Double Tap about 5/s, Phase Round and Suppressive Fire about 1.7/s more, little area). A Megabonk survivor's weapons are scaled towards this so they are as strong as the Risk of Rain 2 survivors next to them; RoR2 items, levels and tomes then grow both alike.",
+   "verified": false
+  },
+  {
+   "id": "balance_pick_value",
+   "value": 0.05,
+   "unit": "x reference power per weapon level",
+   "system": "balance",
+   "note": "Each weapon level a Megabonk survivor gains (a new weapon is one level, an upgrade pick adds its rarity's levels) raises the power its weapons may reach by this much of the reference: a little less than one Damage Tome point (8%), since a Megabonk survivor's weapons also reach more enemies, so a weapon pick and a tome pick are worth the same and Risk of Rain 2 survivors (who take only tomes) keep up.",
+   "verified": false
+  },
+  {
+   "id": "balance_strength",
+   "value": 0.9,
+   "unit": "0..1",
+   "system": "balance",
+   "note": "How strongly the weapons are pulled to the allowed power: 1 makes every loadout exactly as strong, lower lets strong weapon choices stay a little stronger (power = allowed^strength x raw^(1-strength)).",
+   "verified": false
+  },
+  {
+   "id": "balance_max_boost",
+   "value": 1.15,
+   "unit": "x",
+   "system": "balance",
+   "note": "Weak loadouts are raised at most this much (most are lowered).",
+   "verified": false
+  },
+  {
+   "id": "balance_area_melee",
+   "value": 2.0,
+   "unit": "enemies",
+   "system": "balance",
+   "note": "Enemies a melee swing hits on average in a horde (used to compare its power).",
+   "verified": false
+  },
+  {
+   "id": "balance_area_aura",
+   "value": 3.0,
+   "unit": "enemies",
+   "system": "balance",
+   "note": "Enemies an aura hits on average in a horde.",
+   "verified": false
+  },
+  {
+   "id": "balance_area_projectile",
+   "value": 1.3,
+   "unit": "enemies",
+   "system": "balance",
+   "note": "Enemies a projectile hits on average (some explode, bounce or return).",
+   "verified": false
+  },
+  {
+   "id": "balance_area_lightning",
+   "value": 2.0,
+   "unit": "enemies",
+   "system": "balance",
+   "note": "Enemies a lightning strike reaches on average (it chains).",
+   "verified": false
+  },
+  {
+   "id": "balance_area_pierce",
+   "value": 2.0,
+   "unit": "enemies",
+   "system": "balance",
+   "note": "Enemies a piercing bullet hits on average (Sniper, Space Noodle); other bullets hit one.",
+   "verified": false
   }
  ]
 }

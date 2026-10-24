@@ -48,7 +48,7 @@ namespace RiskOfBonk
         /// <summary>Melty's test mode picks a card through this (0-2), as if its key was pressed.</summary>
         public static int TestPick = -1;
 
-        static Texture2D Icon(string name)
+        internal static Texture2D Icon(string name)
         {
             if (icons.TryGetValue(name, out var t)) return t;
             var lib = MegabonkLoader.Library;
