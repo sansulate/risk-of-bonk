@@ -449,10 +449,16 @@ namespace RiskOfBonk
                 string p = row.MbPassive;
 
                 // Health: Megabonk's base 100 plus the character's modifier (Monke Grip: +2 per level), as a fraction.
+                // Shield is flat on Megabonk's base too (CL4NK: 40 health + 50 shield = 90% of a standard survivor).
                 float hp = MbBaseHealth + Stat(row, "MaxHealth") + (p == "WallClimb" ? 2f * L : 0f);
-                Set(b, "maxHealth", b.maxHealth * Mathf.Max(0.1f, hp / MbBaseHealth));
+                float baseHealth = b.maxHealth;
+                Set(b, "maxHealth", baseHealth * Mathf.Max(0.1f, hp / MbBaseHealth));
                 float shield = Stat(row, "Shield");
-                if (shield > 0f) Set(b, "maxShield", b.maxShield + b.maxHealth * shield / MbBaseHealth);
+                if (shield > 0f) Set(b, "maxShield", b.maxShield + baseHealth * shield / MbBaseHealth);
+                // Characters with less health than the standard (Tony, CL4NK) spawn with the unmodified amount: cap it.
+                var hc = b.healthComponent;
+                if (NetworkServer.active && hc && hc.health > b.maxHealth) hc.Networkhealth = b.maxHealth;
+                if (NetworkServer.active && hc && hc.shield > b.maxShield) hc.Networkshield = b.maxShield;
                 // Armor: Megabonk's armor takes that fraction off each hit; Risk of Rain 2 armor a takes a / (100 + a).
                 float armor = Mathf.Min(0.9f, Stat(row, "Armor") + (p == "Reinforced" ? 0.01f * L : 0f));
                 if (armor > 0f) Set(b, "armor", b.armor + 100f * armor / (1f - armor));

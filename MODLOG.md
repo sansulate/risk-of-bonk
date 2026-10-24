@@ -409,3 +409,10 @@
   on the map at once. The stage's own particle effects (waterfalls, falling leaves, dust) are hidden with its geometry;
   they hung in mid-air over the Bonk map. Test key F10 takes a comma separated list in testspawn (each press spawns the
   next, side by side). Checked: Imp, Beetle, Golem, Beetle Guard wear sword goblin, slime, golem and spider looks.
+- Update 35 (2026-10-24): balance comparison under the same play (test file testbot: aims at the nearest monster and
+  holds primary, secondary and special) with tools/ingame/survivetest.sh, 4 minutes of Bonk style stage 1, Rainstorm:
+  Commando 22.9 damage/s, 74 kills, no death; CL4NK (revolver) 19.2/s, 51 kills, no death; Megachad (aura) 8.7/s,
+  31 kills, no death (the circling bot rarely stays inside the aura). Megabonk survivors are now at or a little under
+  a Risk of Rain 2 survivor. Fixes: characters with a negative Megabonk health modifier (Tony, CL4NK) spawned with the
+  unmodified health and kept it until hurt (now capped), and Megabonk's Shield modifier is flat on the base like
+  MaxHealth (CL4NK 44 health + 55 shield = 99, Megabonk's 90; was 22 shield).

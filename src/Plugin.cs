@@ -147,6 +147,41 @@ namespace RiskOfBonk
                 Log.Info($"testgod: {__instance.name} is unkillable");
             }
 
+            // Test runs only: the file testbot aims the local player at the nearest monster and holds the primary,
+            // secondary and special skills (Megabonk weapons fire by themselves anyway), so a scripted run compares a
+            // Risk of Rain 2 survivor with a Megabonk one under the same play.
+            static bool BotOn => TestGodOn && File.Exists(Path.Combine(DataDir, "testbot"));
+            static float botCheck = -1f;
+            static bool botCached;
+
+            [HarmonyPostfix, HarmonyPatch(typeof(PlayerCharacterMasterController), "Update")]
+            static void BotUpdate(PlayerCharacterMasterController __instance) => Bot(__instance);
+
+            [HarmonyPostfix, HarmonyPatch(typeof(PlayerCharacterMasterController), "FixedUpdate")]
+            static void BotFixed(PlayerCharacterMasterController __instance) => Bot(__instance);
+
+            static void Bot(PlayerCharacterMasterController pc)
+            {
+                if (UnityEngine.Time.unscaledTime > botCheck) { botCheck = UnityEngine.Time.unscaledTime + 2f; botCached = BotOn; }
+                if (!botCached || !pc || !pc.master) return;
+                var body = pc.master.GetBody();
+                var input = body ? body.inputBank : null;
+                if (!input) return;
+                HurtBox best = null;
+                float bestD = 60f * 60f;
+                foreach (var tc in TeamComponent.GetTeamMembers(TeamIndex.Monster))
+                {
+                    if (!tc || !tc.body || !tc.body.mainHurtBox || !tc.body.healthComponent || !tc.body.healthComponent.alive) continue;
+                    float d = (tc.body.corePosition - body.corePosition).sqrMagnitude;
+                    if (d < bestD) { bestD = d; best = tc.body.mainHurtBox; }
+                }
+                if (!best) return;
+                input.aimDirection = (best.transform.position - input.aimOrigin).normalized;
+                input.skill1.PushState(true);
+                input.skill2.PushState(true);
+                input.skill4.PushState(true);
+            }
+
             [HarmonyPrefix, HarmonyPatch(typeof(CombatDirector), "AttemptSpawnOnTarget")]
             static bool TestGodNoSpawns(ref bool __result)
             {
