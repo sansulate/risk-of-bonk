@@ -1126,6 +1126,16 @@ namespace RiskOfBonk
                 catch (System.Exception e) { Log.Error($"Bonk style terrain: {e}"); }
             }
 
+            // The stage's title card names the Megabonk map instead of the Risk of Rain 2 stage it replaced.
+            [HarmonyPostfix, HarmonyPatch(typeof(RoR2.UI.AssignStageToken), "Start")]
+            static void Title(RoR2.UI.AssignStageToken __instance)
+            {
+                if (TestKeys.On) Log.Info($"stage title: active {Active}, map {MapName}");
+                if (!Active || profile == null) return;
+                if (__instance.titleText) __instance.titleText.text = profile.name;
+                if (__instance.subtitleText) __instance.subtitleText.text = profile.noise ? "Megabonk's dunes" : profile.name == "Graveyard" ? "Megabonk's crypts" : "Megabonk's woods";
+            }
+
             // Megabonk drops you straight onto the map: no drop pod on Bonk style stages (host side).
             [HarmonyPrefix, HarmonyPatch(typeof(Stage), nameof(Stage.RespawnCharacter))]
             static void NoPod(Stage __instance)

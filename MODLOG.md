@@ -486,3 +486,6 @@
   timer stays at 00:38.04 for 2 s with the menu open, then runs on after the pick.
 - Update 45 (2026-10-24): Megabonk characters' PickupRange stat now widens their XP gem pickup radius (metres on top of
   tuning xp_pickup_radius 7: Fox +4, Bush +6, Calcium/Ninja/Tony/Robinette/CL4NK +3, the casters +5).
+- Update 46 (2026-10-24): on Bonk style stages the stage title card names the Megabonk map ("Forest 1 / Megabonk's
+  woods", "Desert 1 / Megabonk's dunes", "Graveyard / Megabonk's crypts") instead of the Risk of Rain 2 stage it
+  replaced. Checked with tools/ingame/titletest.sh.
