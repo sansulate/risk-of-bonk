@@ -22,8 +22,12 @@ re-ask the user about them.
   (tuning horde_target_*, horde_density). Compare survivors with tools/ingame/survivetest.sh and the test files
   testgod + testmortal + testbot (bot aims and fires for RoR2 survivors); "fight:" lines every 15 s. The circling bot
   plays close-range survivors (Megachad's aura) badly: it dies at about 55 s where Commando and CL4NK survive 4 min.
+- Seamless pass (MODLOG 43-48): no whiteout over long sessions (StageLook notes original grading once), single-player
+  pause while choosing a level-up card (config MegabonkLevelUpPause), PickupRange widens gem pickup, stage title cards
+  and "Boss Portal" text name the Megabonk map/portal, Megabonk map ambience replaces the stage's ambient sounds.
 - Test scripts: tools/ingame/terraintest.sh, stucktest.sh, enemytest.sh (testspawn takes a comma list), chesttest.sh
-  (F2 opens the nearest chest), hudtest.sh (F1 visits interactables), survivetest.sh, tptest.sh.
+  (F2 opens the nearest chest), hudtest.sh (F1 visits interactables), survivetest.sh, tptest.sh, pausetest.sh, titletest.sh. The Bonk/Rain
+  choice persists between runs in one game session and the scripts click it unless NOTOGGLE=1.
 - Still open: Megabonk's duration upgrades (weapons.json skips them; crit damage, bounces, projectile speed and
   knockback are in, MODLOG 38); co-op with two players (per-slot weapon machines, enemy
   looks, interactable looks and music are local and deterministic, untested together); Megabonk's Hell and Dungeon maps
