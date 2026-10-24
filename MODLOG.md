@@ -484,3 +484,5 @@
   players it keeps the invincibility countdown. Never touches the time scale under Risk of Rain 2's own pause menu, and
   restores it afterwards if a pick was made while that menu was open. Checked with tools/ingame/pausetest.sh: the run
   timer stays at 00:38.04 for 2 s with the menu open, then runs on after the pick.
+- Update 45 (2026-10-24): Megabonk characters' PickupRange stat now widens their XP gem pickup radius (metres on top of
+  tuning xp_pickup_radius 7: Fox +4, Bush +6, Calcium/Ninja/Tony/Robinette/CL4NK +3, the casters +5).

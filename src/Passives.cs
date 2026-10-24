@@ -63,6 +63,9 @@ namespace RiskOfBonk
         static readonly Dictionary<CharacterRow, Dictionary<string, float>> statCache = new Dictionary<CharacterRow, Dictionary<string, float>>();
 
         /// <summary>The character's Megabonk stat modifier (mbStats), 0 when it has none.</summary>
+        /// <summary>Extra XP gem pickup radius (m) from the Megabonk character's PickupRange stat.</summary>
+        public static float PickupRange(CharacterBody body) => Mathf.Max(0f, Stat(Weapons.Character(body), "PickupRange"));
+
         public static float Stat(CharacterRow row, string stat)
         {
             if (row == null) return 0f;

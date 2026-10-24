@@ -111,11 +111,13 @@ namespace RiskOfBonk
                 }
                 if (now < nextScan) return;
                 nextScan = now + 0.1f;
-                float r2 = Tune.XpPickupRadius * Tune.XpPickupRadius;
                 foreach (var pc in PlayerCharacterMasterController.instances)
                 {
                     var body = pc && pc.master ? pc.master.GetBody() : null;
                     if (!body || !body.healthComponent || !body.healthComponent.alive) continue;
+                    // Megabonk characters' PickupRange stat (Fox +4, Bush +6, ...) adds metres to the radius.
+                    float r = Tune.XpPickupRadius + Passives.PickupRange(body);
+                    float r2 = r * r;
                     var p = body.corePosition;
                     foreach (var g in gems)
                     {
