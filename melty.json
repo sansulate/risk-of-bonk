@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "mode": "installed",
+  "games": [
+    { "role": "primary", "slug": "risk-of-rain-2" },
+    { "role": "companion", "slug": "custom-megabonk" }
+  ],
+  "components": [
+    { "id": "main", "kind": "main", "label": "Risk of Bonk", "fileName": "RiskOfBonk-*.zip", "required": true }
+  ],
+  "requirements": [{ "id": "bepinex-5", "kind": "loader" }],
+  "mappings": [{ "to": "{game}/BepInEx/plugins/RiskOfBonk", "from": "RiskOfBonk/", "component": "main" }],
+  "launch": { "kind": "game" },
+  "settings": [{ "set": { "megabonk": "{game:custom-megabonk}" }, "file": "{localappdata}/RiskOfBonk/melty.properties" }],
+  "multiplayer": {
+    "maxPlayers": 4,
+    "connect": {
+      "address": { "log": "{localappdata}/RiskOfBonk/melty.log", "after": "Melty join address: " },
+      "joinFile": { "path": "{localappdata}/RiskOfBonk/melty.properties", "key": "join" }
+    }
+  },
+  "runtimeData": ["{localappdata}/RiskOfBonk"],
+  "test": {
+    "checks": ["mod-loads", "megabonk-loaded", "run-started", "weapon-fires", "levelup-menu", "upgrade-picked"],
+    "minutes": 5
+  }
+}
